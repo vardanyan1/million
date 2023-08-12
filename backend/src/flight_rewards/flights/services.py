@@ -1,11 +1,15 @@
 import os
 import csv
+import logging
 
 from dateutil import parser, tz
 from django.utils.timezone import make_aware
 from django.db import transaction, IntegrityError
 
 from flight_rewards.flights.models import Flight, Airport
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def import_airports(filename: str):
@@ -15,7 +19,9 @@ def import_airports(filename: str):
             Airport.objects.get_or_create(code=row['Airport Code(s)'],
                                           defaults={'name': row['Airport Name(s)']})
 
+
 inner_delimiter = ', '
+
 
 def read_flights(file: str):
     cache = {}
@@ -32,16 +38,19 @@ def read_flights(file: str):
             flight_durations = row['Flight Duration(s)'].split(inner_delimiter)
             transition_times = row['Transition Time'].split(inner_delimiter)
             aircraft_details = row['Aircraft Details'].split(inner_delimiter)
-            groups = zip(
-                connection_codes,
-                departure_dates,
-                arrival_dates,
-                flight_durations,
-                transition_times,
-                aircraft_details,
-            )
+            RBD = row['RBD']
+            stop_overs = int(row['StopOvers']) if row['StopOvers'].isdigit() else None
+            timestamp = make_aware(parser.parse(row['TimeStamp']))
+            # New fields
+            equipment = row['Equipment']
+            remaining_seats = row['Remaining Seats']
+            designated_class = row['Designated Class']
+
             connections = []
-            for (code, dep_date, ar_date, dur, trans, aircraft) in groups:
+            for (code, dep_date, ar_date, dur, trans, aircraft) in zip(
+                    connection_codes, departure_dates, arrival_dates, flight_durations, transition_times,
+                    aircraft_details
+            ):
                 connection = {
                     'origin': row['Origin Code'] if code == 'Direct flight' else code.split('-')[0],
                     'destination': row['Destination Code'] if code == 'Direct flight' else code.split('-')[1],
@@ -50,6 +59,7 @@ def read_flights(file: str):
                     'duration': dur,
                     'transition_time': trans,
                     'aircraft_details': aircraft
+                    # Add other connection-related fields if needed
                 }
                 connections.append(connection)
             item = {
@@ -57,18 +67,22 @@ def read_flights(file: str):
                 'destination': destination,
                 'connections': connections,
                 'departure_date': make_aware(parser.parse(departure_dates[0])),
-                'tax_per_adult': row['Tax per Adult (AUD)'][1:],
+                'tax_per_adult': float(row['Tax Per Adult'].replace('$', '')),
                 'source': row.get('Source', 'QF'),
-                'availabilities': [{
-                    'flight_class': row['Cabin Type'],
-                    'points': row['Points per Adult']
-                }]
+                'availabilities': [{'flight_class': row['Cabin Type'], 'points': row['Points Per Adult']}],
+                # Add other fields as needed
+                'equipment': equipment,
+                'remaining_seats': remaining_seats,
+                'designated_class': designated_class,
+                'RBD': RBD,
+                'stop_overs': stop_overs,
+                'timestamp': timestamp,
             }
             cache[key] = item
         else:
             item['availabilities'].append({
                 'flight_class': row['Cabin Type'],
-                'points': row['Points per Adult']
+                'points': row['Points Per Adult']
             })
     return cache
 
@@ -83,7 +97,7 @@ def import_flights(file: str):
             Flight.objects.filter(origin__code=origin, destination__code=destination).delete()
             for flight in aggregated_flights.values():
                 Flight.objects.create(**flight)
-        print('all_migrated!')
-    except IntegrityError:
-        print('Error during migration %s')
+        logger.info('All flights migrated successfully!')
+    except IntegrityError as e:
+        logger.error('Error during migration: %s', e)
         raise

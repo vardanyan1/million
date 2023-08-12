@@ -20,9 +20,8 @@ class AirportSerializer(serializers.ModelSerializer):
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flight
-        exclude = ('modified', )
+        exclude = ('modified',)
         depth = 1
-
 
 
 class FlightDateListSerializer(serializers.ListSerializer):
@@ -35,9 +34,10 @@ class FlightDateListSerializer(serializers.ListSerializer):
                     result[item['date']].append(aval['flight_class'])
         output = []
         for date, availabilities in result.items():
-            entry = { 'date': date, 'availabilities': availabilities }
+            entry = {'date': date, 'availabilities': availabilities}
             output.append(entry)
         return output
+
 
 class FlightDateSerializer(serializers.Serializer):
     date = serializers.DateField()
@@ -62,6 +62,7 @@ class AvailabilityNotificationSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, data=empty, **kwargs):
         setattr(self.Meta, 'depth', 1 if instance else 0)
         super().__init__(instance, data, **kwargs)
+
     class Meta:
         model = AvailabilityNotification
         fields = '__all__'

@@ -35,4 +35,4 @@ WORKDIR /app/src
 
 
 # Run the server using the command from Procfile
-CMD ["gunicorn", "--timeout", "1200", "--worker-tmp-dir", "/dev/shm", "--workers", "1", "--threads", "3", "--capture-output", "flight_rewards.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "--timeout", "1200", "--worker-tmp-dir", "/dev/shm", "--workers", "1", "--threads", "3", "--capture-output", "--reload", "flight_rewards.wsgi:application", "--bind", "0.0.0.0:8000"]
