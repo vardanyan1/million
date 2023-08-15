@@ -1,0 +1,13 @@
+django==4.2
+django_cors_headers==3.14.0
+djangorestframework==3.14.0
+django_filter==23.1
+django_extensions==3.2.1
+gunicorn==20.1.0
+psycopg[binary,pool]==3.1.8
+python_dateutil==2.8.2
+whitenoise==6.4.0
+djangorestframework_simplejwt==5.2.2
+djoser==2.2.0
+python_dotenv==1.0.0
+dj-stripe==2.8.1

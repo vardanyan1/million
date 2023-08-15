@@ -40,7 +40,7 @@ class FlightPagination(pagination.PageNumberPagination):
 
 
 class FlightViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Flight.objects.all().select_related('origin', 'destination').order_by('departure_date')
+    queryset = Flight.objects.all().select_related('origin', 'destination')
     serializer_class = FlightSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = FlightFilterSet

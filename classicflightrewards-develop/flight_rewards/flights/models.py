@@ -100,6 +100,7 @@ class Airport(models.Model):
 
 
 class Flight(TimeStampedModel):
+
     class AwardsSource(models.TextChoices):
         QF = 'QF', 'Qantas'
         VA = 'VA', 'Virgin Australia'
@@ -112,16 +113,8 @@ class Flight(TimeStampedModel):
     tax_per_adult = models.FloatField(null=False, blank=False)
     source = models.CharField(choices=AwardsSource.choices, null=False, blank=False, max_length=255)
 
-    # New fields
-    equipment = models.CharField(max_length=255, null=True, blank=True)
-    remaining_seats = models.PositiveIntegerField(null=True, blank=True)
-    designated_class = models.CharField(max_length=100, null=True, blank=True)
-    RBD = models.CharField(max_length=50, null=True, blank=True)
-    stop_overs = models.PositiveIntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(null=True, blank=True)
-
     def __str__(self):
-        return f"{self.origin.name} ({self.origin.code}) - {self.destination.code} ({self.destination.name})"
+        return f"{self.origin.name} ({self.origin.code}) - {self.destination.code} ({self.destination.name})"    
 
 
 class Contact(TimeStampedModel):
