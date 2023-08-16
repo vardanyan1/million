@@ -13,7 +13,7 @@ import { Link as RouterLink } from "react-router-dom"
 import Menu from "../components/Menu"
 import FilterPanel from "../components/FilterPanel"
 import FlightsTable from "../components/FlightsTable/FlightsTable"
-import Loading from '../components/Loading'
+import Loading from "../components/Loading"
 import instagramImage from "../img/instagram.svg"
 import facebookImage from "../img/facebook.svg"
 import { getFlights } from "../services/api"
@@ -118,7 +118,7 @@ function AllAvailability() {
   }, [])
 
   if (query.isLoading && query.isInitialLoading) {
-    return <Loading/>
+    return <Loading />
   }
 
   const pageCount = Math.ceil(query.data.count / ITEMS_PER_PAGE)
@@ -185,7 +185,7 @@ function AllAvailability() {
 
         <Box bg="white" borderRadius={[0, 12]} mb={7}>
           <Box px={4} pt={4} pb={4}>
-            <FilterPanel onChange={applyFilters} {...filters} user={user}/>
+            <FilterPanel onChange={applyFilters} {...filters} user={user} />
           </Box>
 
           <FlightsTable flights={flights} user={user} />
