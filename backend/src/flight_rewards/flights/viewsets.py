@@ -23,6 +23,7 @@ from flight_rewards.flights.serializers import (
 
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 
+
 class FlightFilterSet(filters.FilterSet):
     origin = filters.CharFilter(field_name='origin__code', lookup_expr='exact')
     destination = filters.CharFilter(field_name='destination__code', lookup_expr='exact')
@@ -146,7 +147,6 @@ class UserViewSet(views.UserViewSet):
         }
         return Response(data)
         
-
 
 class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plan.objects.all()
