@@ -113,7 +113,7 @@ class Flight(TimeStampedModel):
     source = models.CharField(choices=AwardsSource.choices, null=False, blank=False, max_length=255)
 
     # New fields
-    equipment = models.CharField(max_length=255, null=True, blank=True)
+    equipment = models.JSONField(default=list, null=True, blank=True)
     remaining_seats = models.PositiveIntegerField(null=True, blank=True)
     designated_class = models.CharField(max_length=100, null=True, blank=True)
     RBD = models.CharField(max_length=50, null=True, blank=True)

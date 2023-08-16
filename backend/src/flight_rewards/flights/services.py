@@ -42,7 +42,7 @@ def read_flights(file: str):
             stop_overs = int(row['StopOvers']) if row['StopOvers'].isdigit() else None
             timestamp = make_aware(parser.parse(row['TimeStamp']))
             # New fields
-            equipment = row['Equipment']
+            equipment = row['Equipment'].split(inner_delimiter)
             remaining_seats = row['Remaining Seats']
             designated_class = row['Designated Class']
 
