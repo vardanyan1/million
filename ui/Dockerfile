@@ -1,20 +1,23 @@
-# Use Node.js 18.16.0 as the base image
-FROM node:18.16.0-alpine
+FROM node:18.16.0-alpine as build
+WORKDIR /app
+# ENV PATH /app/node_modules/.bin:$PATH
 
-# Set the working directory to /app
-WORKDIR /ui
+ARG REACT_APP_BACKEND_URL
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
 
-# Copy the package.json and package-lock.json files to the working directory
-COPY package*.json ./
+COPY package.json .
+COPY yarn.lock .
 
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application files to the working directory
+RUN yarn
 COPY . .
+RUN yarn build
 
-# Expose port 3000 for the app to run on
-EXPOSE 3000
+# production environment
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
 
-# Start the app
-CMD ["npm", "start"]
+COPY --from=build /app/build .
+# new
+# COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
