@@ -44,10 +44,10 @@ const parseDate = (dateStr) => {
 }
 
 const flightClassesMapping = {
-  ACEECO: "economy",
-  ACEPRM: "premiumEconomy",
-  ACEBUS: "business",
-  ACEFIR: "first",
+  Economy: "economy",
+  PremiumEconomy: "premiumEconomy",
+  Business: "business",
+  First: "first",
 }
 
 const pointsPrograms = {

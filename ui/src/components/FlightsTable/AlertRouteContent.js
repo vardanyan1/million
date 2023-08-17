@@ -63,10 +63,10 @@ const CustomCalendarContainer = ({ className, children }) => {
 }
 
 const flightClassesMapping = {
-  ACEECO: "economy",
-  ACEPRM: "premiumEconomy",
-  ACEBUS: "business",
-  ACEFIR: "first",
+  Economy: "economy",
+  PremiumEconomy: "premiumEconomy",
+  Business: "business",
+  First: "first",
 }
 
 const labelFlightClassMapping = invert(flightClassesMapping)
@@ -84,17 +84,15 @@ const AlertRouteContent = ({ route, onClose }) => {
   const { handleSubmit, control, errors } = useForm({
     values: {
       economy: route.flightClasses.some(
-        (flightClass) => flightClass === "ACEECO"
+        (flightClass) => flightClass === "Economy"
       ),
       premiumEconomy: route.flightClasses.some(
-        (flightClass) => flightClass === "ACEPRM"
+        (flightClass) => flightClass === "PremiumEconomy"
       ),
       business: route.flightClasses.some(
-        (flightClass) => flightClass === "ACEBUS"
+        (flightClass) => flightClass === "Business"
       ),
-      first: route.flightClasses.some(
-        (flightClass) => flightClass === "ACEFIR"
-      ),
+      first: route.flightClasses.some((flightClass) => flightClass === "First"),
       qantasFF: route.preferredPrograms.some((program) => program === "QF"),
       virginVelocity: route.preferredPrograms.some(
         (program) => program === "VA"

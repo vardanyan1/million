@@ -144,6 +144,10 @@ const ExpandableRow = ({ flight, lowestPoint }) => {
                 <Text color={COLORS.secondary}>
                   {connection.aircraft_details}
                 </Text>
+                <Text>
+                  {flight.availabilities[index].flight_class.split(", ")[0]}{" "}
+                  Class
+                </Text>
                 <Text>{flight.equipment[index]}</Text>
                 <Text>
                   Last seen:{" "}

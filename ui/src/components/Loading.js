@@ -1,17 +1,11 @@
-import {
-    Box,
-    Image,
-    AbsoluteCenter,
-    Center,
-    Flex
-} from '@chakra-ui/react'
+import { Image, AbsoluteCenter } from "@chakra-ui/react"
 
-import loadingAnimation from '../img/loading_animation.svg'
+import loadingAnimation from "../img/loading_animation.svg"
 
 export default function Loading() {
-    return (
-        <AbsoluteCenter justifyContent="center">
-            <Image src={loadingAnimation}/>
-        </AbsoluteCenter>
-    )
+  return (
+    <AbsoluteCenter justifyContent="center">
+      <Image src={loadingAnimation} />
+    </AbsoluteCenter>
+  )
 }
