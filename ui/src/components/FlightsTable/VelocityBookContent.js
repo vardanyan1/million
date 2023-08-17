@@ -12,14 +12,14 @@ import {
   Text,
 } from "@chakra-ui/react"
 
-import qantasFFImage from "../../img/qantas_frequent_flyer_logo.svg"
+import velocity from "../../img/velocity.svg"
 
 const numberFormat = new Intl.NumberFormat()
 
-const QantasBookContent = ({ points }) => {
+const VelocityBookContent = ({ points }) => {
   const { t } = useTranslation()
 
-  const howToBookQantasLink = t("links.howToBookQantasLink")
+  const howToBookVelocityLink = t("links.howToBookVelocityLink")
 
   return (
     <>
@@ -31,29 +31,29 @@ const QantasBookContent = ({ points }) => {
         fontSize={"xl"}
         fontWeight="extrabold"
       >
-        {t("table.qantasBookHeader")}
+        {t("table.velocityBookHeader")}
       </Heading>
       <OrderedList fontWeight={"semibold"} fontSize={"sm"}>
-        <ListItem mb={4}>{t("table.qantasBookItem1")}</ListItem>
+        <ListItem mb={4}>{t("table.velocityBookItem1")}</ListItem>
         <ListItem mb={4}>
-          {t("table.qantasBookItem2")}
+          {t("table.velocityBookItem2")}
           <UnorderedList pl={3}>
-            <ListItem my={3}>{t("table.qantasBookItem2_1")}</ListItem>
-            <ListItem mb={3}>{t("table.qantasBookItem2_2")}</ListItem>
-            <ListItem mb={3}>{t("table.qantasBookItem2_3")}</ListItem>
-            <ListItem>{t("table.qantasBookItem2_4")}</ListItem>
+            <ListItem my={3}>{t("table.velocityBookItem2_1")}</ListItem>
+            <ListItem mb={3}>{t("table.velocityBookItem2_2")}</ListItem>
+            <ListItem mb={3}>{t("table.velocityBookItem2_3")}</ListItem>
+            <ListItem>{t("table.velocityBookItem2_4")}</ListItem>
           </UnorderedList>
         </ListItem>
       </OrderedList>
       <Divider />
       <Flex justify={"space-between"} py={4}>
-        <Image src={qantasFFImage} />
+        <Image src={velocity} />
         <Box>
           <Text fontSize={"md"} fontWeight={"bold"}>
-            {numberFormat.format(points)} {t("table.qantasBookPoints")}
+            {numberFormat.format(points)} {t("table.velocityBookPoints")}
           </Text>
           <Text align={"right"} fontWeight={"bold"}>
-            {t("table.qantasBookTaxes")}
+            {t("table.velocityBookTaxes")}
           </Text>
         </Box>
       </Flex>
@@ -65,12 +65,12 @@ const QantasBookContent = ({ points }) => {
         borderRadius={8}
         boxShadow={"0px 4px 12px rgba(0, 0, 0, 0.24)"}
         target="_blank"
-        href={howToBookQantasLink}
+        href={howToBookVelocityLink}
       >
-        {t("table.qantasBookButton")}
+        {t("table.velocityBookButton")}
       </Button>
     </>
   )
 }
 
-export default QantasBookContent
+export default VelocityBookContent

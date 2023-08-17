@@ -13,7 +13,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 
 import { trackPage } from "../../services/analytics"
 import EarnPointsContent from "./EarnPointsContent"
-import QantasBookContent from "./QantasBookContent"
+import VelocityBookContent from "./VelocityBookContent"
 import AlertRouteContent from "./AlertRouteContent"
 import { getAlerts } from "../../services/api"
 
@@ -234,7 +234,7 @@ const FlightsTable = ({ flights, user }) => {
               </Th>
             </Show>
             <Th textTransform="none" textAlign="center" p={2}>
-              {t("table.bookHeader")}
+              {t("table.qantasBookHeader")}
             </Th>
             <Show above="lg">
               <Th textTransform="none" textAlign="center" p={2}>
@@ -499,7 +499,7 @@ const FlightsTable = ({ flights, user }) => {
                         borderRadius={8}
                       >
                         <PopoverBody p={0}>
-                          <QantasBookContent points={highestPoint.points} />
+                          <VelocityBookContent points={highestPoint.points} />
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
