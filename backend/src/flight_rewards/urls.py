@@ -23,6 +23,7 @@ from flight_rewards.flights.viewsets import (FlightViewSet, FlightDatesViewSet,
     AvailabilityNotificationViewSet, UserViewSet, SubscriptionPlanViewSet)
 from flight_rewards.flights.views import upload_flights, upload_result
 
+
 class OptionalSlashDefaultRouter(routers.DefaultRouter):
 
     def __init__(self):
