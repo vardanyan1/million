@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 
-import velocity from "../../img/velocity.svg"
+import velocity from "../../img/velocity.png"
 
 const numberFormat = new Intl.NumberFormat()
 
@@ -47,7 +47,7 @@ const VelocityBookContent = ({ points }) => {
       </OrderedList>
       <Divider />
       <Flex justify={"space-between"} py={4}>
-        <Image src={velocity} />
+        <Image src={velocity} width={"100px"} height={"36px"} />
         <Box>
           <Text fontSize={"md"} fontWeight={"bold"}>
             {numberFormat.format(points)} {t("table.velocityBookPoints")}

@@ -21,7 +21,7 @@ import cardImage from "../../img/card.svg"
 import bellImage from "../../img/bell.svg"
 
 import QFAwards from "../../img/QF.svg"
-import VAAwards from "../../img/VA.svg"
+import VAAwards from "../../img/VA.png"
 
 import flightImages from "../../flightImages"
 
@@ -78,21 +78,47 @@ const parseDate = (dateStr) => {
   return parse(dateStr, DATE_FORMAT, new Date())
 }
 
-const ExpandableRow = ({ flight, lowestPoint }) => {
+const ExpandableRow = ({
+  flight,
+  lowestPoint,
+  planeImage,
+  secondPlaneImage,
+}) => {
+  const showFlightClasses = (flightClass) => {
+    let uniqueFlightClasses = [
+      ...new Set(flightClass.split(", ").map((item) => item.trim())),
+    ]
+    let result = uniqueFlightClasses.join(", ")
+
+    return result
+  }
+
   return (
     <Box>
       {flight.connections.map((connection, index, connections) => {
         return (
           <Fragment key={index}>
             <Flex my={6} fontSize={"sm"} fontWeight={"semibold"}>
-              <Flex alignItems={"center"}>
+              <Flex alignItems={"center"} paddingRight={"10px"} gap={"10px"}>
                 <Image
                   width="36px"
-                  height={"36px"}
-                  src={flightImages[connection.aircraft_details.slice(0, 2)]}
-                  mr={6}
+                  src={planeImage}
+                  margin="0 auto"
+                  position={"relative"}
                   zIndex={1}
+                  top={secondPlaneImage ? "5px" : "0px"}
                 />
+                {secondPlaneImage && (
+                  <Image
+                    width="36px"
+                    src={secondPlaneImage}
+                    margin="0 auto"
+                    position={"absolute"}
+                    zIndex={0}
+                    bottom={"20px"}
+                    right={"35%"}
+                  />
+                )}
                 <Box
                   height={84}
                   position="relative"
@@ -120,7 +146,7 @@ const ExpandableRow = ({ flight, lowestPoint }) => {
                   }}
                 />
               </Flex>
-              <Box w={"45%"}>
+              <Box w={"45%"} fontSize="12px">
                 <Text color={COLORS.secondary}>
                   {format(
                     parseDate(connection.departure_date),
@@ -140,17 +166,17 @@ const ExpandableRow = ({ flight, lowestPoint }) => {
                 <Text>{connection.destination}</Text>
               </Box>
 
-              <Box w={"45%"}>
+              <Box w={"45%"} fontSize={"12px"}>
                 <Text color={COLORS.secondary}>
-                  {connection.aircraft_details}
+                  Flight: {connection.aircraft_details}
                 </Text>
                 <Text>
-                  {flight.availabilities[index].flight_class.split(", ")[0]}{" "}
-                  Class
+                  Aircraft:{" "}
+                  {showFlightClasses(flight.availabilities[index].flight_class)}{" "}
                 </Text>
-                <Text>{flight.equipment[index]}</Text>
+                <Text>Availability: {flight.equipment[index]}</Text>
                 <Text>
-                  Last seen:{" "}
+                  Last seen: about{" "}
                   {formatDistance(new Date(flight.created), new Date(), {
                     addSuffix: true,
                   })}
@@ -391,7 +417,7 @@ const FlightsTable = ({ flights, user }) => {
                             {lowestPoint.name}
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {flight.remaining_seats} seats remaining
+                            {flight.remaining_seats} seats left
                           </Text>
                         </>
                       ) : (
@@ -400,7 +426,11 @@ const FlightsTable = ({ flights, user }) => {
                     </Td>
                   </Show>
                   <Show above="lg">
-                    <Td p={2} border={isFlightExpanded ? "none" : ""}>
+                    <Td
+                      p={2}
+                      border={isFlightExpanded ? "none" : ""}
+                      fontSize={"12px"}
+                    >
                       <Text>
                         {connections.length === 1
                           ? "Direct"
@@ -426,7 +456,7 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {flight.remaining_seats} seats remaining
+                            {flight.remaining_seats} seats left
                           </Text>
                         </>
                       ) : (
@@ -494,6 +524,8 @@ const FlightsTable = ({ flights, user }) => {
                         <Image
                           src={flight.source === "QF" ? QFAwards : VAAwards}
                           margin={"0 auto"}
+                          width={"28px"}
+                          height={"28px"}
                         />
                       </PopoverTrigger>
                       <PopoverContent
@@ -510,33 +542,38 @@ const FlightsTable = ({ flights, user }) => {
                   </Td>
                   <Show above="lg">
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      <Popover
-                        placement="left"
-                        onOpen={() => {
-                          trackPage({
-                            title: "Earn Points",
-                            destination: flight.destination.name,
-                          })
-                        }}
-                      >
-                        <PopoverTrigger>
-                          <Image src={cardImage} margin="0 auto" />
-                        </PopoverTrigger>
-                        <PopoverContent
-                          p={5}
-                          pb={0}
-                          _focus={{ boxShadow: "none" }}
-                          boxShadow="0px 10px 22px rgba(0, 0, 0, 0.14);"
-                          borderRadius={8}
+                      {flight.source === "QF" ? (
+                        <Popover
+                          placement="left"
+                          onOpen={() => {
+                            trackPage({
+                              title: "Earn Points",
+                              destination: flight.destination.name,
+                            })
+                          }}
+                          isOpen={false}
                         >
-                          <PopoverBody p={0}>
-                            <EarnPointsContent
-                              points={highestPoint.points}
-                              destinationAirport={flight.destination}
-                            />
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover>
+                          <PopoverTrigger>
+                            <Image src={cardImage} margin="0 auto" />
+                          </PopoverTrigger>
+                          <PopoverContent
+                            p={5}
+                            pb={0}
+                            _focus={{ boxShadow: "none" }}
+                            boxShadow="0px 10px 22px rgba(0, 0, 0, 0.14);"
+                            borderRadius={8}
+                          >
+                            <PopoverBody p={0}>
+                              <EarnPointsContent
+                                points={highestPoint.points}
+                                destinationAirport={flight.destination}
+                              />
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <Image src={cardImage} margin="0 auto" />
+                      )}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
                       <Popover
@@ -598,6 +635,8 @@ const FlightsTable = ({ flights, user }) => {
                       <ExpandableRow
                         flight={flight}
                         lowestPoint={lowestPoint}
+                        planeImage={planeImage}
+                        secondPlaneImage={secondPlaneImage}
                       />
                     </Td>
                   </Tr>

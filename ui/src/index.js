@@ -31,8 +31,8 @@ import Settings from "./pages/Settings"
 import Alerts from "./pages/Alerts"
 import ResetPassword from "./pages/ResetPassword"
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm"
-import Pricing from './pages/Pricing'
-import CheckoutResult from './pages/CheckoutResult'
+import Pricing from "./pages/Pricing"
+import CheckoutResult from "./pages/CheckoutResult"
 
 import Loading from "./components/Loading"
 
@@ -55,7 +55,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, error } = useAuthContext()
 
   if (!user && !error) {
-    return <Loading/>
+    return <Loading />
   }
 
   return user ? children : <Navigate to="/" replace />
@@ -65,7 +65,7 @@ const AnonymousRoute = ({ children }) => {
   const { user, error } = useAuthContext()
 
   if (!user && !error) {
-    return <Loading/>
+    return <Loading />
   }
 
   return user ? <Navigate to="/" /> : children
@@ -163,11 +163,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/pricing",
-        element: <Pricing/>
+        element: <Pricing />,
       },
       {
         path: "/checkout_result",
-        element: <CheckoutResult/>
+        element: <CheckoutResult />,
       },
       {
         path: "*",
