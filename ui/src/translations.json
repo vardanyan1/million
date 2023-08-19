@@ -154,10 +154,13 @@
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
+    "phoneNumber": "Phone number",
     "login": "Login",
     "noAccountYet": "Don't have an account yet?",
     "signUp": "Sign up",
-    "generalError": "Invalid username or password. Please try again."
+    "unsubscribe": "Unsubscribe",
+    "generalError": "Invalid username or password. Please try again.",
+    "switch": "Switch"
   },
   "register": {
     "header": "Sign up to continue",
