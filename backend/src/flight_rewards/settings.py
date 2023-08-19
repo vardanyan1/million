@@ -208,9 +208,9 @@ DJOSER = {
 }
 
 
-STRIPE_LIVE_MODE = False
-DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'id'
-DJSTRIPE_USE_NATIVE_JSONFIELD = True
+STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your secret key>")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your secret key>")
+STRIPE_LIVE_MODE = False  # Change to True in production
 DJSTRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
-STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY")
-STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY")
+DJSTRIPE_USE_NATIVE_JSONFIELD = True  # We recommend setting to True for new installations
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"

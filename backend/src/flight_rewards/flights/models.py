@@ -42,11 +42,11 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-
 class SUBSCRIPTION_TYPE(enum.StrEnum):
   FREE = 'FREE'
   MONTHLY = 'MONTHLY'
   ANNUAL = 'ANNUAL'
+
 
 class MAX_ALERTS_PER_SUBSCRIPTION(enum.IntEnum):
     FREE = 0
