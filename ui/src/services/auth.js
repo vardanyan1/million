@@ -2,7 +2,7 @@ import { createContext, useContext } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { me } from "./api"
-import Loading from '../components/Loading'
+import Loading from "../components/Loading"
 
 const AuthContext = createContext({ user: null, error: null })
 
@@ -11,13 +11,13 @@ export const AuthProvider = ({ children }) => {
     data: user,
     isLoading,
     error,
-  } = useQuery({ 
-    queryKey: ["me"], 
-    queryFn: me, 
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: me,
   })
   return (
     <AuthContext.Provider value={{ user, error }}>
-      {isLoading ? <Loading/> : children}
+      {isLoading ? <Loading /> : children}
     </AuthContext.Provider>
   )
 }

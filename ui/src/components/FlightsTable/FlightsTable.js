@@ -171,11 +171,11 @@ const ExpandableRow = ({
                   Flight: {connection.aircraft_details}
                 </Text>
                 <Text>
-                  Aircraft:{" "}
+                  Availability:{" "}
                   {showFlightClasses(flight.availabilities[index].flight_class)}{" "}
                 </Text>
-                <Text>Availability: {flight.equipment[index]}</Text>
-                <Text>
+                <Text>Aircraft: {flight.equipment[index]}</Text>
+                <Text color={COLORS.secondary}>
                   Last seen: about{" "}
                   {formatDistance(new Date(flight.created), new Date(), {
                     addSuffix: true,
@@ -348,7 +348,7 @@ const FlightsTable = ({ flights, user }) => {
                   fontSize={[12, 14]}
                   position={isFlightExpanded ? "relative" : "initial"}
                   zIndex={isFlightExpanded ? 2 : 0}
-                  backgroundColor={isFlightExpanded ? "#F7F7F9" : "#FFF"}
+                  backgroundColor={isFlightExpanded ? "#F7F7F9" : "#FFFFFF"}
                   transform={isFlightExpanded ? "translateZ(1px)" : "none"}
                   boxShadow={
                     isFlightExpanded
@@ -403,7 +403,11 @@ const FlightsTable = ({ flights, user }) => {
                     </Text>
                   </Td>
                   <Show below="lg">
-                    <Td p={2} border={isFlightExpanded ? "none" : ""}>
+                    <Td
+                      p={2}
+                      border={isFlightExpanded ? "none" : ""}
+                      fontSize={12}
+                    >
                       {lowestPoint ? (
                         <>
                           <Text color={"#DD0000"}>
@@ -413,10 +417,8 @@ const FlightsTable = ({ flights, user }) => {
                               +${Math.round(flight.tax_per_adult)}
                             </Text>
                           </Text>
-                          <Text color={"#141725"} fontSize={12}>
-                            {lowestPoint.name}
-                          </Text>
-                          <Text color="#141725" fontSize="xs">
+                          <Text color={"#141725"}>{lowestPoint.name}</Text>
+                          <Text color={"#141725"}>
                             {flight.remaining_seats} seats left
                           </Text>
                         </>
@@ -572,7 +574,7 @@ const FlightsTable = ({ flights, user }) => {
                           </PopoverContent>
                         </Popover>
                       ) : (
-                        <Image src={cardImage} margin="0 auto" />
+                        <Image src={cardImage} margin="0 auto" opacity={0.3} />
                       )}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
