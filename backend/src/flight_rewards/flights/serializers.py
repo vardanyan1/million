@@ -18,36 +18,16 @@ class AirportSerializer(serializers.ModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
+    connections = serializers.ListField(child=serializers.DictField())
+
     class Meta:
         model = Flight
         exclude = ('modified',)
         depth = 1
 
 
-class FlightDateListSerializer(serializers.ListSerializer):
-    def to_representation(self, data):
-        result = {}
-        for item in data:
-            result.setdefault(item['date'], [])
-            for aval in item['availabilities']:
-                if aval['flight_class'] not in result[item['date']]:
-                    result[item['date']].append(aval['flight_class'])
-        output = []
-        for date, availabilities in result.items():
-            entry = {'date': date, 'availabilities': availabilities}
-            output.append(entry)
-        return output
-
-
 class FlightDateSerializer(serializers.Serializer):
     date = serializers.DateField()
-    availabilities = serializers.SerializerMethodField(method_name='get_availabilities')
-
-    class Meta:
-        list_serializer_class = FlightDateListSerializer
-
-    def get_availabilities(self, obj):
-        return [item['flight_class'] for item in obj['availabilities']]
 
 
 class ContactSerializer(serializers.ModelSerializer):

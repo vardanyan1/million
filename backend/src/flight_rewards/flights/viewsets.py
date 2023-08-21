@@ -17,8 +17,8 @@ from djstripe import settings as djstripe_settings
 
 from flight_rewards.flights.models import Flight, Airport, Contact, AvailabilityNotification, User
 from flight_rewards.flights.serializers import (
-    FlightSerializer, AirportSerializer, FlightDateSerializer, ContactSerializer, 
-    AvailabilityNotificationSerializer, SubscriptionPlanSerializer
+    FlightSerializer, AirportSerializer, ContactSerializer,
+    AvailabilityNotificationSerializer, SubscriptionPlanSerializer, FlightDateSerializer
 )
 
 
