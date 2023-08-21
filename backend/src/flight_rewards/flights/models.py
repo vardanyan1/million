@@ -30,7 +30,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, first_name, last_name, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -39,7 +39,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(email, password, first_name=first_name, last_name=last_name, **extra_fields)
 
 
 class SUBSCRIPTION_TYPE(enum.StrEnum):
@@ -74,9 +74,9 @@ class User(AbstractUser):
                 return SUBSCRIPTION_TYPE.MONTHLY
             elif last_subscription.plan.interval == PlanInterval.year:
                 return SUBSCRIPTION_TYPE.ANNUAL
-            
+
         return SUBSCRIPTION_TYPE.FREE
-    
+
     @property
     def alerts_limit(self):
         return MAX_ALERTS_PER_SUBSCRIPTION[self.subscription]
@@ -87,11 +87,16 @@ class User(AbstractUser):
 
 @receiver(post_save, sender=User)
 def create_stripe_customer(sender, instance, created, **kwargs):
+    print("Post save signal triggered for User")
     if created:
-        Customer.get_or_create(subscriber=instance)
+        print("User was created")
+        if not instance.is_superuser:
+            print("User is not a superuser, creating Stripe customer")
+            Customer.get_or_create(subscriber=instance)
+        else:
+            print("User is a superuser, skipping Stripe customer creation")
 
 
-# Create your models here.
 class Airport(models.Model):
     code = models.CharField(max_length=50, null=False, blank=False)
     name = models.CharField(max_length=255, null=False, blank=False)
