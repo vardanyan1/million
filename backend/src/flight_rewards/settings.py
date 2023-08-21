@@ -104,9 +104,15 @@ WSGI_APPLICATION = 'flight_rewards.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        'ENGINE': 'django.db.backends.sqlite3' if os.environ.get('USE_SQLITE', '').lower() == 'true'
+        else 'django.db.backends.postgresql',
+        'NAME': ':memory:' if os.environ.get('USE_SQLITE', '').lower() == 'true'
+        else os.environ.get('POSTGRES_DB', ''),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
@@ -210,7 +216,7 @@ DJOSER = {
 
 STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your secret key>")
 STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your secret key>")
-STRIPE_LIVE_MODE = False  # Change to True in production
+STRIPE_LIVE_MODE = False
 DJSTRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
-DJSTRIPE_USE_NATIVE_JSONFIELD = True  # We recommend setting to True for new installations
+DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"

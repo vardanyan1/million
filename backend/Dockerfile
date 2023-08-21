@@ -18,6 +18,9 @@ COPY Pipfile Pipfile.lock /app/
 # Install packages using Pipfile
 RUN pipenv install --system --deploy
 
+# Install nc
+RUN apt-get update && apt-get install -y netcat-openbsd
+
 # Copy the entire project
 COPY . /app/
 

@@ -1,6 +1,8 @@
 """
 Flights app viewsets
 """
+import stripe
+
 from django.db.models import F
 from django.conf import settings
 from django_filters import rest_framework as filters
@@ -12,7 +14,6 @@ from rest_framework.decorators import action
 from djoser import views
 from djstripe.models import Customer, Plan, Price, Session
 from djstripe import settings as djstripe_settings
-import stripe
 
 from flight_rewards.flights.models import Flight, Airport, Contact, AvailabilityNotification, User
 from flight_rewards.flights.serializers import (
@@ -32,7 +33,7 @@ class FlightFilterSet(filters.FilterSet):
 
     class Meta:
         model = Flight
-        fields =('origin', 'destination', 'date')
+        fields = ('origin', 'destination', 'date')
 
 
 class FlightPagination(pagination.PageNumberPagination):
@@ -76,7 +77,7 @@ class FlightDatesFilterSet(filters.FilterSet):
 class FlightDatesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = (Flight.objects.all()
                 .annotate(date=F('departure_date__date'))
-                .values('date', 'availabilities').order_by('date').distinct())
+                .values('date').order_by('date').distinct())
     serializer_class = FlightDateSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = FlightDatesFilterSet

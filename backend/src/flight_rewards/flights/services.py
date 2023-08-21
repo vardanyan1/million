@@ -23,6 +23,13 @@ def import_airports(filename: str):
 inner_delimiter = ', '
 
 
+def process_columns(row, *columns):
+    processed = {}
+    for column in columns:
+        processed[column] = row[column].split(inner_delimiter)
+    return processed
+
+
 def read_flights(file: str):
     cache = {}
     csv_reader = csv.DictReader(file)
@@ -32,58 +39,55 @@ def read_flights(file: str):
         if not item:
             origin = Airport.objects.filter(code=row['Origin Code']).first()
             destination = Airport.objects.filter(code=row['Destination Code']).first()
-            connection_codes = row['Connection Airport Codes'].split(inner_delimiter)
-            departure_dates = row['Departure Date'].split(inner_delimiter)
-            arrival_dates = row['Arrival Date'].split(inner_delimiter)
-            flight_durations = row['Flight Duration(s)'].split(inner_delimiter)
-            transition_times = row['Transition Time'].split(inner_delimiter)
-            aircraft_details = row['Aircraft Details'].split(inner_delimiter)
-            RBD = row['RBD']
+            source = row.get('Source', 'QF')
+            points_per_adult = row['Points Per Adult']
+            tax_per_adult = float(row['Tax Per Adult'].replace('$', ''))
             stop_overs = int(row['StopOvers']) if row['StopOvers'].isdigit() else None
-            timestamp = make_aware(parser.parse(row['TimeStamp']))
-            # New fields
-            equipment = row['Equipment'].split(inner_delimiter)
             remaining_seats = row['Remaining Seats']
             designated_class = row['Designated Class']
+            timestamp = make_aware(parser.parse(row['TimeStamp']))
+
+            processed_columns = process_columns(row, 'Connection Airport Codes', 'Departure Date',
+                                                'Arrival Date', 'Flight Duration(s)', 'RBD',
+                                                'Aircraft Details', 'Cabin Type', 'Equipment')
+
+            transition_times = row['Transition Time'].split(inner_delimiter)
 
             connections = []
-            for (code, dep_date, ar_date, dur, trans, aircraft) in zip(
-                    connection_codes, departure_dates, arrival_dates, flight_durations, transition_times,
-                    aircraft_details
-            ):
+            for i in range(len(processed_columns['Connection Airport Codes'])):
                 connection = {
-                    'origin': row['Origin Code'] if code == 'Direct flight' else code.split('-')[0],
-                    'destination': row['Destination Code'] if code == 'Direct flight' else code.split('-')[1],
-                    'departure_date': dep_date,
-                    'arrival_date': ar_date,
-                    'duration': dur,
-                    'transition_time': trans,
-                    'aircraft_details': aircraft
-                    # Add other connection-related fields if needed
+                    'origin': row['Origin Code'] if processed_columns['Connection Airport Codes'][i] == 'Direct flight'
+                    else processed_columns['Connection Airport Codes'][i].split('-')[0],
+
+                    'destination': row['Destination Code'] if processed_columns['Connection Airport Codes'][
+                                                                  i] == 'Direct flight'
+                    else processed_columns['Connection Airport Codes'][i].split('-')[1],
+
+                    'departure_date': processed_columns['Departure Date'][i],
+                    'arrival_date': processed_columns['Arrival Date'][i],
+                    'duration': processed_columns['Flight Duration(s)'][i],
+                    'transition_time': transition_times[i] if i < len(transition_times) else None,
+                    'aircraft_details': processed_columns['Aircraft Details'][i],
+                    'flight_class': processed_columns['Cabin Type'][i],
+                    'equipment': processed_columns['Equipment'][i],
+                    'RBD': processed_columns['RBD'][i]
                 }
                 connections.append(connection)
+
             item = {
                 'origin': origin,
                 'destination': destination,
                 'connections': connections,
-                'departure_date': make_aware(parser.parse(departure_dates[0])),
-                'tax_per_adult': float(row['Tax Per Adult'].replace('$', '')),
-                'source': row.get('Source', 'QF'),
-                'availabilities': [{'flight_class': row['Cabin Type'], 'points': row['Points Per Adult']}],
-                # Add other fields as needed
-                'equipment': equipment,
+                'departure_date': make_aware(parser.parse(processed_columns['Departure Date'][0])),
+                'source': source,
+                'points_per_adult': points_per_adult,
+                'tax_per_adult': tax_per_adult,
                 'remaining_seats': remaining_seats,
                 'designated_class': designated_class,
-                'RBD': RBD,
                 'stop_overs': stop_overs,
                 'timestamp': timestamp,
             }
             cache[key] = item
-        else:
-            item['availabilities'].append({
-                'flight_class': row['Cabin Type'],
-                'points': row['Points Per Adult']
-            })
     return cache
 
 

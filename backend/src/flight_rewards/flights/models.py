@@ -81,7 +81,6 @@ class User(AbstractUser):
     def alerts_limit(self):
         return MAX_ALERTS_PER_SUBSCRIPTION[self.subscription]
 
-
     def __str__(self):
         return self.email
 
@@ -108,22 +107,20 @@ class Flight(TimeStampedModel):
 
     origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departures")
     destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrivals")
-    connections = models.JSONField(default=list, null=False, blank=False)
+    connections = models.JSONField(default=list, null=False, blank=False)  # Stores connection details
     departure_date = models.DateTimeField(null=False, blank=False)
-    availabilities = models.JSONField(default=list, null=False, blank=False)
     tax_per_adult = models.FloatField(null=False, blank=False)
     source = models.CharField(choices=AwardsSource.choices, null=False, blank=False, max_length=255)
+    points_per_adult = models.PositiveIntegerField(null=False, blank=False)  # Added field for points per adult
 
     # New fields
-    equipment = models.JSONField(default=list, null=True, blank=True)
     remaining_seats = models.PositiveIntegerField(null=True, blank=True)
     designated_class = models.CharField(max_length=100, null=True, blank=True)
-    RBD = models.CharField(max_length=50, null=True, blank=True)
     stop_overs = models.PositiveIntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.origin.name} ({self.origin.code}) - {self.destination.code} ({self.destination.name})"
+        return f"{self.origin.name} ({self.origin.code}) - {self.destination.name} ({self.destination.code})"
 
 
 class Contact(TimeStampedModel):
