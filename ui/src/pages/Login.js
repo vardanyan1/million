@@ -9,13 +9,9 @@ import {
   FormErrorMessage,
   Text,
   Flex,
-  InputGroup,
-  InputLeftAddon,
-  NumberInput,
-  NumberInputField,
 } from "@chakra-ui/react"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
@@ -37,7 +33,6 @@ export default function Login() {
     handleSubmit,
     setError,
     formState: { errors },
-    control,
   } = useForm()
 
   const onSubmit = async (values) => {
@@ -112,40 +107,6 @@ export default function Login() {
                   {t("login.forgotPassword")}
                 </RouterLink>
               </Box>
-            </FormControl>
-            <FormControl mb={6} isInvalid={!!errors?.phoneNumber}>
-              <FormLabel fontSize={"xs"} fontWeight="semibold">
-                {t("login.phoneNumber")}
-              </FormLabel>
-              <InputGroup>
-                <InputLeftAddon
-                  bg="white"
-                  border="1px solid"
-                  borderColor="inherit"
-                  pl={2}
-                >
-                  +61
-                </InputLeftAddon>
-                <Controller
-                  name="phoneNumber"
-                  control={control}
-                  rules={{ required: t("validation.required") }}
-                  render={({ field }) => (
-                    <NumberInput
-                      {...field}
-                      bg={"white"}
-                      allowMouseWheel
-                      onChange={(valueString) => {
-                        const onlyNumbers = valueString.replace(/[^0-9]/g, "")
-                        field.onChange(onlyNumbers)
-                      }}
-                    >
-                      <NumberInputField />
-                    </NumberInput>
-                  )}
-                />
-              </InputGroup>
-              <FormErrorMessage>{errors.phoneNumber?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={errors.root?.loginError}>
               <FormErrorMessage>
