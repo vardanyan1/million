@@ -170,11 +170,13 @@ const ExpandableRow = ({
                 <Text color={COLORS.secondary}>
                   Flight: {connection.aircraft_details}
                 </Text>
-                <Text>
+                <Text color={COLORS.secondary}>
                   Availability:{" "}
                   {showFlightClasses(flight.availabilities[index].flight_class)}{" "}
                 </Text>
-                <Text>Aircraft: {flight.equipment[index]}</Text>
+                <Text color={COLORS.secondary}>
+                  Aircraft: {flight.equipment[index]}
+                </Text>
                 <Text color={COLORS.secondary}>
                   Last seen: about{" "}
                   {formatDistance(new Date(flight.created), new Date(), {

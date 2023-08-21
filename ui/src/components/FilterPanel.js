@@ -121,31 +121,35 @@ const CustomCalendarContainer = ({ className, children }) => {
 }
 
 const buildGradientString = (availabilities) => {
-  console.log(availabilities)
-  const chunks = availabilities.map((avail) => {
-    return [
-      "transparent 0% 2%",
-      avail.includes("Economy")
-        ? `${flightClassesColors.Economy} 2% 23%`
-        : "transparent 2% 23%",
-      "transparent 23% 27%",
-      avail.includes("PremiumEconomy")
-        ? `${flightClassesColors.PremiumEconomy} 27% 48%`
-        : "transparent 27% 48%",
-      "transparent 48% 52%",
-      avail.includes("Business")
-        ? `${flightClassesColors.Business} 52% 73%`
-        : "transparent 52% 73%",
-      "transparent 73% 77%",
-      avail.includes("First")
-        ? `${flightClassesColors.First} 77% 98%`
-        : "transparent 77% 98%",
-      "transparent 98% 100%",
-    ]
-  })
+  const uniqueAvailabilities = Array.from(
+    new Set(
+      availabilities
+        .join(", ")
+        .split(", ")
+        .map((item) => item.trim())
+    )
+  )
 
-  const result = `conic-gradient(${chunks.flat()})`
-
+  const chunks = [
+    "transparent 0% 2%",
+    uniqueAvailabilities.includes("Economy")
+      ? `${flightClassesColors.Economy} 2% 23%`
+      : "transparent 2% 23%",
+    "transparent 23% 27%",
+    uniqueAvailabilities.includes("PremiumEconomy")
+      ? `${flightClassesColors["PremiumEconomy"]} 27% 48%`
+      : "transparent 27% 48%",
+    "transparent 48% 52%",
+    uniqueAvailabilities.includes("Business")
+      ? `${flightClassesColors["Business"]} 52% 73%`
+      : "transparent 52% 73%",
+    "transparent 73% 77%",
+    uniqueAvailabilities.includes("First")
+      ? `${flightClassesColors["First"]} 77% 98%`
+      : "transparent 77% 98%",
+    "transparent 98% 100%",
+  ]
+  const result = `conic-gradient(${chunks.join(", ")})`
   return result
 }
 

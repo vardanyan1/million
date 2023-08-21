@@ -154,11 +154,11 @@
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
-    "phoneNumber": "Phone number",
+    "phoneNumber": "Phone number (optional - for SMS alerts)",
     "login": "Login",
     "noAccountYet": "Don't have an account yet?",
     "signUp": "Sign up",
-    "unsubscribe": "Unsubscribe",
+    "cancel": "Cancel",
     "generalError": "Invalid username or password. Please try again.",
     "switch": "Switch"
   },

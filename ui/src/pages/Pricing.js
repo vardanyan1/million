@@ -1,3 +1,8 @@
+import { useState } from "react"
+import { Link as RouterLink, useNavigate } from "react-router-dom"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next"
+import { CheckIcon } from "@chakra-ui/icons"
 import {
   Stack,
   Box,
@@ -11,18 +16,12 @@ import {
   ListIcon,
   Badge,
 } from "@chakra-ui/react"
-import { CheckIcon } from "@chakra-ui/icons"
-import { useTranslation } from "react-i18next"
-import { Link as RouterLink } from "react-router-dom"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { useNavigate } from "react-router-dom"
-
+import { getPricingPlans, createCheckoutSession } from "../services/api"
 import Menu from "../components/Menu"
 import Footer from "../components/Footer"
-import { getPricingPlans, createCheckoutSession } from "../services/api"
 import { useAuthContext } from "../services/auth"
 import { PRICE_INTERVAL } from "../constants"
-import { useState } from "react"
+import SubscriptionPopup from "../components/SubscriptionPopup"
 
 export const Pricing = () => {
   const [userPlan, setUserPlan] = useState("ANNUAL")
@@ -38,8 +37,37 @@ export const Pricing = () => {
     mutationFn: createCheckoutSession,
   })
 
+  const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false)
+  const [isSwitchPopupOpen, setIsSwitchPopupOpen] = useState(false)
+
   const monthPlan = pricingPlans.find((plan) => plan.interval === "month")
   const annualPlan = pricingPlans.find((plan) => plan.interval === "year")
+
+  const handleCancelClick = () => {
+    setIsCancelPopupOpen(true)
+  }
+
+  const handleCloseCancel = () => {
+    setIsCancelPopupOpen(false)
+  }
+
+  const handleConfirmCancel = () => {
+    setUserPlan("FREE")
+    setIsCancelPopupOpen(false)
+  }
+
+  const handleSwitchClick = () => {
+    setIsSwitchPopupOpen(true)
+  }
+
+  const handleSwitchCancel = () => {
+    setIsSwitchPopupOpen(false)
+  }
+
+  const handleConfirmSwitch = (plan) => {
+    setUserPlan(plan === "MONTHLY" ? "ANNUAL" : "MONTHLY")
+    setIsSwitchPopupOpen(false)
+  }
 
   return (
     <Stack
@@ -48,6 +76,7 @@ export const Pricing = () => {
       spacing={0}
     >
       <Menu />
+
       <Box bg="#F7F7F9" px={[0, 7]} py="7" marginInlineStart={0} flexGrow={1}>
         <Heading
           as="h1"
@@ -118,6 +147,7 @@ export const Pricing = () => {
               {t("pricing.free.button")}
             </Button>
           </Flex>
+
           <Flex
             border={
               user?.subscription === "MONTHLY" ? "1px solid #d00" : "none"
@@ -171,15 +201,13 @@ export const Pricing = () => {
               </ListItem>
             </List>
             <Flex gap={2}>
-              <Button
-                w={"100%"}
-                mt="auto"
-                backgroundColor="#D00"
-                textTransform={"uppercase"}
-                onClick={async () => {
-                  if (userPlan === "MONTHLY") {
-                    setUserPlan("FREE")
-                  } else {
+              {(userPlan === "FREE" || userPlan === null) && (
+                <Button
+                  w={"100%"}
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform={"uppercase"}
+                  onClick={async () => {
                     if (
                       user?.subscription === "FREE" ||
                       user?.subscription === null
@@ -191,24 +219,33 @@ export const Pricing = () => {
                     } else {
                       navigate(`/register?interval=${PRICE_INTERVAL.MONTHLY}`)
                     }
-                  }
-                }}
-                color="white"
-              >
-                {/* replace with this when login will ready user?.subscription === "ANNUAL" ? t("login.unsubscribe") : t("login.signUp") */}
-                {userPlan === "MONTHLY"
-                  ? t("login.unsubscribe")
-                  : t("login.signUp")}
-              </Button>
+                  }}
+                  color="white"
+                >
+                  {t("login.signUp")}
+                </Button>
+              )}
+
+              {userPlan === "MONTHLY" && (
+                <Button
+                  w={"100%"}
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform={"uppercase"}
+                  onClick={handleCancelClick}
+                  color="white"
+                >
+                  {t("login.cancel")}
+                </Button>
+              )}
+
               {userPlan === "ANNUAL" && (
                 <Button
                   w={"100%"}
                   mt="auto"
                   backgroundColor="#D00"
                   textTransform={"uppercase"}
-                  onClick={async () => {
-                    setUserPlan("MONTHLY")
-                  }}
+                  onClick={handleSwitchClick}
                   color="white"
                 >
                   {t("login.switch")}
@@ -216,6 +253,7 @@ export const Pricing = () => {
               )}
             </Flex>
           </Flex>
+
           <Flex
             border={user?.subscription === "ANNUAL" ? "1px solid #d00" : "none"}
             direction="column"
@@ -267,15 +305,13 @@ export const Pricing = () => {
               </ListItem>
             </List>
             <Flex gap={2}>
-              <Button
-                w={"100%"}
-                mt="auto"
-                backgroundColor="#D00"
-                textTransform={"uppercase"}
-                onClick={async () => {
-                  if (userPlan === "ANNUAL") {
-                    setUserPlan("FREE")
-                  } else {
+              {(userPlan === "FREE" || userPlan === null) && (
+                <Button
+                  w={"100%"}
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform={"uppercase"}
+                  onClick={async () => {
                     if (
                       user?.subscription === "FREE" ||
                       user?.subscription === null
@@ -287,15 +323,25 @@ export const Pricing = () => {
                     } else {
                       navigate(`/register?interval=${PRICE_INTERVAL.YEARLY}`)
                     }
-                  }
-                }}
-                color="white"
-              >
-                {/* replace with this when login will ready user?.subscription === "ANNUAL" ? t("login.unsubscribe") : t("login.signUp") */}
-                {userPlan === "ANNUAL"
-                  ? t("login.unsubscribe")
-                  : t("login.signUp")}
-              </Button>
+                  }}
+                  color="white"
+                >
+                  {t("login.signUp")}
+                </Button>
+              )}
+
+              {userPlan === "ANNUAL" && (
+                <Button
+                  w={"100%"}
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform={"uppercase"}
+                  onClick={handleCancelClick}
+                  color="white"
+                >
+                  {t("login.cancel")}
+                </Button>
+              )}
 
               {userPlan === "MONTHLY" && (
                 <Button
@@ -303,9 +349,7 @@ export const Pricing = () => {
                   mt="auto"
                   backgroundColor="#D00"
                   textTransform={"uppercase"}
-                  onClick={async () => {
-                    setUserPlan("ANNUAL")
-                  }}
+                  onClick={handleSwitchClick}
                   color="white"
                 >
                   {t("login.switch")}
@@ -315,6 +359,23 @@ export const Pricing = () => {
           </Flex>
         </Stack>
 
+        <SubscriptionPopup
+          isOpen={isCancelPopupOpen}
+          onClose={handleCloseCancel}
+          onConfirm={handleConfirmCancel}
+          header="Cancel Subscription"
+          body="Are you sure you want to cancel your subscription?"
+          type="cancel"
+        />
+        <SubscriptionPopup
+          isOpen={isSwitchPopupOpen}
+          onClose={handleSwitchCancel}
+          onConfirm={handleConfirmSwitch}
+          header="Switch Subscription"
+          body="The current plan remains in place until the next billing cycle, at which point the account will be switched over."
+          type="switch"
+          plan={userPlan}
+        />
         <Footer />
       </Box>
     </Stack>
