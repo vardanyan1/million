@@ -201,7 +201,8 @@ export const Pricing = () => {
               </ListItem>
             </List>
             <Flex gap={2}>
-              {(userPlan === "FREE" || userPlan === null) && (
+              {(user?.subscription === "FREE" ||
+                user?.subscription === null) && (
                 <Button
                   w={"100%"}
                   mt="auto"
