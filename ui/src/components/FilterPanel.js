@@ -34,6 +34,9 @@ import {
 } from "../services/api"
 import circleImage from "../img/circle.svg"
 import locationPinImage from "../img/location_pin.svg"
+import { SUBSCRIPTION, flightClassesColors } from "../constants"
+
+const { FREE } = SUBSCRIPTION
 
 const Circle = ({ color }) => {
   return (
@@ -60,7 +63,7 @@ const DatePickerInput = forwardRef((props, ref) => {
         borderRadius={12}
         _focus={{ border: "1px solid black", boxShadow: "none" }}
         border="1px solid black"
-        borderColor={"gray.200"}
+        borderColor="gray.200"
         py={1}
         px={3}
       />
@@ -74,21 +77,14 @@ const DatePickerInput = forwardRef((props, ref) => {
   )
 })
 
-const flightClassesColors = {
-  Economy: "#DD0000",
-  PremiumEconomy: "#FC9E0A",
-  Business: "#B39E69",
-  First: "#796F5A",
-}
-
 const CustomCalendarContainer = ({ className, children }) => {
   return (
     <div style={{ background: "#fff" }} className="datepicker-wrapper">
       <CalendarContainer className={className}>{children}</CalendarContainer>
       <Flex
-        borderTop={"1px solid rgba(0, 0, 0, 0.12)"}
-        justifyContent={"space-around"}
-        py={"24px"}
+        borderTop="1px solid rgba(0, 0, 0, 0.12)"
+        justifyContent="space-around"
+        py="24px"
         mx={3}
       >
         <Box>
@@ -184,12 +180,12 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
     initialData: [],
   })
 
-  const monthPlan = pricingPlans.find((plan) => plan.interval === "month")
+  const monthPlan = pricingPlans.find(({ interval }) => interval === "month")
 
   const today = new Date()
   const twoMonthsLater = addMonths(today, 2)
 
-  const isFreePlan = !user || ["FREE", null].includes(user.subscription)
+  const isFreePlan = !user || [FREE, null].includes(user?.subscription)
 
   const originAirportOptions = originAirportsQuery.data.map((airport) => {
     return { value: airport.code, label: `${airport.name} (${airport.code})` }
@@ -231,7 +227,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
         justify="center"
         background={
           dayWithAvailability
-            ? buildGradientString(dayWithAvailability?.availabilities)
+            ? buildGradientString(dayWithAvailability.availabilities)
             : "none"
         }
       >
@@ -287,38 +283,33 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
         <PopoverContent py={5}>
           <PopoverCloseButton />
           <PopoverBody>
-            <Heading as="h3" fontSize={"md"} mb={3} fontWeight={"bold"}>
+            <Heading as="h3" fontSize="md" mb={3} fontWeight="bold">
               {t("filterPanel.60daysAlert.header")}
             </Heading>
-            <Text fontWeight={"semibold"}>
+            <Text fontWeight="semibold">
               {t("filterPanel.60daysAlert.text")}
             </Text>
             <Divider my={2} />
-            <Text fontWeight={"semibold"}>
+            <Text fontWeight="semibold">
               {t("filterPanel.60daysAlert.text2")}
             </Text>
-            <Flex
-              alignItems={"baseline"}
-              justifyContent={"center"}
-              gap={2}
-              mb={2}
-            >
-              <Text fontSize={"xs"}>
+            <Flex alignItems="baseline" justifyContent="center" gap={2} mb={2}>
+              <Text fontSize="xs">
                 {t("filterPanel.60daysAlert.textBeforePrice")}
               </Text>
-              <Text fontSize={"2xl"} fontWeight={"bold"}>
+              <Text fontSize="2xl" fontWeight="bold">
                 ${monthPlan?.amount}
               </Text>
-              <Text fontSize={"xs"}>
+              <Text fontSize="xs">
                 {t("filterPanel.60daysAlert.textAfterPrice")}
               </Text>
             </Flex>
             <Button
               as={RouterLink}
               to="/register"
-              w={"100%"}
+              w="100%"
               backgroundColor="#D00"
-              color={"white"}
+              color="white"
             >
               {t("login.signUp")}
             </Button>
@@ -330,7 +321,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
 
   return (
     <Stack
-      justifyContent={"space-between"}
+      justifyContent="space-between"
       direction={{ base: "column", lg: "row" }}
       gap={3}
     >

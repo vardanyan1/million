@@ -44,34 +44,19 @@ import {
   Box,
   useOutsideClick,
 } from "@chakra-ui/react"
+import {
+  COLORS,
+  DATE_FORMAT,
+  DATE_FORMAT_EXPANDABLE_ROW,
+  flightClassesMapping,
+  maxAlertsPerSubscription,
+} from "../../constants"
 
 const numberFormat = new Intl.NumberFormat()
-
-const DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-
-const DATE_FORMAT_EXPANDABLE_ROW = "EEEE, MMMM dd, HH:mm aa"
-// 'yyyy-MM-dd HH:mm:ss'
 
 const formatTime = (dateStr) => {
   const parsedDate = parse(dateStr, DATE_FORMAT, new Date())
   return format(parsedDate, "HH:mm")
-}
-
-const flightClassesMapping = {
-  Economy: "economy",
-  PremiumEconomy: "premiumEconomy",
-  Business: "business",
-  First: "first",
-}
-
-const maxAlertsPerSubscription = {
-  FREE: 0,
-  MONTHLY: 10,
-  ANNUAL: 100,
-}
-
-const COLORS = {
-  secondary: "#6A6E85",
 }
 
 const parseDate = (dateStr) => {
@@ -231,7 +216,7 @@ const FlightsTable = ({ flights, user }) => {
 
   return (
     <>
-      <Table width={"100%"} ref={ref}>
+      <Table width="100%" ref={ref}>
         <Thead>
           <Tr
             boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)"

@@ -3,29 +3,33 @@ import { useSearchParams, Navigate } from "react-router-dom"
 
 import { useAuthContext } from "../services/auth"
 import { getCheckoutResult } from "../services/api"
-import Loading from '../components/Loading'
+import Loading from "../components/Loading"
 
 export default function CheckoutResult() {
-    const { user, error } = useAuthContext()
+  const { user, error } = useAuthContext()
 
-    const [searchParams, _] = useSearchParams()
-    console.log(searchParams)
-    const sessionId = searchParams.get('session_id')
-    const { data: session, isLoading, error: sessionError } = useQuery({
-        queryKey: ["session", user?.id, sessionId],
-        queryFn: getCheckoutResult,
-        initialData: [],
-        enabled: !!user,
-        refetchInterval: 1000
-    })
+  const [searchParams, _] = useSearchParams()
 
-    if (error || sessionError) {
-        return "Error fetching session. Please try again."
-    }
+  const sessionId = searchParams.get("session_id")
+  const {
+    data: session,
+    isLoading,
+    error: sessionError,
+  } = useQuery({
+    queryKey: ["session", user?.id, sessionId],
+    queryFn: getCheckoutResult,
+    initialData: [],
+    enabled: !!user,
+    refetchInterval: 1000,
+  })
 
-    if (isLoading || session.session_status === 'open') {
-        return <Loading/>
-    }
+  if (error || sessionError) {
+    return "Error fetching session. Please try again."
+  }
 
-    return <Navigate to="/"/>
+  if (isLoading || session.session_status === "open") {
+    return <Loading />
+  }
+
+  return <Navigate to="/" />
 }

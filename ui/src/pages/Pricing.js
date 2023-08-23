@@ -19,13 +19,16 @@ import {
 import { getPricingPlans, createCheckoutSession } from "../services/api"
 import Menu from "../components/Menu"
 import Footer from "../components/Footer"
-import { useAuthContext } from "../services/auth"
-import { PRICE_INTERVAL } from "../constants"
 import SubscriptionPopup from "../components/SubscriptionPopup"
+import { useAuthContext } from "../services/auth"
+import { PRICE_INTERVAL, SUBSCRIPTION } from "../constants"
+
+const { FREE, MONTHLY, ANNUAL } = SUBSCRIPTION
+const { MONTH, YEAR } = PRICE_INTERVAL
 
 export const Pricing = () => {
-  const [userPlan, setUserPlan] = useState("ANNUAL")
-  let { user } = useAuthContext()
+  const [userPlan, setUserPlan] = useState(FREE)
+  const { user } = useAuthContext()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: pricingPlans } = useQuery({
@@ -40,19 +43,19 @@ export const Pricing = () => {
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false)
   const [isSwitchPopupOpen, setIsSwitchPopupOpen] = useState(false)
 
-  const monthPlan = pricingPlans.find((plan) => plan.interval === "month")
-  const annualPlan = pricingPlans.find((plan) => plan.interval === "year")
+  const monthPlan = pricingPlans.find((plan) => plan.interval === MONTH)
+  const annualPlan = pricingPlans.find((plan) => plan.interval === YEAR)
 
   const handleCancelClick = () => {
     setIsCancelPopupOpen(true)
   }
 
-  const handleCloseCancel = () => {
+  const handleCancelClose = () => {
     setIsCancelPopupOpen(false)
   }
 
-  const handleConfirmCancel = () => {
-    setUserPlan("FREE")
+  const handleCancelConfirm = () => {
+    setUserPlan(FREE)
     setIsCancelPopupOpen(false)
   }
 
@@ -64,8 +67,14 @@ export const Pricing = () => {
     setIsSwitchPopupOpen(false)
   }
 
-  const handleConfirmSwitch = (plan) => {
-    setUserPlan(plan === "MONTHLY" ? "ANNUAL" : "MONTHLY")
+  const handleSwitchConfirm = async (plan) => {
+    if (plan) {
+      const response = await checkoutSessionMutation({
+        interval: plan,
+      })
+      window.location.href = response.session_url
+    }
+
     setIsSwitchPopupOpen(false)
   }
 
@@ -90,47 +99,48 @@ export const Pricing = () => {
 
         <Stack direction={{ base: "column", lg: "row" }} gap={4} mb={7}>
           <Flex
-            border={user?.subscription === "FREE" ? "1px solid #d00" : "none"}
+            border={
+              user?.subscription === FREE || user?.subscription === null
+                ? "1px solid #d00"
+                : "1px solid transparent"
+            }
             direction="column"
             borderRadius={12}
             p={6}
             flexBasis={0}
             flexGrow={1}
             backgroundColor="white"
-            position={"relative"}
+            position="relative"
           >
-            {user?.subscription === "FREE" && (
+            {(user?.subscription === FREE || user?.subscription === null) && (
               <Badge
                 colorScheme="red"
                 width="100px"
                 position="absolute"
-                top={"8px"}
-                left={"8px"}
+                top="8px"
+                left="8px"
               >
                 {t("pricing.activePlan")}
               </Badge>
             )}
             <Text
               fontSize="sm"
-              textTransform={"uppercase"}
+              textTransform="uppercase"
               fontWeight="bold"
               color="#D00"
             >
               {t("pricing.free.header")}
             </Text>
             <Text fontSize={"3xl"}>$0.00</Text>
+
             <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
-            <List
-              fontWeight={"semibold"}
-              fontSize={"sm"}
-              textAlign={"left"}
-              mb={8}
-            >
-              <ListItem display={"flex"}>
+
+            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
+              <ListItem display="flex">
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.free.point1")}
               </ListItem>
-              <ListItem display={"flex"}>
+              <ListItem display="flex">
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.free.point2")}
               </ListItem>
@@ -138,10 +148,10 @@ export const Pricing = () => {
             <Button
               as={RouterLink}
               to="/"
-              w={"100%"}
+              w="100%"
               mt="auto"
               backgroundColor="#D00"
-              textTransform={"uppercase"}
+              textTransform="uppercase"
               color="white"
             >
               {t("pricing.free.button")}
@@ -150,7 +160,9 @@ export const Pricing = () => {
 
           <Flex
             border={
-              user?.subscription === "MONTHLY" ? "1px solid #d00" : "none"
+              user?.subscription === MONTHLY
+                ? "1px solid #d00"
+                : "1px solid transparent"
             }
             direction="column"
             borderRadius={12}
@@ -158,68 +170,54 @@ export const Pricing = () => {
             flexBasis={0}
             flexGrow={1}
             backgroundColor="white"
-            position={"relative"}
+            position="relative"
           >
-            {user?.subscription === "MONTHLY" && (
+            {user?.subscription === MONTHLY && (
               <Badge
                 colorScheme="red"
                 width="100px"
                 position="absolute"
-                top={"8px"}
-                left={"8px"}
+                top="8px"
+                left="8px"
               >
                 {t("pricing.activePlan")}
               </Badge>
             )}
             <Text
-              fontSize={"sm"}
-              textTransform={"uppercase"}
+              fontSize="sm"
+              textTransform="uppercase"
               fontWeight="bold"
               color="#D00"
             >
               {t("pricing.monthly.header")}
             </Text>
             <Text fontSize={"3xl"}>${monthPlan?.amount}</Text>
+
             <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
-            <List
-              fontWeight={"semibold"}
-              fontSize={"sm"}
-              textAlign={"left"}
-              mb={8}
-            >
+
+            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
               <ListItem display={"flex"}>
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.monthly.point1")}
               </ListItem>
-              <ListItem display={"flex"}>
+              <ListItem display="flex">
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.monthly.point2")}
               </ListItem>
-              <ListItem display={"flex"}>
+              <ListItem display="flex">
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.monthly.point3")}
               </ListItem>
             </List>
             <Flex gap={2}>
-              {(user?.subscription === "FREE" ||
-                user?.subscription === null) && (
+              {!user && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform={"uppercase"}
-                  onClick={async () => {
-                    if (
-                      user?.subscription === "FREE" ||
-                      user?.subscription === null
-                    ) {
-                      const response = await checkoutSessionMutation({
-                        interval: PRICE_INTERVAL.MONTHLY,
-                      })
-                      window.location.href = response.session_url
-                    } else {
-                      navigate(`/register?interval=${PRICE_INTERVAL.MONTHLY}`)
-                    }
+                  textTransform="uppercase"
+                  onClick={() => {
+                    navigate(`/register?interval=${MONTH}`)
                   }}
                   color="white"
                 >
@@ -227,12 +225,30 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {userPlan === "MONTHLY" && (
+              {(user?.subscription === FREE || user?.subscription === null) && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform={"uppercase"}
+                  textTransform="uppercase"
+                  onClick={async () => {
+                    const response = await checkoutSessionMutation({
+                      interval: MONTH,
+                    })
+                    window.location.href = response.session_url
+                  }}
+                  color="white"
+                >
+                  {t("login.switch")}
+                </Button>
+              )}
+
+              {user?.subscription === MONTHLY && (
+                <Button
+                  w="100%"
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform="uppercase"
                   onClick={handleCancelClick}
                   color="white"
                 >
@@ -240,12 +256,12 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {userPlan === "ANNUAL" && (
+              {user?.subscription === ANNUAL && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform={"uppercase"}
+                  textTransform="uppercase"
                   onClick={handleSwitchClick}
                   color="white"
                 >
@@ -256,29 +272,33 @@ export const Pricing = () => {
           </Flex>
 
           <Flex
-            border={user?.subscription === "ANNUAL" ? "1px solid #d00" : "none"}
+            border={
+              user?.subscription === ANNUAL
+                ? "1px solid #d00"
+                : "1px solid transparent"
+            }
             direction="column"
             borderRadius={12}
             p={6}
             flexBasis={0}
             flexGrow={1}
             backgroundColor="white"
-            position={"relative"}
+            position="relative"
           >
-            {user?.subscription === "ANNUAL" && (
+            {user?.subscription === ANNUAL && (
               <Badge
                 colorScheme="red"
                 width="100px"
                 position="absolute"
-                top={"8px"}
-                left={"8px"}
+                top="8px"
+                left="8px"
               >
                 {t("pricing.activePlan")}
               </Badge>
             )}
             <Text
-              fontSize={"sm"}
-              textTransform={"uppercase"}
+              fontSize="sm"
+              textTransform="uppercase"
               fontWeight="bold"
               color="#D00"
             >
@@ -286,13 +306,8 @@ export const Pricing = () => {
             </Text>
             <Text fontSize={"3xl"}>${annualPlan?.amount}</Text>
             <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
-            <List
-              fontWeight={"semibold"}
-              fontSize={"sm"}
-              textAlign={"left"}
-              mb={8}
-            >
-              <ListItem display={"flex"}>
+            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
+              <ListItem display="flex">
                 <ListIcon as={CheckIcon} color="#D00" mt={1} />
                 {t("pricing.annual.point1")}
               </ListItem>
@@ -306,24 +321,14 @@ export const Pricing = () => {
               </ListItem>
             </List>
             <Flex gap={2}>
-              {(userPlan === "FREE" || userPlan === null) && (
+              {!user && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
                   textTransform={"uppercase"}
-                  onClick={async () => {
-                    if (
-                      user?.subscription === "FREE" ||
-                      user?.subscription === null
-                    ) {
-                      const response = await checkoutSessionMutation({
-                        interval: PRICE_INTERVAL.YEARLY,
-                      })
-                      window.location.href = response.session_url
-                    } else {
-                      navigate(`/register?interval=${PRICE_INTERVAL.YEARLY}`)
-                    }
+                  onClick={() => {
+                    navigate(`/register?interval=${YEAR}`)
                   }}
                   color="white"
                 >
@@ -331,29 +336,47 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {userPlan === "ANNUAL" && (
+              {(user?.subscription === FREE || user?.subscription === null) && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform={"uppercase"}
-                  onClick={handleCancelClick}
+                  textTransform="uppercase"
+                  onClick={async () => {
+                    const response = await checkoutSessionMutation({
+                      interval: YEAR,
+                    })
+                    window.location.href = response.session_url
+                  }}
                   color="white"
                 >
-                  {t("login.cancel")}
+                  {t("login.switch")}
                 </Button>
               )}
 
-              {userPlan === "MONTHLY" && (
+              {user?.subscription === MONTHLY && (
                 <Button
-                  w={"100%"}
+                  w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform={"uppercase"}
+                  textTransform="uppercase"
                   onClick={handleSwitchClick}
                   color="white"
                 >
                   {t("login.switch")}
+                </Button>
+              )}
+
+              {user?.subscription === ANNUAL && (
+                <Button
+                  w="100%"
+                  mt="auto"
+                  backgroundColor="#D00"
+                  textTransform="uppercase"
+                  onClick={handleCancelClick}
+                  color="white"
+                >
+                  {t("login.cancel")}
                 </Button>
               )}
             </Flex>
@@ -362,8 +385,8 @@ export const Pricing = () => {
 
         <SubscriptionPopup
           isOpen={isCancelPopupOpen}
-          onClose={handleCloseCancel}
-          onConfirm={handleConfirmCancel}
+          onClose={handleCancelClose}
+          onConfirm={handleCancelConfirm}
           header="Cancel Subscription"
           body="Are you sure you want to cancel your subscription?"
           type="cancel"
@@ -371,11 +394,11 @@ export const Pricing = () => {
         <SubscriptionPopup
           isOpen={isSwitchPopupOpen}
           onClose={handleSwitchCancel}
-          onConfirm={handleConfirmSwitch}
+          onConfirm={handleSwitchConfirm}
           header="Switch Subscription"
           body="The current plan remains in place until the next billing cycle, at which point the account will be switched over."
           type="switch"
-          plan={userPlan}
+          plan={user?.subscription}
         />
         <Footer />
       </Box>

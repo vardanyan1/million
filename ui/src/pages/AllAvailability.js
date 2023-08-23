@@ -19,6 +19,7 @@ import facebookImage from "../img/facebook.svg"
 import { getFlights } from "../services/api"
 import { useAuthContext } from "../services/auth"
 import { trackPage } from "../services/analytics"
+import { ITEMS_PER_PAGE } from "../constants"
 
 const breakpoints = {
   base: "0em", //0??
@@ -28,8 +29,6 @@ const breakpoints = {
   xl: "80em", // 1280px
   "2xl": "96em", // 1536px
 }
-
-const ITEMS_PER_PAGE = 10
 
 const getPagesToRender = (currentPage, pageCount) => {
   if (pageCount <= 6) {
@@ -89,7 +88,7 @@ const getPagesToRender = (currentPage, pageCount) => {
   }
 }
 
-function AllAvailability() {
+const AllAvailability = () => {
   const { user } = useAuthContext()
   const { t } = useTranslation()
   const [currentPage, setCurrentPage] = useState(1)
@@ -105,6 +104,7 @@ function AllAvailability() {
     origin: filters.from?.value,
     destination: filters.to?.value,
   }
+
   const query = useQuery({
     queryKey: ["flights", params],
     queryFn: getFlights,
