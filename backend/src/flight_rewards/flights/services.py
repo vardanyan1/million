@@ -22,13 +22,19 @@ def import_flights_from_csv(file_obj):
         main_destination = Airport.objects.get(code=row['Destination Code'])
         timestamp = make_aware(datetime.strptime(row['TimeStamp'], "%Y-%m-%d %H:%M:%S"))
 
-        # Get or create Flight
+        first_segment_departure_date = make_aware(
+            datetime.strptime(row['Departure Date'].split(', ')[0], "%Y-%m-%d %H:%M:%S"))
+        last_segment_arrival_date = make_aware(
+            datetime.strptime(row['Arrival Date'].split(', ')[-1], "%Y-%m-%d %H:%M:%S"))
+
         flight, flight_created = Flight.objects.get_or_create(
             origin=main_origin,
             destination=main_destination,
             stopovers=row['StopOvers'],
             source=row['Source'],
-            timestamp=timestamp
+            timestamp=timestamp,
+            flight_start_date=first_segment_departure_date,
+            flight_end_date=last_segment_arrival_date
         )
 
         # If flight was just created, add FlightDetails
@@ -47,12 +53,21 @@ def import_flights_from_csv(file_obj):
                     to_airport = main_destination
                 else:
                     from_airport_code, to_airport_code = code.split('-')
-                    try:
-                        from_airport = Airport.objects.get(code=from_airport_code)
-                        to_airport = Airport.objects.get(code=to_airport_code)
-                    except Airport.DoesNotExist:
-                        logger.error(f"Airport not found for code {from_airport_code} or {to_airport_code}")
-                        continue
+
+                    from_airport, created_from = Airport.objects.get_or_create(
+                        code=from_airport_code,
+                        defaults={'name': "-"}
+                    )
+                    if created_from:
+                        logger.info(
+                            f"Airport with code {from_airport_code} added to the database with placeholder name.")
+
+                    to_airport, created_to = Airport.objects.get_or_create(
+                        code=to_airport_code,
+                        defaults={'name': "-"}
+                    )
+                    if created_to:
+                        logger.info(f"Airport with code {to_airport_code} added to the database with placeholder name.")
 
                 # Create FlightDetail for each connection
                 FlightDetail.objects.create(

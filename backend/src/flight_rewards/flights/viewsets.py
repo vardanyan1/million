@@ -52,7 +52,8 @@ class CustomFlightPagination(PageNumberPagination):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.all()
+    queryset = Flight.objects.annotate(first_departure_date=Min('details__departure_date')
+                                       ).order_by('first_departure_date')
     serializer_class = FlightSerializer
     pagination_class = CustomFlightPagination
 

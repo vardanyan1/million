@@ -111,6 +111,8 @@ class Flight(models.Model):
     stopovers = models.PositiveIntegerField()
     source = models.CharField(max_length=255)
     timestamp = models.DateTimeField()
+    flight_start_date = models.DateTimeField(null=True, blank=True)  # renamed from first_departure_date
+    flight_end_date = models.DateTimeField(null=True, blank=True)  # renamed from last_arrival_date
 
     def __str__(self):
         return f"{self.origin} to {self.destination}"
