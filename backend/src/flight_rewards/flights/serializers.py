@@ -3,7 +3,8 @@ from rest_framework.fields import empty
 from djoser.serializers import UserSerializer
 from djstripe.models import Plan
 
-from flight_rewards.flights.models import Flight, Airport, Contact, AvailabilityNotification
+from flight_rewards.flights.models import Airport, Contact, AvailabilityNotification, Flight, FlightDetail, \
+    FlightClassDetail
 
 
 class CurrentUserSerializer(UserSerializer):
@@ -17,17 +18,34 @@ class AirportSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FlightDetailSerializer(serializers.ModelSerializer):
+    from_airport = serializers.StringRelatedField()
+    to_airport = serializers.StringRelatedField()
+
+    class Meta:
+        model = FlightDetail
+        exclude = ('flight',)  # Exclude 'flight' field
+
+
+class FlightClassDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlightClassDetail
+        exclude = ('flight',)  # Exclude 'flight' field
+
+
 class FlightSerializer(serializers.ModelSerializer):
-    connections = serializers.ListField(child=serializers.DictField())
+    details = FlightDetailSerializer(many=True, read_only=True)
+    class_details = FlightClassDetailSerializer(many=True, read_only=True)
+    origin = serializers.StringRelatedField()
+    destination = serializers.StringRelatedField()
 
     class Meta:
         model = Flight
-        exclude = ('modified',)
-        depth = 1
+        fields = '__all__'
 
 
-class FlightDateSerializer(serializers.Serializer):
-    date = serializers.DateField()
+class FlightDepartureDateSerializer(serializers.Serializer):
+    departure_date = serializers.DateTimeField()
 
 
 class ContactSerializer(serializers.ModelSerializer):

@@ -1,14 +1,10 @@
-import os
 import csv
+from django.utils.timezone import make_aware
+from datetime import datetime
 import logging
 
-from dateutil import parser, tz
-from django.utils.timezone import make_aware
-from django.db import transaction, IntegrityError
+from flight_rewards.flights.models import Flight, FlightDetail, FlightClassDetail, Airport
 
-from flight_rewards.flights.models import Flight, Airport
-
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -16,92 +12,77 @@ def import_airports(filename: str):
     with open(filename, 'r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
-            Airport.objects.get_or_create(code=row['Airport Code(s)'],
-                                          defaults={'name': row['Airport Name(s)']})
+            Airport.objects.get_or_create(code=row['Airport Code(s)'], defaults={'name': row['Airport Name(s)']})
 
 
-inner_delimiter = ', '
-
-
-def process_columns(row, *columns):
-    processed = {}
-    for column in columns:
-        processed[column] = row[column].split(inner_delimiter)
-    return processed
-
-
-def read_flights(file: str):
-    cache = {}
-    csv_reader = csv.DictReader(file)
+def import_flights_from_csv(file_obj):
+    csv_reader = csv.DictReader(file_obj)
     for row in csv_reader:
-        key = f"{row['Connection Airport Codes']}{row['Departure Date']}{row['Arrival Date']}{row['Aircraft Details']}"
-        item = cache.get(key)
-        if not item:
-            origin = Airport.objects.filter(code=row['Origin Code']).first()
-            destination = Airport.objects.filter(code=row['Destination Code']).first()
-            source = row.get('Source', 'QF')
-            points_per_adult = row['Points Per Adult']
-            tax_per_adult = float(row['Tax Per Adult'].replace('$', ''))
-            stop_overs = int(row['StopOvers']) if row['StopOvers'].isdigit() else None
-            remaining_seats = row['Remaining Seats']
-            designated_class = row['Designated Class']
-            timestamp = make_aware(parser.parse(row['TimeStamp']))
+        main_origin = Airport.objects.get(code=row['Origin Code'])
+        main_destination = Airport.objects.get(code=row['Destination Code'])
+        timestamp = make_aware(datetime.strptime(row['TimeStamp'], "%Y-%m-%d %H:%M:%S"))
 
-            processed_columns = process_columns(row, 'Connection Airport Codes', 'Departure Date',
-                                                'Arrival Date', 'Flight Duration(s)', 'RBD',
-                                                'Aircraft Details', 'Cabin Type', 'Equipment')
+        # Get or create Flight
+        flight, flight_created = Flight.objects.get_or_create(
+            origin=main_origin,
+            destination=main_destination,
+            stopovers=row['StopOvers'],
+            source=row['Source'],
+            timestamp=timestamp
+        )
 
-            transition_times = row['Transition Time'].split(inner_delimiter)
+        # If flight was just created, add FlightDetails
+        if flight_created:
+            connection_codes = row['Connection Airport Codes'].split(', ')
+            departure_dates = row['Departure Date'].split(', ')
+            arrival_dates = row['Arrival Date'].split(', ')
+            durations = row['Flight Duration(s)'].split(', ')
+            transition_times = row['Transition Time'].split(', ')
+            aircraft_details = row['Aircraft Details'].split(', ')
+            equipment_list = row['Equipment'].split(', ')
 
-            connections = []
-            for i in range(len(processed_columns['Connection Airport Codes'])):
-                connection = {
-                    'origin': row['Origin Code'] if processed_columns['Connection Airport Codes'][i] == 'Direct flight'
-                    else processed_columns['Connection Airport Codes'][i].split('-')[0],
+            for idx, code in enumerate(connection_codes):
+                if code == "Direct flight":
+                    from_airport = main_origin
+                    to_airport = main_destination
+                else:
+                    from_airport_code, to_airport_code = code.split('-')
+                    try:
+                        from_airport = Airport.objects.get(code=from_airport_code)
+                        to_airport = Airport.objects.get(code=to_airport_code)
+                    except Airport.DoesNotExist:
+                        logger.error(f"Airport not found for code {from_airport_code} or {to_airport_code}")
+                        continue
 
-                    'destination': row['Destination Code'] if processed_columns['Connection Airport Codes'][
-                                                                  i] == 'Direct flight'
-                    else processed_columns['Connection Airport Codes'][i].split('-')[1],
+                # Create FlightDetail for each connection
+                FlightDetail.objects.create(
+                    flight=flight,
+                    from_airport=from_airport,
+                    to_airport=to_airport,
+                    departure_date=make_aware(datetime.strptime(departure_dates[idx], "%Y-%m-%d %H:%M:%S")),
+                    arrival_date=make_aware(datetime.strptime(arrival_dates[idx], "%Y-%m-%d %H:%M:%S")),
+                    flight_duration=durations[idx],
+                    transition_time=transition_times[idx] if idx < len(transition_times) else None,
+                    aircraft_details=aircraft_details[idx],
+                    equipment=equipment_list[idx]
+                )
 
-                    'departure_date': processed_columns['Departure Date'][i],
-                    'arrival_date': processed_columns['Arrival Date'][i],
-                    'duration': processed_columns['Flight Duration(s)'][i],
-                    'transition_time': transition_times[i] if i < len(transition_times) else None,
-                    'aircraft_details': processed_columns['Aircraft Details'][i],
-                    'flight_class': processed_columns['Cabin Type'][i],
-                    'equipment': processed_columns['Equipment'][i],
-                    'RBD': processed_columns['RBD'][i]
-                }
-                connections.append(connection)
+        # Check if FlightClassDetail already exists for current flight and class combo
+        class_exists = FlightClassDetail.objects.filter(
+            flight=flight,
+            cabin_type=row['Cabin Type']
+        ).exists()
 
-            item = {
-                'origin': origin,
-                'destination': destination,
-                'connections': connections,
-                'departure_date': make_aware(parser.parse(processed_columns['Departure Date'][0])),
-                'source': source,
-                'points_per_adult': points_per_adult,
-                'tax_per_adult': tax_per_adult,
-                'remaining_seats': remaining_seats,
-                'designated_class': designated_class,
-                'stop_overs': stop_overs,
-                'timestamp': timestamp,
-            }
-            cache[key] = item
-    return cache
+        if not class_exists:
+            # Create FlightClassDetail for each flight class
+            FlightClassDetail.objects.create(
+                flight=flight,
+                cabin_type=row['Cabin Type'],
+                rbd=row['RBD'],
+                points_per_adult=int(row['Points Per Adult']),
+                tax_per_adult=float(row['Tax Per Adult'].replace('$', '')),
+                remaining_seats=int(row['Remaining Seats']),
+                designated_class=row['Designated Class']
+            )
 
-
-def import_flights(file: str):
-    aggregated_flights = read_flights(file)
-
-    [_, origin, destination, *_] = os.path.basename(file.name).split('_')
-
-    try:
-        with transaction.atomic():
-            Flight.objects.filter(origin__code=origin, destination__code=destination).delete()
-            for flight in aggregated_flights.values():
-                Flight.objects.create(**flight)
-        logger.info('All flights migrated successfully!')
-    except IntegrityError as e:
-        logger.error('Error during migration: %s', e)
-        raise
+    logger.info('Successfully imported flights from CSV')
