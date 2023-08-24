@@ -105,27 +105,46 @@ class Airport(models.Model):
         return f"{self.name} ({self.code})"
 
 
-class Flight(TimeStampedModel):
-    class AwardsSource(models.TextChoices):
-        QF = 'QF', 'Qantas'
-        VA = 'VA', 'Virgin Australia'
-
-    origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departures")
-    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrivals")
-    connections = models.JSONField(default=list, null=False, blank=False)  # Stores connection details
-    departure_date = models.DateTimeField(null=False, blank=False)
-    tax_per_adult = models.FloatField(null=False, blank=False)
-    source = models.CharField(choices=AwardsSource.choices, null=False, blank=False, max_length=255)
-    points_per_adult = models.PositiveIntegerField(null=False, blank=False)  # Added field for points per adult
-
-    # New fields
-    remaining_seats = models.PositiveIntegerField(null=True, blank=True)
-    designated_class = models.CharField(max_length=100, null=True, blank=True)
-    stop_overs = models.PositiveIntegerField(null=True, blank=True)
-    timestamp = models.DateTimeField(null=True, blank=True)
+class Flight(models.Model):
+    origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departure_flights")
+    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrival_flights")
+    stopovers = models.PositiveIntegerField()
+    source = models.CharField(max_length=255)
+    timestamp = models.DateTimeField()
+    flight_start_date = models.DateTimeField(null=True, blank=True)  # renamed from first_departure_date
+    flight_end_date = models.DateTimeField(null=True, blank=True)  # renamed from last_arrival_date
 
     def __str__(self):
-        return f"{self.origin.name} ({self.origin.code}) - {self.destination.name} ({self.destination.code})"
+        return f"{self.origin} to {self.destination}"
+
+
+class FlightDetail(models.Model):
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="details")
+    from_airport = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departure_details")
+    to_airport = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrival_details")
+    departure_date = models.DateTimeField()
+    arrival_date = models.DateTimeField()
+    flight_duration = models.CharField(max_length=255)
+    transition_time = models.CharField(max_length=255, null=True, blank=True)
+    aircraft_details = models.CharField(max_length=255)
+    equipment = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.from_airport} to {self.to_airport} - Departure:" \
+               f" {self.departure_date} - Arrival: {self.arrival_date}"
+
+
+class FlightClassDetail(models.Model):
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="class_details")
+    cabin_type = models.CharField(max_length=255)
+    rbd = models.CharField(max_length=255)
+    points_per_adult = models.PositiveIntegerField()
+    tax_per_adult = models.DecimalField(max_digits=8, decimal_places=2)
+    remaining_seats = models.PositiveIntegerField()
+    designated_class = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.flight} - {self.cabin_type}"
 
 
 class Contact(TimeStampedModel):

@@ -3,10 +3,11 @@ Flights app viewsets
 """
 import stripe
 
-from django.db.models import F
+from django.db.models import Min, Q
 from django.conf import settings
 from django_filters import rest_framework as filters
-from rest_framework import viewsets, pagination, mixins, filters as rest_filters
+from rest_framework import viewsets, mixins, filters as rest_filters
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
@@ -15,42 +16,18 @@ from djoser import views
 from djstripe.models import Customer, Plan, Price, Session
 from djstripe import settings as djstripe_settings
 
-from flight_rewards.flights.models import Flight, Airport, Contact, AvailabilityNotification, User
+from flight_rewards.flights.models import Airport, Contact, AvailabilityNotification, User, Flight
 from flight_rewards.flights.serializers import (
-    FlightSerializer, AirportSerializer, ContactSerializer,
-    AvailabilityNotificationSerializer, SubscriptionPlanSerializer, FlightDateSerializer
+    AirportSerializer, ContactSerializer,
+    AvailabilityNotificationSerializer, SubscriptionPlanSerializer, FlightDepartureDateSerializer, FlightSerializer
 )
 
 
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 
 
-class FlightFilterSet(filters.FilterSet):
-    origin = filters.CharFilter(field_name='origin__code', lookup_expr='exact')
-    destination = filters.CharFilter(field_name='destination__code', lookup_expr='exact')
-    date = filters.CharFilter(field_name='departure_date__date', lookup_expr='startswith',
-                              label='Departure date')
-
-    class Meta:
-        model = Flight
-        fields = ('origin', 'destination', 'date')
-
-
-class FlightPagination(pagination.PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-
-
-class FlightViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Flight.objects.all().select_related('origin', 'destination').order_by('departure_date')
-    serializer_class = FlightSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = FlightFilterSet
-    pagination_class = FlightPagination
-
-
 class DestinationAirportFilterSet(filters.FilterSet):
-    origin = filters.CharFilter(field_name='arrivals__origin__code', distinct=True)
+    origin = filters.CharFilter(field_name='arrival_flights__origin__code', distinct=True)
 
     class Meta:
         model = Airport
@@ -58,29 +35,48 @@ class DestinationAirportFilterSet(filters.FilterSet):
 
 
 class OriginAirportViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Airport.objects.exclude(departures__isnull=True).order_by('name')
+    queryset = Airport.objects.filter(departure_flights__isnull=False).distinct().order_by('name')
     serializer_class = AirportSerializer
 
 
 class DestinationAirportViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Airport.objects.exclude(arrivals__isnull=True).order_by('name')
+    queryset = Airport.objects.filter(Q(departure_flights__isnull=False)
+                                      | Q(arrival_flights__isnull=False)).distinct().order_by('name')
     serializer_class = AirportSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = DestinationAirportFilterSet
 
 
-class FlightDatesFilterSet(filters.FilterSet):
-    origin = filters.CharFilter(field_name='origin__code', lookup_expr='exact')
-    destination = filters.CharFilter(field_name='destination__code', lookup_expr='exact')
+class CustomFlightPagination(PageNumberPagination):
+    page_size = 10
 
 
-class FlightDatesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = (Flight.objects.all()
-                .annotate(date=F('departure_date__date'))
-                .values('date').order_by('date').distinct())
-    serializer_class = FlightDateSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = FlightDatesFilterSet
+class FlightViewSet(viewsets.ModelViewSet):
+    queryset = Flight.objects.annotate(first_departure_date=Min('details__departure_date')
+                                       ).order_by('first_departure_date')
+    serializer_class = FlightSerializer
+    pagination_class = CustomFlightPagination
+
+
+class FlightDepartureDatesViewSet(viewsets.ViewSet):
+    """
+    A simple ViewSet for listing distinct first departure dates for flights.
+    """
+
+    def list(self, request):
+        # Annotate each Flight with the earliest departure_date from related FlightDetail
+        flights_with_earliest_date = Flight.objects.annotate(first_departure_date=Min('details__departure_date'))
+
+        # Get dates excluding None values
+        dates = flights_with_earliest_date.exclude(first_departure_date__isnull=True).values_list(
+            'first_departure_date', flat=True).distinct()
+
+        # Convert dates to a list of dictionaries for the serializer.
+        dates_list = [{"departure_date": date} for date in dates]
+
+        serializer = FlightDepartureDateSerializer(data=dates_list, many=True)
+        serializer.is_valid(raise_exception=True)  # This will raise a 400 error if data is invalid
+        return Response(serializer.data)
 
 
 class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -133,7 +129,7 @@ class UserViewSet(views.UserViewSet):
             'session_url': session.url
         }
         return Response(data)
-    
+
     @action(detail=True, methods=['GET'])
     def session_result(self, request, id):
         session_id = request.query_params.get('session_id')
@@ -147,7 +143,7 @@ class UserViewSet(views.UserViewSet):
             'session_payment_status': session.payment_status
         }
         return Response(data)
-        
+
 
 class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plan.objects.all()
