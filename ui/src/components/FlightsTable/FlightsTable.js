@@ -44,38 +44,23 @@ import {
   Box,
   useOutsideClick,
 } from "@chakra-ui/react"
+import {
+  COLORS,
+  DATE_FORMAT,
+  DATE_FORMAT_EXPANDABLE_ROW,
+  flightClassesMapping,
+  maxAlertsPerSubscription,
+} from "../../constants"
 
 const numberFormat = new Intl.NumberFormat()
 
-const DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-
-const DATE_FORMAT_EXPANDABLE_ROW = "EEEE, MMMM dd, HH:mm aa"
-// 'yyyy-MM-dd HH:mm:ss'
-
 const formatTime = (dateStr) => {
-  const parsedDate = parse(dateStr, DATE_FORMAT, new Date())
+  const parsedDate = parseISO(dateStr)
   return format(parsedDate, "HH:mm")
 }
 
-const flightClassesMapping = {
-  Economy: "economy",
-  PremiumEconomy: "premiumEconomy",
-  Business: "business",
-  First: "first",
-}
-
-const maxAlertsPerSubscription = {
-  FREE: 0,
-  MONTHLY: 10,
-  ANNUAL: 100,
-}
-
-const COLORS = {
-  secondary: "#6A6E85",
-}
-
 const parseDate = (dateStr) => {
-  return parse(dateStr, DATE_FORMAT, new Date())
+  return parseISO(dateStr)
 }
 
 const ExpandableRow = ({
@@ -172,7 +157,7 @@ const ExpandableRow = ({
                 </Text>
                 <Text color={COLORS.secondary}>
                   Availability:{" "}
-                  {showFlightClasses(flight.availabilities[index].flight_class)}{" "}
+                  {showFlightClasses(flight.class_details[index].cabin_type)}
                 </Text>
                 <Text color={COLORS.secondary}>
                   Aircraft: {flight.equipment[index]}
@@ -231,7 +216,7 @@ const FlightsTable = ({ flights, user }) => {
 
   return (
     <>
-      <Table width={"100%"} ref={ref}>
+      <Table width="100%" ref={ref}>
         <Thead>
           <Tr
             boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)"
@@ -280,15 +265,15 @@ const FlightsTable = ({ flights, user }) => {
         </Thead>
         <Tbody>
           {flights.map((flight) => {
-            const { connections } = flight
+            const { details } = flight
 
-            const summaryPoints = flight.availabilities.reduce(
+            const summaryPoints = flight.class_details.reduce(
               (acc, item) => ({
                 ...acc,
-                [flight.designated_class]: {
-                  points: item.points,
+                [item.designated_class]: {
+                  points: item.points_per_adult,
                   name: t(
-                    `table.${flightClassesMapping[flight.designated_class]}`
+                    `table.${flightClassesMapping[item.designated_class]}`
                   ),
                 },
               }),
@@ -307,24 +292,24 @@ const FlightsTable = ({ flights, user }) => {
               summaryPoints["PremiumEconomy"] ||
               summaryPoints["Economy"]
 
+            console.log(flight)
+
             const planeImage =
-              flight.connections.length >= 3
+              details.length >= 3
                 ? flightImages.group_3_plus
-                : flightImages[
-                    flight.connections[0].aircraft_details.slice(0, 2)
-                  ]
+                : flightImages[details[0].aircraft_details.slice(0, 2)]
 
             const secondPlaneImage =
-              flight.connections.length === 2 &&
-              flightImages[flight.connections[1].aircraft_details.slice(0, 2)]
+              details.length === 2 &&
+              flightImages[details[1].aircraft_details.slice(0, 2)]
 
             const departureDate = parse(
-              connections[0].departure_date,
+              details[0].departure_date,
               DATE_FORMAT,
               new Date()
             )
             const arrivalDate = parse(
-              connections[connections.length - 1].arrival_date,
+              details[details.length - 1].arrival_date,
               DATE_FORMAT,
               new Date()
             )
@@ -336,8 +321,8 @@ const FlightsTable = ({ flights, user }) => {
             const route = {
               origin: flight.origin,
               destination: flight.destination,
-              fromDate: parseISO(flight.departure_date),
-              toDate: addDays(parseISO(flight.departure_date), 1),
+              fromDate: parseISO(flight.flight_start_date),
+              toDate: addDays(parseISO(flight.flight_start_date), 1),
               flightClasses: Object.keys(summaryPoints),
               preferredPrograms: [flight.source],
             }
@@ -392,14 +377,12 @@ const FlightsTable = ({ flights, user }) => {
                   </Show>
                   <Td p={2} border={isFlightExpanded ? "none" : ""}>
                     <Text>
-                      {formatTime(connections[0].departure_date)} -{" "}
-                      {formatTime(
-                        connections[connections.length - 1].arrival_date
-                      )}
+                      {formatTime(flight.flight_start_date)} -{" "}
+                      {formatTime(flight.flight_end_date)}
                       {diffInDays > 0 && <Text as="sup"> +{diffInDays}</Text>}
                     </Text>
                     <Text fontSize={12}>
-                      {connections
+                      {details
                         .map((conn) => conn.aircraft_details.split("(")[0])
                         .join(", ")}
                     </Text>
@@ -412,16 +395,19 @@ const FlightsTable = ({ flights, user }) => {
                     >
                       {lowestPoint ? (
                         <>
-                          <Text color={"#DD0000"}>
+                          <Text color="#DD0000">
                             {lowestPoint.points}
                             <Text as="span" fontSize={10}>
                               {" "}
-                              +${Math.round(flight.tax_per_adult)}
+                              +$
+                              {Math.round(
+                                flight.class_details[0].tax_per_adult
+                              )}
                             </Text>
                           </Text>
                           <Text color={"#141725"}>{lowestPoint.name}</Text>
                           <Text color={"#141725"}>
-                            {flight.remaining_seats} seats left
+                            {flight.class_details[0].remaining_seats} seats left
                           </Text>
                         </>
                       ) : (
@@ -436,14 +422,12 @@ const FlightsTable = ({ flights, user }) => {
                       fontSize={"12px"}
                     >
                       <Text>
-                        {connections.length === 1
-                          ? "Direct"
-                          : connections.length - 1}
+                        {details.length === 1 ? "Direct" : details.length - 1}
                       </Text>
                       <Text fontSize={12} color={"#6A6E85"}>
-                        {connections
+                        {details
                           .slice(0, -1)
-                          .map((conn) => conn.destination)
+                          .map((conn) => conn.to_airport)
                           .join(", ")}
                       </Text>
                     </Td>
@@ -456,11 +440,14 @@ const FlightsTable = ({ flights, user }) => {
                             )}
                             <Text as="span" fontSize={10}>
                               {" "}
-                              +${Math.round(flight.tax_per_adult)}
+                              +$
+                              {Math.round(
+                                flight.class_details[0].tax_per_adult
+                              )}
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {flight.remaining_seats} seats left
+                            {flight.class_details[0].remaining_seats} seats left
                           </Text>
                         </>
                       ) : (
@@ -476,7 +463,10 @@ const FlightsTable = ({ flights, user }) => {
                             )}
                             <Text as="span" fontSize={10}>
                               {" "}
-                              +${Math.round(flight.tax_per_adult)}
+                              +$
+                              {Math.round(
+                                flight.class_details[0].tax_per_adult
+                              )}
                             </Text>
                           </>
                         ) : (
@@ -493,7 +483,10 @@ const FlightsTable = ({ flights, user }) => {
                             )}
                             <Text as="span" fontSize={10}>
                               {" "}
-                              +${Math.round(flight.tax_per_adult)}
+                              +$
+                              {Math.round(
+                                flight.class_details[0].tax_per_adult
+                              )}
                             </Text>
                           </>
                         ) : (
@@ -508,7 +501,10 @@ const FlightsTable = ({ flights, user }) => {
                             {numberFormat.format(summaryPoints["First"].points)}
                             <Text as="span" fontSize={10}>
                               {" "}
-                              +${Math.round(flight.tax_per_adult)}
+                              +$
+                              {Math.round(
+                                flight.class_details[0].tax_per_adult
+                              )}
                             </Text>
                           </>
                         ) : (
@@ -527,9 +523,9 @@ const FlightsTable = ({ flights, user }) => {
                       <PopoverTrigger>
                         <Image
                           src={flight.source === "QF" ? QFAwards : VAAwards}
-                          margin={"0 auto"}
-                          width={"28px"}
-                          height={"28px"}
+                          margin="0 auto"
+                          width="28px"
+                          height="28px"
                         />
                       </PopoverTrigger>
                       <PopoverContent
@@ -552,7 +548,7 @@ const FlightsTable = ({ flights, user }) => {
                           onOpen={() => {
                             trackPage({
                               title: "Earn Points",
-                              destination: flight.destination.name,
+                              destination: flight.destination,
                             })
                           }}
                           isOpen={false}
