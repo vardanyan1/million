@@ -42,10 +42,10 @@ const Circle = ({ color }) => {
   return (
     <Box
       borderRadius="50%"
-      width={"6px"}
-      height={"6px"}
+      width="6px"
+      height="6px"
       background={color}
-      margin={"0 auto"}
+      margin="0 auto"
     ></Box>
   )
 }
@@ -125,7 +125,7 @@ const buildGradientString = (availabilities) => {
         .map((item) => item.trim())
     )
   )
-
+  console.log(availabilities)
   const chunks = [
     "transparent 0% 2%",
     uniqueAvailabilities.includes("Economy")
@@ -152,7 +152,7 @@ const buildGradientString = (availabilities) => {
 const FilterPanel = ({ from, to, date, onChange, user }) => {
   const { t } = useTranslation()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  console.log(date)
   const originAirportsQuery = useQuery({
     queryKey: ["originAirports"],
     queryFn: getOriginAirports,
@@ -318,7 +318,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
       </Popover>
     </Flex>
   )
-
+  console.log(date)
   return (
     <Stack
       justifyContent="space-between"
@@ -361,6 +361,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
             includeDates={allowedDates}
             minDate={today}
             maxDate={isFreePlan ? twoMonthsLater : null}
+            renderDayContents={renderDayContents}
             renderCustomHeader={renderCustomHeader}
             calendarContainer={CustomCalendarContainer}
           />
