@@ -18,6 +18,12 @@ class AirportSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DestinationAirportSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    code = serializers.CharField()
+    name = serializers.CharField()
+
+
 class FlightDetailSerializer(serializers.ModelSerializer):
     from_airport = serializers.StringRelatedField()
     to_airport = serializers.StringRelatedField()

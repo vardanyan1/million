@@ -3,7 +3,7 @@ Flights app viewsets
 """
 import stripe
 
-from django.db.models import Min, Q, Func
+from django.db.models import Min, Q, Func, F
 from django.conf import settings
 from django.db.models.functions import TruncDate
 
@@ -41,12 +41,34 @@ class OriginAirportViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AirportSerializer
 
 
-class DestinationAirportViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Airport.objects.filter(Q(departure_flights__isnull=False)
-                                      | Q(arrival_flights__isnull=False)).distinct().order_by('name')
-    serializer_class = AirportSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = DestinationAirportFilterSet
+class DestinationAirportViewSet(viewsets.ViewSet):
+    """
+    A ViewSet for listing all distinct destination airports for a given origin.
+    """
+
+    def list(self, request):
+        origin_code = request.GET.get('origin', None)
+
+        if origin_code:
+            # Fetch distinct destination airports for the given origin
+            queryset = Flight.objects.filter(
+                origin__code=origin_code
+            ).values(
+                'destination__id', 'destination__code', 'destination__name'
+            ).distinct().order_by('destination__id')
+
+            # Serialize and return the response
+            data = []
+            for record in queryset:
+                data.append({
+                    'id': record['destination__id'],
+                    'code': record['destination__code'],
+                    'name': record['destination__name'],
+                })
+            return Response(data)
+
+        else:
+            return Response({"error": "Origin code must be provided"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomFlightPagination(PageNumberPagination):
