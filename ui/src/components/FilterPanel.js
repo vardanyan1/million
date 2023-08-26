@@ -361,7 +361,6 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
             includeDates={allowedDates}
             minDate={today}
             maxDate={isFreePlan ? twoMonthsLater : null}
-            renderDayContents={renderDayContents}
             renderCustomHeader={renderCustomHeader}
             calendarContainer={CustomCalendarContainer}
           />
