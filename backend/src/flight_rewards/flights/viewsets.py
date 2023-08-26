@@ -5,6 +5,8 @@ import stripe
 
 from django.db.models import Min, Q, Func
 from django.conf import settings
+from django.db.models.functions import TruncDate
+
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, filters as rest_filters, status
 from rest_framework.pagination import PageNumberPagination
@@ -51,11 +53,34 @@ class CustomFlightPagination(PageNumberPagination):
     page_size = 10
 
 
+from django.db.models.functions import TruncDate
+
+
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.annotate(first_departure_date=Min('details__departure_date')
-                                       ).order_by('first_departure_date')
     serializer_class = FlightSerializer
     pagination_class = CustomFlightPagination
+
+    def get_queryset(self):
+        queryset = Flight.objects.annotate(
+            flight_start_date_trunc=TruncDate('flight_start_date')
+        ).order_by('flight_start_date_trunc')
+
+        # Date filter
+        date = self.request.query_params.get('date', None)
+        if date:
+            queryset = queryset.filter(flight_start_date_trunc=date)
+
+        # Origin and Destination filter
+        origin = self.request.query_params.get('origin', None)
+        destination = self.request.query_params.get('destination', None)
+
+        if origin:
+            queryset = queryset.filter(origin__code=origin)
+
+        if destination:
+            queryset = queryset.filter(destination__code=destination)
+
+        return queryset
 
 
 class TruncDate(Func):
