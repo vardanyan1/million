@@ -3,9 +3,8 @@ Flights app viewsets
 """
 import stripe
 
-from django.db.models import Min, Q, Func, F
+from django.db.models import Min, Func
 from django.conf import settings
-from django.db.models.functions import TruncDate
 
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, filters as rest_filters, status
