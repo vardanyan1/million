@@ -45,7 +45,8 @@ class FlightSerializer(serializers.ModelSerializer):
 
 
 class FlightDepartureDateSerializer(serializers.Serializer):
-    departure_date = serializers.DateTimeField()
+    departure_date = serializers.DateField()
+    designated_classes = serializers.ListField(child=serializers.CharField())
 
 
 class ContactSerializer(serializers.ModelSerializer):
