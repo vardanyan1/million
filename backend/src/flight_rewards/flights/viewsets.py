@@ -3,8 +3,9 @@ Flights app viewsets
 """
 import stripe
 
-from django.db.models import Min, Func
+from django.db.models import Min
 from django.conf import settings
+from django.db.models.functions import TruncDate
 
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, filters as rest_filters, status
@@ -74,9 +75,6 @@ class CustomFlightPagination(PageNumberPagination):
     page_size = 10
 
 
-from django.db.models.functions import TruncDate
-
-
 class FlightViewSet(viewsets.ModelViewSet):
     serializer_class = FlightSerializer
     pagination_class = CustomFlightPagination
@@ -104,10 +102,6 @@ class FlightViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class TruncDate(Func):
-    function = 'DATE'
-
-
 class FlightDepartureDatesViewSet(viewsets.ViewSet):
     """
     A ViewSet for listing distinct first departure dates for flights along with available designated classes.
@@ -127,23 +121,23 @@ class FlightDepartureDatesViewSet(viewsets.ViewSet):
 
         # Annotate each Flight with the earliest departure_date truncated to date from related FlightDetail
         flights_with_earliest_date = queryset.annotate(
-            first_departure_date=TruncDate(Min('details__departure_date'))
-        ).values('first_departure_date', 'class_details__designated_class')
+            date=TruncDate(Min('flight_start_date'))  # Assumed field, replace with your actual date field
+        ).values('date', 'class_details__designated_class')  # Assumed relationship, replace with your actual field
 
         # Create a dictionary to store the departure dates and their respective designated classes
         date_class_dict = {}
         for flight in flights_with_earliest_date:
-            date = flight['first_departure_date']
+            date = flight['date']
             if date:
-                designated_class = flight['class_details__designated_class']
+                designated_class = flight['class_details__designated_class']  # Assumed relationship, replace with your actual field
                 if date not in date_class_dict:
                     date_class_dict[date] = []
                 if designated_class:
                     date_class_dict[date].append(designated_class)
 
         # Convert the data to a list of dictionaries
-        date_class_list = [{"departure_date": key, "designated_classes": list(set(value))}
-                            for key, value in date_class_dict.items()]
+        date_class_list = [{"date": key, "availabilities": list(set(value))}
+                           for key, value in date_class_dict.items()]
 
         serializer = FlightDepartureDateSerializer(data=date_class_list, many=True)
         serializer.is_valid(raise_exception=True)
