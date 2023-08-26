@@ -125,7 +125,7 @@ const buildGradientString = (availabilities) => {
         .map((item) => item.trim())
     )
   )
-  console.log(availabilities)
+
   const chunks = [
     "transparent 0% 2%",
     uniqueAvailabilities.includes("Economy")
@@ -212,9 +212,11 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
   }
 
   const renderDayContents = (day, date) => {
+    console.log(day, date)
+
     const dayWithAvailability = flightDatesQuery.data.find(
       (allowedDate) =>
-        isSameDay(date, new Date(allowedDate.date)) &&
+        isSameDay(date, new Date(allowedDate.departure_date)) &&
         (isToday(date) || isFuture(date))
     )
 
@@ -227,7 +229,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
         justify="center"
         background={
           dayWithAvailability
-            ? buildGradientString(dayWithAvailability.availabilities)
+            ? buildGradientString(dayWithAvailability.designated_classes)
             : "none"
         }
       >
