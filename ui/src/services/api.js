@@ -108,6 +108,7 @@ export const getDestinationAirports = async ({ queryKey }) => {
   const response = await axios.get(
     `${BACKEND_URL}/api/destinations?${urlParams}`
   )
+
   return response.data
 }
 

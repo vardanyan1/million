@@ -42,10 +42,10 @@ const Circle = ({ color }) => {
   return (
     <Box
       borderRadius="50%"
-      width={"6px"}
-      height={"6px"}
+      width="6px"
+      height="6px"
       background={color}
-      margin={"0 auto"}
+      margin="0 auto"
     ></Box>
   )
 }
@@ -152,7 +152,7 @@ const buildGradientString = (availabilities) => {
 const FilterPanel = ({ from, to, date, onChange, user }) => {
   const { t } = useTranslation()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  console.log(date)
   const originAirportsQuery = useQuery({
     queryKey: ["originAirports"],
     queryFn: getOriginAirports,
@@ -212,9 +212,11 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
   }
 
   const renderDayContents = (day, date) => {
+    console.log(day, date)
+
     const dayWithAvailability = flightDatesQuery.data.find(
       (allowedDate) =>
-        isSameDay(date, new Date(allowedDate.date)) &&
+        isSameDay(date, new Date(allowedDate.departure_date)) &&
         (isToday(date) || isFuture(date))
     )
 
@@ -227,7 +229,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
         justify="center"
         background={
           dayWithAvailability
-            ? buildGradientString(dayWithAvailability.availabilities)
+            ? buildGradientString(dayWithAvailability.designated_classes)
             : "none"
         }
       >
@@ -318,7 +320,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
       </Popover>
     </Flex>
   )
-
+  console.log(date)
   return (
     <Stack
       justifyContent="space-between"

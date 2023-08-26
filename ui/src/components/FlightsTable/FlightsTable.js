@@ -80,30 +80,19 @@ const ExpandableRow = ({
 
   return (
     <Box>
-      {flight.connections.map((connection, index, connections) => {
+      {flight.details.map((detail, index, details) => {
         return (
           <Fragment key={index}>
-            <Flex my={6} fontSize={"sm"} fontWeight={"semibold"}>
-              <Flex alignItems={"center"} paddingRight={"10px"} gap={"10px"}>
+            <Flex my={6} fontSize="sm" fontWeight="semibold">
+              <Flex alignItems="center" gap="10px" w="36px" mr="26px">
                 <Image
-                  width="36px"
+                  width="100%"
                   src={planeImage}
                   margin="0 auto"
-                  position={"relative"}
+                  position="relative"
                   zIndex={1}
                   top={secondPlaneImage ? "5px" : "0px"}
                 />
-                {secondPlaneImage && (
-                  <Image
-                    width="36px"
-                    src={secondPlaneImage}
-                    margin="0 auto"
-                    position={"absolute"}
-                    zIndex={0}
-                    bottom={"20px"}
-                    right={"35%"}
-                  />
-                )}
                 <Box
                   height={84}
                   position="relative"
@@ -134,52 +123,52 @@ const ExpandableRow = ({
               <Box w={"45%"} fontSize="12px">
                 <Text color={COLORS.secondary}>
                   {format(
-                    parseDate(connection.departure_date),
+                    parseDate(detail.departure_date),
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{connection.origin}</Text>
+                <Text>{detail.from_airport}</Text>
                 <Text color={COLORS.secondary} my={5} fontSize={"xs"}>
-                  {connection.duration}
+                  {detail.flight_duration}
                 </Text>
                 <Text color={COLORS.secondary}>
                   {format(
-                    parseDate(connection.arrival_date),
+                    parseDate(detail.arrival_date),
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{connection.destination}</Text>
+                <Text>{detail.to_airport}</Text>
               </Box>
 
               <Box w={"45%"} fontSize={"12px"}>
                 <Text color={COLORS.secondary}>
-                  Flight: {connection.aircraft_details}
+                  Flight: {detail.aircraft_details}
                 </Text>
                 <Text color={COLORS.secondary}>
                   Availability:{" "}
-                  {showFlightClasses(flight.class_details[index].cabin_type)}
+                  {showFlightClasses(flight.class_details[0].cabin_type)}
                 </Text>
                 <Text color={COLORS.secondary}>
-                  Aircraft: {flight.equipment[index]}
+                  Aircraft: {detail.equipment}
                 </Text>
                 <Text color={COLORS.secondary}>
                   Last seen: about{" "}
-                  {formatDistance(new Date(flight.created), new Date(), {
+                  {formatDistance(new Date(flight.timestamp), new Date(), {
                     addSuffix: true,
                   })}
                 </Text>
               </Box>
             </Flex>
-            {index < connections.length - 1 && (
+            {index < details.length - 1 && (
               <Box
-                ml={"60px"}
+                ml="60px"
                 py={4}
-                borderTop={"1px solid #D4D4D9;"}
-                borderBottom={"1px solid #D4D4D9;"}
-                fontWeight={"semibold"}
-                fontSize={"sm"}
+                borderTop="1px solid #D4D4D9;"
+                borderBottom="1px solid #D4D4D9;"
+                fontWeight="semibold"
+                fontSize="sm"
               >
-                Layover: {connection.destination} {connection.transition_time}
+                Layover: {detail.to_airport} {detail.transition_time}
               </Box>
             )}
           </Fragment>
@@ -292,8 +281,6 @@ const FlightsTable = ({ flights, user }) => {
               summaryPoints["PremiumEconomy"] ||
               summaryPoints["Economy"]
 
-            console.log(flight)
-
             const planeImage =
               details.length >= 3
                 ? flightImages.group_3_plus
@@ -350,27 +337,29 @@ const FlightsTable = ({ flights, user }) => {
                 >
                   <Show above="lg">
                     <Td
-                      p={2}
-                      position={"relative"}
+                      p="8px"
+                      width="50px"
+                      position="relative"
                       border={isFlightExpanded ? "none" : ""}
                     >
                       <Image
-                        width="36px"
+                        width="100%"
                         src={planeImage}
                         margin="0 auto"
-                        position={"relative"}
+                        position="relative"
+                        right="-4px"
                         zIndex={1}
                         top={secondPlaneImage ? "5px" : "0px"}
                       />
                       {secondPlaneImage && (
                         <Image
-                          width="36px"
+                          width="100%"
                           src={secondPlaneImage}
                           margin="0 auto"
-                          position={"absolute"}
+                          position="relative"
+                          right="4px"
+                          bottom="18px"
                           zIndex={0}
-                          bottom={"20px"}
-                          right={"35%"}
                         />
                       )}
                     </Td>
@@ -475,7 +464,7 @@ const FlightsTable = ({ flights, user }) => {
                       </Text>
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      <Text color={"#DD0000"}>
+                      <Text color="#DD0000">
                         {summaryPoints["Business"] ? (
                           <>
                             {numberFormat.format(
@@ -526,6 +515,9 @@ const FlightsTable = ({ flights, user }) => {
                           margin="0 auto"
                           width="28px"
                           height="28px"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
                         />
                       </PopoverTrigger>
                       <PopoverContent
@@ -588,7 +580,13 @@ const FlightsTable = ({ flights, user }) => {
                         {({ onClose }) => (
                           <>
                             <PopoverTrigger>
-                              <Image src={bellImage} margin="0 auto" />
+                              <Image
+                                src={bellImage}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                }}
+                                margin="0 auto"
+                              />
                             </PopoverTrigger>
                             <PopoverContent
                               p={5}

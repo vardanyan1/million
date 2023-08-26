@@ -27,7 +27,6 @@ const { FREE, MONTHLY, ANNUAL } = SUBSCRIPTION
 const { MONTH, YEAR } = PRICE_INTERVAL
 
 export const Pricing = () => {
-  const [userPlan, setUserPlan] = useState(FREE)
   const { user } = useAuthContext()
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -55,7 +54,6 @@ export const Pricing = () => {
   }
 
   const handleCancelConfirm = () => {
-    setUserPlan(FREE)
     setIsCancelPopupOpen(false)
   }
 
