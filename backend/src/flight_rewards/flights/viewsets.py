@@ -3,10 +3,10 @@ Flights app viewsets
 """
 import stripe
 
-from django.db.models import Min, Q
+from django.db.models import Min, Q, Func
 from django.conf import settings
 from django_filters import rest_framework as filters
-from rest_framework import viewsets, mixins, filters as rest_filters
+from rest_framework import viewsets, mixins, filters as rest_filters, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -58,24 +58,49 @@ class FlightViewSet(viewsets.ModelViewSet):
     pagination_class = CustomFlightPagination
 
 
+class TruncDate(Func):
+    function = 'DATE'
+
+
 class FlightDepartureDatesViewSet(viewsets.ViewSet):
     """
-    A simple ViewSet for listing distinct first departure dates for flights.
+    A ViewSet for listing distinct first departure dates for flights along with available designated classes.
     """
 
     def list(self, request):
-        # Annotate each Flight with the earliest departure_date from related FlightDetail
-        flights_with_earliest_date = Flight.objects.annotate(first_departure_date=Min('details__departure_date'))
+        # Apply filters for origin and destination if provided
+        queryset = Flight.objects.all()
+        origin = request.GET.get('origin', None)
+        destination = request.GET.get('destination', None)
 
-        # Get dates excluding None values
-        dates = flights_with_earliest_date.exclude(first_departure_date__isnull=True).values_list(
-            'first_departure_date', flat=True).distinct()
+        if origin:
+            queryset = queryset.filter(origin__code=origin)
 
-        # Convert dates to a list of dictionaries for the serializer.
-        dates_list = [{"departure_date": date} for date in dates]
+        if destination:
+            queryset = queryset.filter(destination__code=destination)
 
-        serializer = FlightDepartureDateSerializer(data=dates_list, many=True)
-        serializer.is_valid(raise_exception=True)  # This will raise a 400 error if data is invalid
+        # Annotate each Flight with the earliest departure_date truncated to date from related FlightDetail
+        flights_with_earliest_date = queryset.annotate(
+            first_departure_date=TruncDate(Min('details__departure_date'))
+        ).values('first_departure_date', 'class_details__designated_class')
+
+        # Create a dictionary to store the departure dates and their respective designated classes
+        date_class_dict = {}
+        for flight in flights_with_earliest_date:
+            date = flight['first_departure_date']
+            if date:
+                designated_class = flight['class_details__designated_class']
+                if date not in date_class_dict:
+                    date_class_dict[date] = []
+                if designated_class:
+                    date_class_dict[date].append(designated_class)
+
+        # Convert the data to a list of dictionaries
+        date_class_list = [{"departure_date": key, "designated_classes": list(set(value))}
+                            for key, value in date_class_dict.items()]
+
+        serializer = FlightDepartureDateSerializer(data=date_class_list, many=True)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
