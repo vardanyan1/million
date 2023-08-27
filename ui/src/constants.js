@@ -30,8 +30,8 @@ export const DATE_FORMAT_EXPANDABLE_ROW = "EEEE, MMMM dd, HH:mm aa"
 
 export const maxAlertsPerSubscription = {
   FREE: 0,
-  MONTHLY: 10,
-  ANNUAL: 100,
+  MONTHLY: 5,
+  ANNUAL: 25,
 }
 
 export const ITEMS_PER_PAGE = 10
