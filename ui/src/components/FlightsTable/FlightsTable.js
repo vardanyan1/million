@@ -66,6 +66,7 @@ const parseDate = (dateStr) => {
 const ExpandableRow = ({
   flight,
   lowestPoint,
+  summarypoints,
   planeImage,
   secondPlaneImage,
 }) => {
@@ -264,6 +265,8 @@ const FlightsTable = ({ flights, user }) => {
                   name: t(
                     `table.${flightClassesMapping[item.designated_class]}`
                   ),
+                  tax_per_adult: item.tax_per_adult,
+                  remaining_seats: item.remaining_seats,
                 },
               }),
               {}
@@ -389,14 +392,12 @@ const FlightsTable = ({ flights, user }) => {
                             <Text as="span" fontSize={10}>
                               {" "}
                               +$
-                              {Math.round(
-                                flight.class_details[0].tax_per_adult
-                              )}
+                              {Math.round(lowestPoint.tax_per_adult)}
                             </Text>
                           </Text>
-                          <Text color={"#141725"}>{lowestPoint.name}</Text>
-                          <Text color={"#141725"}>
-                            {flight.class_details[0].remaining_seats} seats left
+                          <Text color="#141725">{lowestPoint.name}</Text>
+                          <Text color="#141725">
+                            {lowestPoint.remaining_seats} seats left
                           </Text>
                         </>
                       ) : (
@@ -431,12 +432,13 @@ const FlightsTable = ({ flights, user }) => {
                               {" "}
                               +$
                               {Math.round(
-                                flight.class_details[0].tax_per_adult
+                                summaryPoints["Economy"].tax_per_adult
                               )}
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {flight.class_details[0].remaining_seats} seats left
+                            {summaryPoints["Economy"].remaining_seats} seats
+                            left
                           </Text>
                         </>
                       ) : (
@@ -444,29 +446,33 @@ const FlightsTable = ({ flights, user }) => {
                       )}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      <Text color={"#DD0000"}>
-                        {summaryPoints["PremiumEconomy"] ? (
-                          <>
+                      {summaryPoints["PremiumEconomy"] ? (
+                        <>
+                          <Text color="#DD0000">
                             {numberFormat.format(
                               summaryPoints["PremiumEconomy"].points
                             )}
-                            <Text as="span" fontSize={10}>
+                            <Text as="span" fontSize={10} color="#DD0000">
                               {" "}
                               +$
                               {Math.round(
-                                flight.class_details[0].tax_per_adult
+                                summaryPoints["PremiumEconomy"].tax_per_adult
                               )}
                             </Text>
-                          </>
-                        ) : (
-                          "-"
-                        )}
-                      </Text>
+                          </Text>
+                          <Text color="#141725" fontSize="xs">
+                            {summaryPoints["PremiumEconomy"].remaining_seats}{" "}
+                            seats left
+                          </Text>
+                        </>
+                      ) : (
+                        "-"
+                      )}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      <Text color="#DD0000">
-                        {summaryPoints["Business"] ? (
-                          <>
+                      {summaryPoints["Business"] ? (
+                        <>
+                          <Text color="#DD0000">
                             {numberFormat.format(
                               summaryPoints["Business"].points
                             )}
@@ -474,32 +480,37 @@ const FlightsTable = ({ flights, user }) => {
                               {" "}
                               +$
                               {Math.round(
-                                flight.class_details[0].tax_per_adult
+                                summaryPoints["Business"].tax_per_adult
                               )}
                             </Text>
-                          </>
-                        ) : (
-                          "-"
-                        )}
-                      </Text>
+                          </Text>
+                          <Text color="#141725" fontSize="xs">
+                            {summaryPoints["Business"].remaining_seats} seats
+                            left
+                          </Text>
+                        </>
+                      ) : (
+                        "-"
+                      )}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      <Text color={"#DD0000"}>
-                        {summaryPoints["First"] ? (
-                          <>
+                      {summaryPoints["First"] ? (
+                        <>
+                          <Text color="#DD0000">
                             {numberFormat.format(summaryPoints["First"].points)}
                             <Text as="span" fontSize={10}>
                               {" "}
                               +$
-                              {Math.round(
-                                flight.class_details[0].tax_per_adult
-                              )}
+                              {Math.round(summaryPoints["First"].tax_per_adult)}
                             </Text>
-                          </>
-                        ) : (
-                          "-"
-                        )}
-                      </Text>
+                          </Text>
+                          <Text color="#141725" fontSize="xs">
+                            {summaryPoints["First"].remaining_seats} seats left
+                          </Text>
+                        </>
+                      ) : (
+                        "-"
+                      )}
                     </Td>
                   </Show>
                   <Td p={2} border={isFlightExpanded ? "none" : ""}>
@@ -633,6 +644,7 @@ const FlightsTable = ({ flights, user }) => {
                       <ExpandableRow
                         flight={flight}
                         lowestPoint={lowestPoint}
+                        summaryPoints={summaryPoints}
                         planeImage={planeImage}
                         secondPlaneImage={secondPlaneImage}
                       />
