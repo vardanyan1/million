@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     'shark-app-baxvf.ondigitalocean.app',
     'starfish-app-hkg6j.ondigitalocean.app',
 
-    '21c7-2a02-8109-bd40-854-4de5-5ae1-c7b3-2677.ngrok-free.app'
+    '21c7-2a02-8109-bd40-854-4de5-5ae1-c7b3-2677.ngrok-free.app',
     '170.64.192.200'
 ]
 
