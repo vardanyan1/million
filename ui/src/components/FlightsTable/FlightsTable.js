@@ -70,13 +70,23 @@ const ExpandableRow = ({
   planeImage,
   secondPlaneImage,
 }) => {
-  const showFlightClasses = (flightClass) => {
-    let uniqueFlightClasses = [
-      ...new Set(flightClass.split(", ").map((item) => item.trim())),
-    ]
-    let result = uniqueFlightClasses.join(", ")
+  const showFlightClasses = (flightClass, index) => {
+    const uniqueFlightClasses = flightClass.map(({ cabin_type }) => {
+      const classArr = cabin_type.split(", ")
+      return classArr[index]
+    })
 
-    return result
+    const sortOrder = ["Economy", "PremiumEconomy", "Business", "First"]
+
+    uniqueFlightClasses.sort((a, b) => {
+      const indexA = sortOrder.indexOf(a)
+      const indexB = sortOrder.indexOf(b)
+      if (indexA === -1) return 1 // If not found, place at the end
+      if (indexB === -1) return -1 // If not found, place at the end
+      return indexA - indexB
+    })
+
+    return uniqueFlightClasses.join(", ")
   }
 
   return (
@@ -146,8 +156,7 @@ const ExpandableRow = ({
                   Flight: {detail.aircraft_details}
                 </Text>
                 <Text color={COLORS.secondary}>
-                  Availability:{" "}
-                  {showFlightClasses(flight.class_details[0].cabin_type)}
+                  Availability: {showFlightClasses(flight.class_details, index)}
                 </Text>
                 <Text color={COLORS.secondary}>
                   Aircraft: {detail.equipment}
