@@ -27,6 +27,7 @@ const { FREE, MONTHLY, ANNUAL } = SUBSCRIPTION
 const { MONTH, YEAR } = PRICE_INTERVAL
 
 export const Pricing = () => {
+  const [plan, setPlan] = useState()
   const { user } = useAuthContext()
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -57,7 +58,8 @@ export const Pricing = () => {
     setIsCancelPopupOpen(false)
   }
 
-  const handleSwitchClick = () => {
+  const handleSwitchClick = (plan) => {
+    setPlan(plan)
     setIsSwitchPopupOpen(true)
   }
 
@@ -223,18 +225,13 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {(user?.subscription === FREE || user?.subscription === null) && (
+              {user?.subscription !== MONTHLY && (
                 <Button
                   w="100%"
                   mt="auto"
                   backgroundColor="#D00"
                   textTransform="uppercase"
-                  onClick={async () => {
-                    const response = await checkoutSessionMutation({
-                      interval: MONTH,
-                    })
-                    window.location.href = response.session_url
-                  }}
+                  onClick={() => handleSwitchClick(MONTH)}
                   color="white"
                 >
                   {t("login.switch")}
@@ -251,19 +248,6 @@ export const Pricing = () => {
                   color="white"
                 >
                   {t("login.cancel")}
-                </Button>
-              )}
-
-              {user?.subscription === ANNUAL && (
-                <Button
-                  w="100%"
-                  mt="auto"
-                  backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={handleSwitchClick}
-                  color="white"
-                >
-                  {t("login.switch")}
                 </Button>
               )}
             </Flex>
@@ -334,31 +318,13 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {(user?.subscription === FREE || user?.subscription === null) && (
+              {user?.subscription !== ANNUAL && (
                 <Button
                   w="100%"
                   mt="auto"
                   backgroundColor="#D00"
                   textTransform="uppercase"
-                  onClick={async () => {
-                    const response = await checkoutSessionMutation({
-                      interval: YEAR,
-                    })
-                    window.location.href = response.session_url
-                  }}
-                  color="white"
-                >
-                  {t("login.switch")}
-                </Button>
-              )}
-
-              {user?.subscription === MONTHLY && (
-                <Button
-                  w="100%"
-                  mt="auto"
-                  backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={handleSwitchClick}
+                  onClick={() => handleSwitchClick(YEAR)}
                   color="white"
                 >
                   {t("login.switch")}
@@ -396,7 +362,7 @@ export const Pricing = () => {
           header="Switch Subscription"
           body="The current plan remains in place until the next billing cycle, at which point the account will be switched over."
           type="switch"
-          plan={user?.subscription}
+          plan={plan}
         />
         <Footer />
       </Box>

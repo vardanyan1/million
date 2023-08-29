@@ -16,14 +16,14 @@ const SubscriptionPopup = ({
   header,
   body,
   type,
-  subscribeToPlan,
+  plan,
 }) => {
   const handleConfirmation = () => {
     if (type === "cancel") {
       onConfirm()
     }
     if (type === "switch") {
-      onConfirm(subscribeToPlan)
+      onConfirm(plan)
     }
   }
 
