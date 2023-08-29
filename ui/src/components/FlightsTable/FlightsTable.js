@@ -92,6 +92,9 @@ const ExpandableRow = ({
   return (
     <Box>
       {flight.details.map((detail, index, details) => {
+        const from_airport_code = detail.from_airport.match(/\(([^)]+)\)$/)[1]
+        const to_airport_code = detail.to_airport.match(/\(([^)]+)\)$/)[1]
+
         return (
           <Fragment key={index}>
             <Flex my={6} fontSize="sm" fontWeight="semibold">
@@ -138,7 +141,7 @@ const ExpandableRow = ({
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{detail.from_airport}</Text>
+                <Text>{from_airport_code}</Text>
                 <Text color={COLORS.secondary} my={5} fontSize={"xs"}>
                   {detail.flight_duration}
                 </Text>
@@ -148,7 +151,7 @@ const ExpandableRow = ({
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{detail.to_airport}</Text>
+                <Text>{to_airport_code}</Text>
               </Box>
 
               <Box w={"45%"} fontSize={"12px"}>
@@ -302,15 +305,9 @@ const FlightsTable = ({ flights, user }) => {
               details.length === 2 &&
               flightImages[details[1].aircraft_details.slice(0, 2)]
 
-            const departureDate = parse(
-              details[0].departure_date,
-              DATE_FORMAT,
-              new Date()
-            )
-            const arrivalDate = parse(
-              details[details.length - 1].arrival_date,
-              DATE_FORMAT,
-              new Date()
+            const departureDate = new Date(details[0].departure_date)
+            const arrivalDate = new Date(
+              details[details.length - 1].arrival_date
             )
             const diffInDays = differenceInCalendarDays(
               arrivalDate,
