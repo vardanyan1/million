@@ -162,7 +162,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 ADMINS = [('Sergii Vorobei', "sergii.vorobei1@gmail.com"),]
