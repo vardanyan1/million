@@ -22,10 +22,8 @@ def import_flights_from_csv(file_obj):
         main_destination = Airport.objects.get(code=row['Destination Code'])
         timestamp = make_aware(datetime.strptime(row['TimeStamp'], "%Y-%m-%d %H:%M:%S"))
 
-        first_segment_departure_date = make_aware(
-            datetime.strptime(row['Departure Date'].split(', ')[0], "%Y-%m-%d %H:%M:%S"))
-        last_segment_arrival_date = make_aware(
-            datetime.strptime(row['Arrival Date'].split(', ')[-1], "%Y-%m-%d %H:%M:%S"))
+        first_segment_departure_date = datetime.strptime(row['Departure Date'].split(', ')[0], "%Y-%m-%d %H:%M:%S")
+        last_segment_arrival_date = datetime.strptime(row['Arrival Date'].split(', ')[-1], "%Y-%m-%d %H:%M:%S")
 
         flight, flight_created = Flight.objects.get_or_create(
             origin=main_origin,
@@ -74,8 +72,8 @@ def import_flights_from_csv(file_obj):
                     flight=flight,
                     from_airport=from_airport,
                     to_airport=to_airport,
-                    departure_date=make_aware(datetime.strptime(departure_dates[idx], "%Y-%m-%d %H:%M:%S")),
-                    arrival_date=make_aware(datetime.strptime(arrival_dates[idx], "%Y-%m-%d %H:%M:%S")),
+                    departure_date=datetime.strptime(departure_dates[idx], "%Y-%m-%d %H:%M:%S"),
+                    arrival_date=datetime.strptime(arrival_dates[idx], "%Y-%m-%d %H:%M:%S"),
                     flight_duration=durations[idx],
                     transition_time=transition_times[idx] if idx < len(transition_times) else None,
                     aircraft_details=aircraft_details[idx],
