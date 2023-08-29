@@ -211,13 +211,13 @@
     "monthly": {
       "header": "Monthly",
       "point1": "search all routes & classes up to a year in advance",
-      "point2": "up to 10 active email alerts (SMS coming soon!)",
+      "point2": "up to 5 active email alerts (SMS coming soon!)",
       "point3": "billed monthly; cancel anytime"
     },
     "annual": {
       "header": "Annual",
       "point1": "search all routes & classes up to a year in advance",
-      "point2": "up to 10 active email alerts (SMS coming soon!)",
+      "point2": "up to 25 active email alerts (SMS coming soon!)",
       "point3": "billed annually; cancel anytime"
     }
   }

@@ -143,7 +143,6 @@ const AllAvailability = () => {
   }
 
   const applyFilters = (newFilters) => {
-    console.log(newFilters)
     if (
       newFilters.from !== filters.from ||
       newFilters.to !== filters.to ||
