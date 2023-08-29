@@ -317,7 +317,6 @@ export const Pricing = () => {
                   {t("login.signUp")}
                 </Button>
               )}
-
               {user?.subscription !== ANNUAL && (
                 <Button
                   w="100%"
@@ -330,7 +329,6 @@ export const Pricing = () => {
                   {t("login.switch")}
                 </Button>
               )}
-
               {user?.subscription === ANNUAL && (
                 <Button
                   w="100%"
