@@ -43,7 +43,7 @@ export default function Register() {
   const { mutateAsync: checkoutSessionMutation } = useMutation({
     mutationFn: createCheckoutSession,
   })
-  const { interval = PRICE_INTERVAL.MONTHLY } = useParams()
+  const { interval = PRICE_INTERVAL.MONTH } = useParams()
 
   const onSubmit = async (values) => {
     try {
