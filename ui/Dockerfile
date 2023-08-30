@@ -1,23 +1,21 @@
-FROM node:18.16.0-alpine as build
+# Use the official Node image.
+FROM node:18.16.0-alpine
+
+# Set the working directory
 WORKDIR /app
-# ENV PATH /app/node_modules/.bin:$PATH
 
-ARG REACT_APP_BACKEND_URL
-ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+# Add `/app/node_modules/.bin` to $PATH
+ENV PATH /app/node_modules/.bin:$PATH
 
-COPY package.json .
-COPY yarn.lock .
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
 
+# Install dependencies
 RUN yarn
+
+
+# Copy local code to the container
 COPY . .
-RUN yarn build
 
-# production environment
-FROM nginx:stable-alpine
-WORKDIR /usr/share/nginx/html
-
-COPY --from=build /app/build .
-# new
-# COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-# EXPOSE 80
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# Run the application
+CMD ["yarn", "start"]
