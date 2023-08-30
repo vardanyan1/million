@@ -23,6 +23,10 @@ from flight_rewards.flights.serializers import (
     AirportSerializer, ContactSerializer,
     AvailabilityNotificationSerializer, SubscriptionPlanSerializer, FlightDepartureDateSerializer, FlightSerializer
 )
+import logging
+
+# Initialize logging
+logger = logging.getLogger(__name__)
 
 
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
@@ -175,7 +179,18 @@ class UserViewSet(views.UserViewSet):
     def checkout_session(self, request):
         user = request.user
         customer = Customer.objects.get(subscriber=user)
-        price = Price.objects.filter(active=True, recurring__interval=request.data['interval']).last()
+        logger.info(f"Received request data: {request.data}")
+
+        # Validate the request data
+        interval = request.data.get('interval', 'month')  # Set to 'monthly' if not provided
+        if not interval:
+            print("Interval not provided, setting to 'month'")
+            interval = 'month'
+
+        price = Price.objects.filter(active=True, recurring__interval=interval).last()
+        if not price:
+            return Response({'error': 'Invalid interval or no active price found'}, status=status.HTTP_400_BAD_REQUEST)
+
         metadata = {
             f"{djstripe_settings.djstripe_settings.SUBSCRIBER_CUSTOMER_KEY}": user.id
         }
@@ -187,7 +202,7 @@ class UserViewSet(views.UserViewSet):
                 'price': price.id,
                 'quantity': 1,
             }],
-            success_url=f"https://{settings.DOMAIN}/checkout_result?session_id={{CHECKOUT_SESSION_ID}}"
+            success_url=f"http://{settings.DOMAIN}/checkout_result?session_id={{CHECKOUT_SESSION_ID}}"
         )
         data = {
             'session_id': session.id,
@@ -200,7 +215,11 @@ class UserViewSet(views.UserViewSet):
         session_id = request.query_params.get('session_id')
         if not session_id:
             raise APIException({"reason": "Invalid Request"})
-        session = Session.objects.filter(id=session_id, customer__subscriber=request.user).last()
+        session = Session.objects.filter(id=session_id)
+        logger.debug(f"Sessions with session_id: {session}")
+        session = session.filter(customer__subscriber=request.user).last()
+        logger.debug(f"Session with customer__subscriber: {session}")
+
         if not session:
             raise APIException({"reason": "Invalid Request"})
         data = {

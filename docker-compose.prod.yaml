@@ -8,20 +8,19 @@ services:
       - LC_CTYPE=en_US.UTF-8
       - LANG=en_US.UTF-8
       - LC_ALL=en_US.UTF-8
-    volumes:
-      - ./backend:/app
     ports:
       - "8000:8000"
     stdin_open: true
     tty: true
-    env_file: .env
+    env_file: .env.prod
     restart: unless-stopped
 
   ui:
     build:
       context: ./ui
+      dockerfile: Dockerfile.prod
       args:
-        REACT_APP_BACKEND_URL: 'http://170.64.192.200:8000'
+        REACT_APP_BACKEND_URL: 'http://170.64.192.200:8000/api'
     ports:
       - "80:80"
     restart: unless-stopped
@@ -29,7 +28,7 @@ services:
   postgres:
     image: postgres:alpine
     env_file:
-      - .env
+      - .env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

@@ -1,4 +1,5 @@
 import enum
+import logging
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -8,6 +9,10 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from djstripe.models import Customer
 from djstripe.enums import PlanInterval
+
+
+# Initialize logging
+logger = logging.getLogger(__name__)
 
 
 class UserManager(BaseUserManager):
@@ -87,9 +92,8 @@ class User(AbstractUser):
 
 @receiver(post_save, sender=User)
 def create_stripe_customer(sender, instance, created, **kwargs):
-    print("Post save signal triggered for User")
     if created:
-        print("User was created")
+        logger.info("User was created")
         if not instance.is_superuser:
             print("User is not a superuser, creating Stripe customer")
             Customer.get_or_create(subscriber=instance)
