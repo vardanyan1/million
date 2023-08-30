@@ -55,7 +55,7 @@ const pointsPrograms = {
   VA: "Virgin Velocity",
 }
 
-export default function Alerts() {
+const Alerts = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const queryClient = useQueryClient()
   const { data: alerts } = useQuery({
@@ -63,6 +63,7 @@ export default function Alerts() {
     queryFn: getAlerts,
     initialData: [],
   })
+
   const { mutateAsync: deleteAlertMutation } = useMutation({
     mutationFn: deleteAlert,
     onSuccess: () => queryClient.invalidateQueries(["alerts"]),
@@ -246,3 +247,5 @@ export default function Alerts() {
     </Stack>
   )
 }
+
+export default Alerts

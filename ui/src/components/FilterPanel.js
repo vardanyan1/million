@@ -34,8 +34,9 @@ import {
 } from "../services/api"
 import circleImage from "../img/circle.svg"
 import locationPinImage from "../img/location_pin.svg"
-import { SUBSCRIPTION, flightClassesColors } from "../constants"
+import { PRICE_INTERVAL, SUBSCRIPTION, flightClassesColors } from "../constants"
 
+const { MONTH } = PRICE_INTERVAL
 const { FREE } = SUBSCRIPTION
 
 const Circle = ({ color }) => {
@@ -52,6 +53,7 @@ const Circle = ({ color }) => {
 
 const DatePickerInput = forwardRef((props, ref) => {
   const { value, onClick } = props
+
   return (
     <Flex onClick={onClick} ref={ref} position="relative">
       <Input
@@ -180,7 +182,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
     initialData: [],
   })
 
-  const monthPlan = pricingPlans.find(({ interval }) => interval === "month")
+  const monthPlan = pricingPlans.find(({ interval }) => interval === MONTH)
 
   const today = new Date()
   const twoMonthsLater = addMonths(today, 2)
@@ -306,7 +308,7 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
             </Flex>
             <Button
               as={RouterLink}
-              to="/register"
+              to={`/register?interval=${MONTH}`}
               w="100%"
               backgroundColor="#D00"
               color="white"

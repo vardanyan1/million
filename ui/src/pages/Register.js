@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react"
 import {
   Heading,
   Box,
@@ -11,11 +12,10 @@ import {
   Stack,
   Flex,
   NumberInput,
-  InputLeftAddon,
   InputGroup,
   NumberInputField,
 } from "@chakra-ui/react"
-import { Link as RouterLink, useParams } from "react-router-dom"
+import { Link as RouterLink, useLocation } from "react-router-dom"
 import { useForm, Controller } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -25,8 +25,21 @@ import { EMAIL_REGEX, PRICE_INTERVAL } from "../constants"
 import Menu from "../components/Menu"
 import PasswordInput from "../components/PasswordInput"
 
-export default function Register() {
+const { MONTH } = PRICE_INTERVAL
+
+const Register = () => {
   const { t } = useTranslation()
+  const location = useLocation()
+  const [countryCode, setCountryCode] = useState("+61")
+  const phoneNumberRef = useRef(null)
+
+  useEffect(() => {
+    if (countryCode && countryCode.length === 4) {
+      console.log(phoneNumberRef)
+      phoneNumberRef.current?.focus()
+    }
+  }, [countryCode])
+
   const {
     register,
     handleSubmit,
@@ -43,9 +56,11 @@ export default function Register() {
   const { mutateAsync: checkoutSessionMutation } = useMutation({
     mutationFn: createCheckoutSession,
   })
-  const { interval = PRICE_INTERVAL.MONTH } = useParams()
+  const searchParams = new URLSearchParams(location.search)
+  const interval = searchParams.get("interval") || MONTH
 
   const onSubmit = async (values) => {
+    const fullPhoneNumber = `${countryCode}${values.phoneNumber || ""}`
     try {
       const credentials = {
         email: values.email,
@@ -54,6 +69,7 @@ export default function Register() {
       const signupValues = {
         first_name: values.firstName,
         last_name: values.lastName,
+        phone_number: fullPhoneNumber || null,
         ...credentials,
       }
       await performSignup(signupValues)
@@ -71,6 +87,23 @@ export default function Register() {
         message,
       })
     }
+  }
+
+  const handleCountryCodeChange = (e) => {
+    let value = e.target.value
+
+    if (value.length > 4) {
+      value = value.substring(0, 4)
+    }
+
+    value = value.replace(/[^\d+]/g, "")
+
+    if (!value.startsWith("+")) {
+      value = "+" + value
+    }
+    value = "+" + value.substring(1).replace(/[+]/g, "")
+
+    setCountryCode(value)
   }
 
   return (
@@ -148,14 +181,15 @@ export default function Register() {
                 {t("login.phoneNumber")}
               </FormLabel>
               <InputGroup>
-                <InputLeftAddon
+                <Input
+                  value={countryCode}
+                  onChange={handleCountryCodeChange}
+                  width="80px"
                   bg="white"
                   border="1px solid"
                   borderColor="inherit"
                   pl={2}
-                >
-                  +61
-                </InputLeftAddon>
+                />
                 <Controller
                   name="phoneNumber"
                   control={control}
@@ -169,7 +203,7 @@ export default function Register() {
                         field.onChange(onlyNumbers)
                       }}
                     >
-                      <NumberInputField />
+                      <NumberInputField ref={phoneNumberRef} />
                     </NumberInput>
                   )}
                 />
@@ -243,3 +277,5 @@ export default function Register() {
     </Stack>
   )
 }
+
+export default Register
