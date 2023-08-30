@@ -46,7 +46,6 @@ import {
 } from "@chakra-ui/react"
 import {
   COLORS,
-  DATE_FORMAT,
   DATE_FORMAT_EXPANDABLE_ROW,
   flightClassesMapping,
   maxAlertsPerSubscription,
