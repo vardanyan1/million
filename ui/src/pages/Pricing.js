@@ -225,7 +225,7 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {user?.subscription !== MONTHLY && (
+              {user && user.subscription !== MONTHLY && (
                 <Button
                   w="100%"
                   mt="auto"
@@ -238,7 +238,7 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {user?.subscription === MONTHLY && (
+              {user && user.subscription === MONTHLY && (
                 <Button
                   w="100%"
                   mt="auto"
@@ -317,7 +317,8 @@ export const Pricing = () => {
                   {t("login.signUp")}
                 </Button>
               )}
-              {user?.subscription !== ANNUAL && (
+
+              {user && user.subscription !== ANNUAL && (
                 <Button
                   w="100%"
                   mt="auto"
@@ -329,7 +330,7 @@ export const Pricing = () => {
                   {t("login.switch")}
                 </Button>
               )}
-              {user?.subscription === ANNUAL && (
+              {user && user?.subscription === ANNUAL && (
                 <Button
                   w="100%"
                   mt="auto"

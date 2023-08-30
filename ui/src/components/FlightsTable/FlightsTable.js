@@ -2,7 +2,7 @@ import { Fragment, useState, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import {
   format,
-  parse,
+  subHours,
   differenceInCalendarDays,
   parseISO,
   addDays,
@@ -89,6 +89,22 @@ const ExpandableRow = ({
     return uniqueFlightClasses.join(", ")
   }
 
+  const convertLocalToUTC = (dateStr) => {
+    const localDate = new Date(dateStr)
+    const timeInMilliseconds = localDate.getTime()
+    const timezoneOffsetInMinutes = localDate.getTimezoneOffset()
+    const offsetInMilliseconds = timezoneOffsetInMinutes * 60 * 1000
+
+    const utcDate = new Date(timeInMilliseconds - offsetInMilliseconds)
+
+    return utcDate.toISOString()
+  }
+
+  const subtractTenHours = (dateStr) => {
+    const parsedDate = new Date(dateStr)
+    return new Date(parsedDate.getTime() - 10 * 60 * 60 * 1000).toISOString()
+  }
+
   return (
     <Box>
       {flight.details.map((detail, index, details) => {
@@ -166,9 +182,13 @@ const ExpandableRow = ({
                 </Text>
                 <Text color={COLORS.secondary}>
                   Last seen: about{" "}
-                  {formatDistance(new Date(flight.timestamp), new Date(), {
-                    addSuffix: true,
-                  })}
+                  {formatDistance(
+                    new Date(subtractTenHours(flight.timestamp)),
+                    new Date(convertLocalToUTC(new Date().toISOString())),
+                    {
+                      addSuffix: true,
+                    }
+                  )}
                 </Text>
               </Box>
             </Flex>
