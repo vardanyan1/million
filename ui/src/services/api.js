@@ -72,7 +72,7 @@ export const signup = async (values) => {
 export const refreshToken = async () => {
   const token = localStorage.getItem("refreshToken")
   if (token) {
-    const response = await axios.post(`${BACKEND_URL}/jwt/refresh`, {
+    const response = await API.post(`/jwt/refresh`, {
       refresh: token,
     })
     localStorage.setItem("accessToken", response.data.access)
@@ -93,19 +93,19 @@ export const updateUser = async (values) => {
 export const getFlights = async ({ queryKey }) => {
   const [_, params] = queryKey
   const urlParams = new URLSearchParams(params)
-  const response = await axios.get(`${BACKEND_URL}/flights?${urlParams}`)
+  const response = await API.get(`/flights?${urlParams}`)
   return response.data
 }
 
 export const getOriginAirports = async () => {
-  const response = await axios.get(`${BACKEND_URL}/origins`)
+  const response = await API.get(`/origins`)
   return response.data
 }
 
 export const getDestinationAirports = async ({ queryKey }) => {
   const [_, origin] = queryKey
   const urlParams = origin ? `origin=${origin}` : ""
-  const response = await axios.get(`${BACKEND_URL}/destinations?${urlParams}`)
+  const response = await API.get(`/destinations?${urlParams}`)
 
   return response.data
 }
@@ -113,59 +113,56 @@ export const getDestinationAirports = async ({ queryKey }) => {
 export const getFlightDates = async ({ queryKey }) => {
   const [_, params] = queryKey
   const urlParams = new URLSearchParams(params)
-  const response = await axios.get(`${BACKEND_URL}/flight-dates?${urlParams}`)
+  const response = await API.get(`/flight-dates?${urlParams}`)
   return response.data
 }
 
 export const createAlert = async (data) => {
-  const response = await API.post(`${BACKEND_URL}/alerts`, data)
+  const response = await API.post(`/alerts`, data)
   return response.data
 }
 
 export const updateAlert = async ({ id, ...data }) => {
-  const response = await API.put(`${BACKEND_URL}/alerts/${id}`, data)
+  const response = await API.put(`/alerts/${id}`, data)
   return response.data
 }
 
 export const getAlerts = async (data) => {
-  const response = await API.get(`${BACKEND_URL}/alerts`)
+  const response = await API.get(`/alerts`)
   return response.data
 }
 
 export const deleteAlert = async (id) => {
-  const response = await API.delete(`${BACKEND_URL}/alerts/${id}`)
+  const response = await API.delete(`/alerts/${id}`)
   return response.data
 }
 
 export const resetPassword = async (email) => {
-  const response = await API.post(`${BACKEND_URL}/users/reset_password/`, {
+  const response = await API.post(`/users/reset_password/`, {
     email,
   })
   return response.data
 }
 
 export const resetPasswordConfirm = async (data) => {
-  const response = await API.post(
-    `${BACKEND_URL}/users/reset_password_confirm/`,
-    data
-  )
+  const response = await API.post(`/users/reset_password_confirm/`, data)
   return response.data
 }
 
 export const createCheckoutSession = async (data) => {
-  const response = await API.post(`${BACKEND_URL}/users/checkout_session`, data)
+  const response = await API.post(`/users/checkout_session`, data)
   return response.data
 }
 
 export const getCheckoutResult = async ({ queryKey }) => {
   const [_, userId, sessionId] = queryKey
   const response = await API.get(
-    `${BACKEND_URL}/users/${userId}/session_result?session_id=${sessionId}`
+    `/users/${userId}/session_result?session_id=${sessionId}`
   )
   return response.data
 }
 
 export const getPricingPlans = async () => {
-  const response = await API.get(`${BACKEND_URL}/plans`)
+  const response = await API.get(`/plans`)
   return response.data
 }
