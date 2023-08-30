@@ -38,11 +38,11 @@
 	.st32{fill:#fff;}
 	.st33{clip-path:url(#SVGID_4_);}
   ellipse{
-    fill: #4c7a96;
+    fill: #D00;
     
   }
   .st31{
-        fill: #4c7a96;
+        fill: #D00;
   }
   
 </style>
