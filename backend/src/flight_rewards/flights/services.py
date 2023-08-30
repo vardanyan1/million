@@ -110,5 +110,3 @@ def process_row(row):
             remaining_seats=int(row['Remaining Seats']),
             designated_class=row['Designated Class']
         )
-
-    logger.info('Successfully imported flights from CSV')

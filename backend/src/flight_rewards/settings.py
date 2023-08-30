@@ -32,11 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    'flight-rewards-backend-uur5r.ondigitalocean.app',
-    'shark-app-baxvf.ondigitalocean.app',
-    'starfish-app-hkg6j.ondigitalocean.app',
-
-    '21c7-2a02-8109-bd40-854-4de5-5ae1-c7b3-2677.ngrok-free.app',
     '170.64.192.200'
 ]
 
@@ -127,7 +122,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'ERROR',
+        'level': 'INFO',
         # 'level': 'DEBUG',  # Set the logging level to DEBUG
 
     },
@@ -165,7 +160,7 @@ USE_I18N = True
 USE_TZ = False
 
 
-ADMINS = [('Sergii Vorobei', "sergii.vorobei1@gmail.com"),]
+ADMINS = [('Vazgen Vardanyan', "vardanyaninbox@gmail.com"),]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
