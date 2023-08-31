@@ -180,7 +180,7 @@ const ExpandableRow = ({
                   Aircraft: {detail.equipment}
                 </Text>
                 <Text color={COLORS.secondary}>
-                  Last seen: 
+                  Last seen: {" "}
                   {formatDistance(
                     new Date(subtractTenHours(flight.timestamp)),
                     new Date(convertLocalToUTC(new Date().toISOString())),
