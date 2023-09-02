@@ -23,6 +23,8 @@ services:
       dockerfile: Dockerfile
     environment:
       REACT_APP_BACKEND_URL: 'http://localhost:8000/api'
+    volumes:
+      - ./ui/src:/app/src
     ports:
       - "3000:3000"
     restart: unless-stopped

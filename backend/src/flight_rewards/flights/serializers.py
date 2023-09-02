@@ -35,11 +35,16 @@ class FlightClassDetailSerializer(serializers.ModelSerializer):
         exclude = ('flight',)  # Exclude 'flight' field
 
 
+class AirportIdCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Airport
+        fields = ('id', 'code', 'name')
+
 class FlightSerializer(serializers.ModelSerializer):
     details = FlightDetailSerializer(many=True, read_only=True)
     class_details = FlightClassDetailSerializer(many=True, read_only=True)
-    origin = serializers.StringRelatedField()
-    destination = serializers.StringRelatedField()
+    origin = AirportIdCodeSerializer(read_only=True)  # changed from StringRelatedField
+    destination = AirportIdCodeSerializer(read_only=True)  # changed from StringRelatedField
 
     class Meta:
         model = Flight
