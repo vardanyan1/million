@@ -1,6 +1,7 @@
 import enum
 import logging
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -10,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from djstripe.models import Customer
 from djstripe.enums import PlanInterval
 
+from flight_rewards.flights import NOTIFICATION_STATUS, FLIGHT_CLASSES, PREFERRED_PROGRAMS
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -168,5 +170,22 @@ class AvailabilityNotification(models.Model):
     destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="destination_notifications")
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=False, blank=False)
-    flight_classes = models.JSONField(default=list, null=False, blank=False)
-    preferred_programs = models.JSONField(default=list, null=False, blank=False)
+    flight_classes = ArrayField(
+        models.CharField(
+            max_length=20,
+            choices=[(cls.value, cls.name) for cls in FLIGHT_CLASSES]
+        ),
+        null=True,
+        blank=True
+    )
+    preferred_programs = models.CharField(
+        max_length=20,
+        choices=[(prog.value, prog.name) for prog in PREFERRED_PROGRAMS],
+        null=False,
+        blank=False
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=[(status.value, status.name) for status in NOTIFICATION_STATUS],
+        default=NOTIFICATION_STATUS.PENDING
+    )
