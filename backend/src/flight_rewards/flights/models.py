@@ -175,12 +175,14 @@ class AvailabilityNotification(models.Model):
             max_length=20,
             choices=[(cls.value, cls.name) for cls in FLIGHT_CLASSES]
         ),
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
-    preferred_programs = models.CharField(
-        max_length=20,
-        choices=[(prog.value, prog.name) for prog in PREFERRED_PROGRAMS],
+    preferred_programs = ArrayField(
+        models.CharField(
+            max_length=20,
+            choices=[(prog.value, prog.name) for prog in PREFERRED_PROGRAMS]
+        ),
         null=False,
         blank=False
     )
