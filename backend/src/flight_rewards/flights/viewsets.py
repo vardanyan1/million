@@ -18,6 +18,7 @@ from djoser import views
 from djstripe.models import Customer, Plan, Price, Session
 from djstripe import settings as djstripe_settings
 
+from flight_rewards.flights import NOTIFICATION_STATUS
 from flight_rewards.flights.models import Airport, Contact, AvailabilityNotification, User, Flight
 from flight_rewards.flights.serializers import (
     AirportSerializer, ContactSerializer,
@@ -158,22 +159,6 @@ class UserFilterBackend(rest_filters.BaseFilterBackend):
         return queryset.filter(user=request.user)
 
 
-class AvailabilityNotificationViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    queryset = AvailabilityNotification.objects.all()
-    serializer_class = AvailabilityNotificationSerializer
-    filter_backends = [UserFilterBackend]
-
-    def create(self, request, *args, **kwargs):
-        user: User = request.user
-        if user.notifications.count() == user.alerts_limit:
-            raise APIException({"reason": "MAX ammount of alets reached"})
-        # request.data['user'] = request.user.id
-        request.data['destination_id'] = request.data['destination']
-        request.data['origin_id'] = request.data['origin']
-        return super().create(request, *args, **kwargs)
-
-
 class UserViewSet(views.UserViewSet):
     @action(detail=False, methods=['POST'])
     def checkout_session(self, request):
@@ -232,3 +217,59 @@ class UserViewSet(views.UserViewSet):
 class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plan.objects.all()
     serializer_class = SubscriptionPlanSerializer
+
+
+class AvailabilityNotificationViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = AvailabilityNotification.objects.all()
+    serializer_class = AvailabilityNotificationSerializer
+    filter_backends = [UserFilterBackend]
+
+    def create(self, request, *args, **kwargs):
+        user: User = request.user
+        if user.notifications.count() >= user.alerts_limit:  # Changed == to >= for safety
+            raise APIException({"reason": "MAX amount of alerts reached"})
+
+        mutable_data = request.data.copy()  # Create a mutable copy
+        mutable_data['user'] = user.id  # Set the user id
+        # No need to rename 'destination' and 'origin' if they are already correct
+
+        serializer = self.get_serializer(data=mutable_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class NotificationJobViewSet(viewsets.ViewSet):
+    def list(self, request):
+        queryset = AvailabilityNotification.objects.filter(status=NOTIFICATION_STATUS.PENDING)
+        # Serialize the data into the format you want
+        serialized_data = []
+        for notification in queryset:
+            serialized_data.append({
+                'id': notification.id,  # Include the ID
+                'Name': notification.user.first_name,
+                'Surname': notification.user.last_name,
+                'Email': notification.user.email,
+                'Departure Air': notification.origin.code,
+                'Destination Air': notification.destination.code,
+                'Start Date': notification.start_date,
+                'End Date': notification.end_date,
+                'Cabin': ','.join(notification.flight_classes), # This will work correctly now
+                'Status': notification.status
+            })
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'])
+    def update_status(self, request):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({'error': 'No IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter notifications by IDs and update their status
+        AvailabilityNotification.objects.filter(id__in=ids).update(status=NOTIFICATION_STATUS.SENT)
+
+        return Response({'message': 'Status updated successfully'}, status=status.HTTP_200_OK)
+

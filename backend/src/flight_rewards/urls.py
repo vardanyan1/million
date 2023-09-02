@@ -19,8 +19,15 @@ from django.urls import path, include
 from rest_framework import routers
 
 from flight_rewards.flights.viewsets import (
-    OriginAirportViewSet, DestinationAirportViewSet, ContactViewSet,
-    AvailabilityNotificationViewSet, UserViewSet, SubscriptionPlanViewSet, FlightDepartureDatesViewSet, FlightViewSet)
+    OriginAirportViewSet,
+    DestinationAirportViewSet,
+    ContactViewSet,
+    AvailabilityNotificationViewSet,
+    UserViewSet,
+    SubscriptionPlanViewSet,
+    FlightDepartureDatesViewSet,
+    FlightViewSet,
+    NotificationJobViewSet)
 from flight_rewards.flights.views import upload_flights, upload_result
 
 
@@ -39,6 +46,7 @@ router.register(r'flights', FlightViewSet, basename='flights')
 router.register(r'flight-dates', FlightDepartureDatesViewSet, basename='flight-departure-dates')
 router.register(r'contacts', ContactViewSet)
 router.register(r'alerts', AvailabilityNotificationViewSet, basename='alerts')
+router.register(r'alert_job', NotificationJobViewSet, basename='alert_job')
 router.register(r'plans', SubscriptionPlanViewSet, basename='plans')
 
 urlpatterns = [
