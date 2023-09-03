@@ -5,7 +5,7 @@ from rest_framework.fields import empty
 from djoser.serializers import UserSerializer
 from djstripe.models import Plan
 
-from flight_rewards.flights import FLIGHT_CLASSES
+from flight_rewards.flights import FLIGHT_CLASSES, PREFERRED_PROGRAMS
 from flight_rewards.flights.models import Airport, Contact, AvailabilityNotification, Flight, FlightDetail, \
     FlightClassDetail
 
@@ -73,6 +73,12 @@ class AvailabilityNotificationSerializer(serializers.ModelSerializer):
         .filter(num_arrivals__gt=0)
     )
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['origin'] = AirportIdCodeSerializer(instance.origin).data
+        ret['destination'] = AirportIdCodeSerializer(instance.destination).data
+        return ret
+
     def __init__(self, instance=None, data=empty, **kwargs):
         setattr(self.Meta, 'depth', 1 if instance else 0)
         super().__init__(instance, data, **kwargs)
@@ -82,6 +88,13 @@ class AvailabilityNotificationSerializer(serializers.ModelSerializer):
         for v in value:
             if v not in [cls.value for cls in FLIGHT_CLASSES]:
                 raise serializers.ValidationError("Invalid flight class")
+        return value
+
+    def validate_preferred_programs(self, value):
+        # Custom logic to validate that value is one of the allowed choices
+        for v in value:
+            if v not in [prog.value for prog in PREFERRED_PROGRAMS]:
+                raise serializers.ValidationError("Invalid preferred program")
         return value
 
     class Meta:

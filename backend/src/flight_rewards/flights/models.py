@@ -11,7 +11,13 @@ from django.utils.translation import gettext_lazy as _
 from djstripe.models import Customer
 from djstripe.enums import PlanInterval
 
-from flight_rewards.flights import NOTIFICATION_STATUS, FLIGHT_CLASSES, PREFERRED_PROGRAMS
+from flight_rewards.flights import (
+    NOTIFICATION_STATUS,
+    FLIGHT_CLASSES,
+    PREFERRED_PROGRAMS,
+    MAX_ALERTS_PER_SUBSCRIPTION,
+    SUBSCRIPTION_TYPE
+)
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -47,18 +53,6 @@ class UserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self._create_user(email, password, first_name=first_name, last_name=last_name, **extra_fields)
-
-
-class SUBSCRIPTION_TYPE(enum.StrEnum):
-  FREE = 'FREE'
-  MONTHLY = 'MONTHLY'
-  ANNUAL = 'ANNUAL'
-
-
-class MAX_ALERTS_PER_SUBSCRIPTION(enum.IntEnum):
-    FREE = 0
-    MONTHLY = 10
-    ANNUAL = 100
 
 
 class User(AbstractUser):
