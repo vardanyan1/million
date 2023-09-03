@@ -130,7 +130,7 @@
     "indemnificationParagraph2": "Please contact contact@Classic Flight Rewards.com with any questions"
   },
   "privacy": {
-    "header": "Privacy Policy",
+    "header": "Terms & Conditions",
     "paragraph1": "This Privacy Policy describes the policies and procedures of Classic Flight Rewards (“Classic Flight Rewards”, “we”, “our” or “us”) on the collection, use and disclosure of your information on classicflightrewards.com (the “Site”) and the services, features, content or applications we offer (collectively with the Site, the “Services”). We may receive information about you from various sources, including: (i) if you register for the Site and the Services, through a user account on the Services (your “Account”); (ii) your use of the Services generally; and (iii) from third party websites and services. When you use the Services, you are consenting to the collection, transfer, manipulation, storage, disclosure and other uses of your information as described in this Privacy Policy.",
     "coverSubheader": "What Does This Privacy Policy Cover?",
     "coverParagraph1": "This Privacy Policy covers the treatment of personally identifiable information (“Personal Information”) gathered when you are using or accessing the Services. This Privacy Policy also covers our treatment of any Personal Information that our business partners share with us or that we share with our business partners.",
@@ -169,8 +169,8 @@
     "lastName": "Last name",
     "lastNamePlaceholder": "Enter your last name",
     "alreadyHaveAccount": "Already have an account?",
-    "readPrivacyPolicy": "I have read ",
-    "acceptPrivacyPolicy": "and accept the Terms & Conditions. You will be redirected to Stripe to complete the signup process.",
+    "readPrivacyPolicy": "I have read Privacy Policy and accept the ",
+    "acceptPrivacyPolicy": ". You will be redirected to Stripe to complete the signup process.",
     "generalError": "Whoops - an error occurred. Please try again."
   },
   "validation": {

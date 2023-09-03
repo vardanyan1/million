@@ -34,6 +34,7 @@ import format from "date-fns/format"
 import Menu from "../components/Menu"
 import { getAlerts, deleteAlert } from "../services/api"
 import AlertRouteContent from "../components/FlightsTable/AlertRouteContent"
+import { trackPage } from "../services/analytics"
 
 const DATE_FORMAT = "MMMM dd, yyyy"
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
@@ -51,8 +52,8 @@ const flightClassesMapping = {
 }
 
 const pointsPrograms = {
-  QF: "Qantas FF",
-  VA: "Virgin Velocity",
+  "Qantas FF": "Qantas FF",
+  "Virgin Velocity": "Virgin Velocity",
 }
 
 const Alerts = () => {
@@ -127,23 +128,17 @@ const Alerts = () => {
                   const programs = userAlert.preferred_programs.map(
                     (program) => pointsPrograms[program]
                   )
+
                   const route = {
                     id: userAlert.id,
                     origin: userAlert.origin,
                     destination: userAlert.destination,
-                    fromDate: parse(
-                      userAlert.start_date,
-                      DEFAULT_DATE_FORMAT,
-                      new Date()
-                    ),
-                    toDate: parse(
-                      userAlert.end_date,
-                      DEFAULT_DATE_FORMAT,
-                      new Date()
-                    ),
+                    startDate: userAlert.start_date,
+                    endDate: userAlert.end_date,
                     flightClasses: userAlert.flight_classes,
                     preferredPrograms: userAlert.preferred_programs,
                   }
+
                   return (
                     <Tr key={userAlert.id}>
                       <Td p={4} textAlign={"left"}>
@@ -201,9 +196,9 @@ const Alerts = () => {
                           placement={"left"}
                           closeOnBlur={false}
                           onOpen={() => {
-                            // trackPage({
-                            //     title: 'Alert Route',
-                            // })
+                            trackPage({
+                              title: "Alert Route",
+                            })
                           }}
                         >
                           {({ onClose }) => (

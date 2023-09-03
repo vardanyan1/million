@@ -237,7 +237,10 @@ const Register = () => {
                           color="#D00"
                           textDecoration={"underline"}
                         >
-                          <RouterLink to="/privacy-policy" target="_blank">
+                          <RouterLink
+                            to="/terms-and-conditions"
+                            target="_blank"
+                          >
                             {t("privacy.header")}
                           </RouterLink>
                         </Text>{" "}

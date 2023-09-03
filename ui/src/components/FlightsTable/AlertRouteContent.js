@@ -23,6 +23,7 @@ import invert from "lodash/invert"
 
 import bellImage from "../../img/bell.svg"
 import { createAlert, updateAlert } from "../../services/api"
+import { addDays, parseISO } from "date-fns"
 
 const DatePickerInput = forwardRef((props, ref) => {
   const { value, onClick } = props
@@ -72,17 +73,21 @@ const flightClassesMapping = {
 const labelFlightClassMapping = invert(flightClassesMapping)
 
 const pointsPrograms = {
-  QF: "qantasFF",
-  VA: "virginVelocity",
+  "Qantas FF": "qantasFF",
+  "Virgin Velocity": "virginVelocity",
 }
 
 const labelPointsPrograms = invert(pointsPrograms)
 
 const AlertRouteContent = ({ route, onClose }) => {
-  const [fromDate, setFromDate] = useState(route.fromDate)
-  const [toDate, setToDate] = useState(route.toDate)
+  const [fromDate, setFromDate] = useState(route?.startDate)
+  const [toDate, setToDate] = useState(
+    format(addDays(parseISO(route?.endDate), 1), "yyyy-MM-dd")
+  )
+
   const { handleSubmit, control, errors } = useForm({
     values: {
+      origin: route.origin,
       economy: route.flightClasses.some(
         (flightClass) => flightClass === "Economy"
       ),
@@ -93,10 +98,8 @@ const AlertRouteContent = ({ route, onClose }) => {
         (flightClass) => flightClass === "Business"
       ),
       first: route.flightClasses.some((flightClass) => flightClass === "First"),
-      qantasFF: route.preferredPrograms.some((program) => program === "QF"),
-      virginVelocity: route.preferredPrograms.some(
-        (program) => program === "VA"
-      ),
+      qantasFF: [route.source].some((program) => program === "QF"),
+      virginVelocity: [route.source].some((program) => program === "VA"),
     },
   })
   const queryClient = useQueryClient()
@@ -113,8 +116,8 @@ const AlertRouteContent = ({ route, onClose }) => {
 
   const onSubmit = async (data) => {
     const formattedData = {
-      start_date: format(fromDate, "yyyy-MM-dd"),
-      end_date: format(toDate, "yyyy-MM-dd"),
+      start_date: fromDate,
+      end_date: toDate,
       origin: route.origin.id,
       destination: route.destination.id,
       flight_classes: Object.keys(labelFlightClassMapping)
@@ -159,9 +162,10 @@ const AlertRouteContent = ({ route, onClose }) => {
           {t("alertRouteModal.header")}
         </Heading>
       </Flex>
-      <Text mb={4} textTransform={"uppercase"} fontSize={"md"}>
-        {route?.origin.name} <ArrowForwardIcon verticalAlign={-2} />{" "}
-        {route?.destination.name}
+      <Text mb={4} fontSize="md" align="center">
+        {route?.origin.name + " (" + route?.origin.code + ")"}{" "}
+        <ArrowForwardIcon verticalAlign={-2} />{" "}
+        {route?.destination.name + " (" + route?.destination.code + ")"}
       </Text>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -171,13 +175,13 @@ const AlertRouteContent = ({ route, onClose }) => {
               From:
             </Text>
             <DatePicker
-              selected={fromDate}
+              selected={new Date(fromDate)}
               onChange={(date) => {
-                setFromDate(date)
+                setFromDate(format(date, "yyyy-MM-dd"))
               }}
               selectsStart
-              startDate={fromDate}
-              endDate={toDate}
+              startDate={new Date(fromDate)}
+              endDate={new Date(toDate)}
               customInput={<DatePickerInput />}
               dateFormat="EEE, dd MMMM"
               minDate={new Date()}
@@ -191,13 +195,13 @@ const AlertRouteContent = ({ route, onClose }) => {
               To:
             </Text>
             <DatePicker
-              selected={toDate}
+              selected={new Date(toDate)}
               onChange={(date) => {
-                setToDate(date)
+                setToDate(format(date, "yyyy-MM-dd"))
               }}
               selectsEnd
-              startDate={fromDate}
-              endDate={toDate}
+              startDate={new Date(fromDate)}
+              endDate={new Date(toDate)}
               customInput={<DatePickerInput />}
               dateFormat="EEE, dd MMMM"
               minDate={new Date()}

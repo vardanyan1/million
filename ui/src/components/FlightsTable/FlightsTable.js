@@ -2,11 +2,10 @@ import { Fragment, useState, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import {
   format,
-  subHours,
   differenceInCalendarDays,
   parseISO,
+  formatDistanceToNow,
   addDays,
-  formatDistance,
 } from "date-fns"
 import { useQuery } from "@tanstack/react-query"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
@@ -62,13 +61,7 @@ const parseDate = (dateStr) => {
   return parseISO(dateStr)
 }
 
-const ExpandableRow = ({
-  flight,
-  lowestPoint,
-  summarypoints,
-  planeImage,
-  secondPlaneImage,
-}) => {
+const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
   const showFlightClasses = (flightClass, index) => {
     const uniqueFlightClasses = flightClass.map(({ cabin_type }) => {
       const classArr = cabin_type.split(", ")
@@ -88,20 +81,23 @@ const ExpandableRow = ({
     return uniqueFlightClasses.join(", ")
   }
 
-  const convertLocalToUTC = (dateStr) => {
-    const localDate = new Date(dateStr)
-    const timeInMilliseconds = localDate.getTime()
-    const timezoneOffsetInMinutes = localDate.getTimezoneOffset()
-    const offsetInMilliseconds = timezoneOffsetInMinutes * 60 * 1000
+  const adjustTimezone = (dateStr, timezoneOffsetInHoursFromUTC) => {
+    const [datePart, timePart] = dateStr.split("T")
+    const [year, month, day] = datePart.split("-").map(Number)
+    const [hour, minute, second] = timePart.split(":").map(Number)
 
-    const utcDate = new Date(timeInMilliseconds - offsetInMilliseconds)
+    const utcDate = new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        day,
+        hour - timezoneOffsetInHoursFromUTC,
+        minute,
+        second
+      )
+    )
 
     return utcDate.toISOString()
-  }
-
-  const subtractTenHours = (dateStr) => {
-    const parsedDate = new Date(dateStr)
-    return new Date(parsedDate.getTime() - 10 * 60 * 60 * 1000).toISOString()
   }
 
   return (
@@ -109,6 +105,8 @@ const ExpandableRow = ({
       {flight.details.map((detail, index, details) => {
         const from_airport_code = detail.from_airport.match(/\(([^)]+)\)$/)[1]
         const to_airport_code = detail.to_airport.match(/\(([^)]+)\)$/)[1]
+
+        const flightTimeInUTC = adjustTimezone(flight.timestamp, 10)
 
         return (
           <Fragment key={index}>
@@ -180,14 +178,10 @@ const ExpandableRow = ({
                   Aircraft: {detail.equipment}
                 </Text>
                 <Text color={COLORS.secondary}>
-                  Last seen: {" "}
-                  {formatDistance(
-                    new Date(subtractTenHours(flight.timestamp)),
-                    new Date(convertLocalToUTC(new Date().toISOString())),
-                    {
-                      addSuffix: true,
-                    }
-                  )}
+                  Last seen: about{" "}
+                  {formatDistanceToNow(parseDate(flightTimeInUTC), {
+                    addSuffix: true,
+                  })}
                 </Text>
               </Box>
             </Flex>
@@ -336,10 +330,19 @@ const FlightsTable = ({ flights, user }) => {
             const route = {
               origin: flight.origin,
               destination: flight.destination,
-              fromDate: parseISO(flight.flight_start_date),
-              toDate: addDays(parseISO(flight.flight_start_date), 1),
+              startDate: format(
+                parseISO(flight.flight_start_date),
+                "yyyy-MM-dd"
+              ),
+              endDate: format(
+                addDays(parseISO(flight.flight_start_date), 1),
+                "yyyy-MM-dd"
+              ),
               flightClasses: Object.keys(summaryPoints),
-              preferredPrograms: [flight.source],
+              preferredPrograms: [
+                flight.source === "Virgin Velocity" ? "VA" : "Qantas FF",
+              ],
+              source: flight.source,
             }
 
             const isFlightExpanded = expandedFlight === flight
@@ -357,7 +360,7 @@ const FlightsTable = ({ flights, user }) => {
                       ? "0px -10px 18px 0px rgba(20, 23, 37, 0.13)"
                       : "none"
                   }
-                  fontWeight={"semibold"}
+                  fontWeight="semibold"
                   onClick={() => {
                     setExpandedFlight(expandedFlight === flight ? null : flight)
                   }}
@@ -606,7 +609,7 @@ const FlightsTable = ({ flights, user }) => {
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
                       <Popover
                         placement="left"
-                        closeOnBlur={!canCreateAlerts}
+                        closeOnBlur={true}
                         onOpen={() => {
                           trackPage({
                             title: "Alert Route",
@@ -630,12 +633,14 @@ const FlightsTable = ({ flights, user }) => {
                               boxShadow="0px 10px 22px rgba(0, 0, 0, 0.14);"
                               borderRadius={8}
                               w={360}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               {canCreateAlerts && <PopoverCloseButton />}
                               <PopoverBody p={0}>
                                 {canCreateAlerts ? (
                                   <AlertRouteContent
                                     route={route}
+                                    summaryPoints={summaryPoints}
                                     onClose={onClose}
                                   />
                                 ) : (
@@ -668,8 +673,6 @@ const FlightsTable = ({ flights, user }) => {
                     <Td colSpan={11} p={2} border={0}>
                       <ExpandableRow
                         flight={flight}
-                        lowestPoint={lowestPoint}
-                        summaryPoints={summaryPoints}
                         planeImage={planeImage}
                         secondPlaneImage={secondPlaneImage}
                       />
