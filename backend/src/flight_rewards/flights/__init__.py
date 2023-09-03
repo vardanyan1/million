@@ -9,8 +9,8 @@ class SUBSCRIPTION_TYPE(enum.StrEnum):
 
 class MAX_ALERTS_PER_SUBSCRIPTION(enum.IntEnum):
     FREE = 0
-    MONTHLY = 10
-    ANNUAL = 100
+    MONTHLY = 5
+    ANNUAL = 25
 
 
 class NOTIFICATION_STATUS(enum.StrEnum):
