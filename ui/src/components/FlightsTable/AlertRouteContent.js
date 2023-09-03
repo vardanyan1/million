@@ -318,6 +318,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
                   ref={ref}
                   isChecked={value}
                   colorScheme="red"
+                  isDisabled={true}
                 >
                   <Text fontSize="sm" fontWeight="semibold">
                     Qantas FF
