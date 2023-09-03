@@ -24,6 +24,7 @@ import invert from "lodash/invert"
 import bellImage from "../../img/bell.svg"
 import { createAlert, updateAlert } from "../../services/api"
 import { addDays, parseISO } from "date-fns"
+import { pointsPrograms } from "../../constants"
 
 const DatePickerInput = forwardRef((props, ref) => {
   const { value, onClick } = props
@@ -72,14 +73,9 @@ const flightClassesMapping = {
 
 const labelFlightClassMapping = invert(flightClassesMapping)
 
-const pointsPrograms = {
-  "Qantas FF": "qantasFF",
-  "Virgin Velocity": "virginVelocity",
-}
-
 const labelPointsPrograms = invert(pointsPrograms)
 
-const AlertRouteContent = ({ route, onClose }) => {
+const AlertRouteContent = ({ route, onClose, isNew }) => {
   const [fromDate, setFromDate] = useState(route?.startDate)
   const [toDate, setToDate] = useState(
     format(addDays(parseISO(route?.endDate), 1), "yyyy-MM-dd")
@@ -98,8 +94,8 @@ const AlertRouteContent = ({ route, onClose }) => {
         (flightClass) => flightClass === "Business"
       ),
       first: route.flightClasses.some((flightClass) => flightClass === "First"),
-      qantasFF: [route.source].some((program) => program === "QF"),
-      virginVelocity: [route.source].some((program) => program === "VA"),
+      qantasFF: route.source.some((program) => program === "QF"),
+      virginVelocity: route.source.some((program) => program === "VA"),
     },
   })
   const queryClient = useQueryClient()
@@ -142,7 +138,11 @@ const AlertRouteContent = ({ route, onClose }) => {
     } catch (err) {
       toast({
         position: "bottom-right",
-        title: t("alertRouteModal.toastError"),
+        title: t(
+          isNew
+            ? "alertRouteModal.newToastError"
+            : "alertRouteModal.editToastError"
+        ),
         status: "error",
       })
     }
@@ -317,7 +317,7 @@ const AlertRouteContent = ({ route, onClose }) => {
                   onChange={onChange}
                   ref={ref}
                   isChecked={value}
-                  colorScheme={"red"}
+                  colorScheme="red"
                 >
                   <Text fontSize="sm" fontWeight="semibold">
                     Qantas FF
@@ -362,7 +362,11 @@ const AlertRouteContent = ({ route, onClose }) => {
           borderRadius={8}
           boxShadow={"0px 4px 12px rgba(0, 0, 0, 0.24)"}
         >
-          {t("alertRouteModal.button")}
+          {t(
+            isNew
+              ? "alertRouteModal.createButton"
+              : "alertRouteModal.editButton"
+          )}
         </Button>
       </form>
     </>

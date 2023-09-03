@@ -74,6 +74,7 @@ import VT from "./img/airline_logos/VT.png"
 import UX from "./img/airline_logos/UX.png"
 import AK from "./img/airline_logos/AK.png"
 import MH from "./img/airline_logos/MH.png"
+import VA from "./img/airline_logos/VA.png"
 
 const flightImages = {
   TG,
@@ -149,6 +150,7 @@ const flightImages = {
   UX,
   AK,
   MH,
+  VA,
   "3K": threeK,
   "9W": nineW,
   "0V": zeroV,

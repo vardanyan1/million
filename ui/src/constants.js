@@ -42,3 +42,13 @@ export const flightClassesColors = {
   Business: "#B39E69",
   First: "#796F5A",
 }
+
+export const pointsPrograms = {
+  "Qantas FF": "qantasFF",
+  "Virgin Velocity": "virginVelocity",
+}
+
+export const programNameToCodeMapping = {
+  "Qantas FF": "QF",
+  "Virgin Velocity": "VA",
+}

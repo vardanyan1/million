@@ -35,6 +35,7 @@ import Menu from "../components/Menu"
 import { getAlerts, deleteAlert } from "../services/api"
 import AlertRouteContent from "../components/FlightsTable/AlertRouteContent"
 import { trackPage } from "../services/analytics"
+import { programNameToCodeMapping } from "../constants"
 
 const DATE_FORMAT = "MMMM dd, yyyy"
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
@@ -74,6 +75,12 @@ const Alerts = () => {
   const onAlertDelete = async (userAlert) => {
     await deleteAlertMutation(userAlert.id)
     onClose()
+  }
+
+  const convertProgramNamesToCodes = (preferred_programs) => {
+    return preferred_programs.map(
+      (programName) => programNameToCodeMapping[programName] || programName
+    )
   }
 
   return (
@@ -137,6 +144,9 @@ const Alerts = () => {
                     endDate: userAlert.end_date,
                     flightClasses: userAlert.flight_classes,
                     preferredPrograms: userAlert.preferred_programs,
+                    source: convertProgramNamesToCodes(
+                      userAlert.preferred_programs
+                    ),
                   }
 
                   return (
@@ -222,6 +232,7 @@ const Alerts = () => {
                                   <AlertRouteContent
                                     route={route}
                                     onClose={onClose}
+                                    isNew={false}
                                   />
                                 </PopoverBody>
                               </PopoverContent>

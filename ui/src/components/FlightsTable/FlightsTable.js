@@ -103,10 +103,13 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
   return (
     <Box>
       {flight.details.map((detail, index, details) => {
-        const from_airport_code = detail.from_airport.match(/\(([^)]+)\)$/)[1]
-        const to_airport_code = detail.to_airport.match(/\(([^)]+)\)$/)[1]
-
         const flightTimeInUTC = adjustTimezone(flight.timestamp, 10)
+
+        const lastSeenText = formatDistanceToNow(parseDate(flightTimeInUTC), {
+          addSuffix: true,
+        })
+
+        const shouldIncludeAbout = !lastSeenText.includes("about")
 
         return (
           <Fragment key={index}>
@@ -154,7 +157,7 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{from_airport_code}</Text>
+                <Text>{detail.from_airport}</Text>
                 <Text color={COLORS.secondary} my={5} fontSize={"xs"}>
                   {detail.flight_duration}
                 </Text>
@@ -164,7 +167,7 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                     DATE_FORMAT_EXPANDABLE_ROW
                   )}
                 </Text>
-                <Text>{to_airport_code}</Text>
+                <Text>{detail.to_airport}</Text>
               </Box>
 
               <Box w={"45%"} fontSize={"12px"}>
@@ -178,10 +181,8 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                   Aircraft: {detail.equipment}
                 </Text>
                 <Text color={COLORS.secondary}>
-                  Last seen: about{" "}
-                  {formatDistanceToNow(parseDate(flightTimeInUTC), {
-                    addSuffix: true,
-                  })}
+                  Last seen: {shouldIncludeAbout ? "about " : ""}
+                  {lastSeenText}
                 </Text>
               </Box>
             </Flex>
@@ -342,7 +343,7 @@ const FlightsTable = ({ flights, user }) => {
               preferredPrograms: [
                 flight.source === "Virgin Velocity" ? "VA" : "Qantas FF",
               ],
-              source: flight.source,
+              source: [flight.source],
             }
 
             const isFlightExpanded = expandedFlight === flight
@@ -445,7 +446,9 @@ const FlightsTable = ({ flights, user }) => {
                       <Text fontSize={12} color={"#6A6E85"}>
                         {details
                           .slice(0, -1)
-                          .map((conn) => conn.to_airport)
+                          .map(
+                            (conn) => conn.to_airport.match(/\(([^)]+)\)$/)[1]
+                          )
                           .join(", ")}
                       </Text>
                     </Td>
@@ -640,8 +643,8 @@ const FlightsTable = ({ flights, user }) => {
                                 {canCreateAlerts ? (
                                   <AlertRouteContent
                                     route={route}
-                                    summaryPoints={summaryPoints}
                                     onClose={onClose}
+                                    isNew={true}
                                   />
                                 ) : (
                                   <Box>

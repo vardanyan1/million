@@ -81,9 +81,11 @@
   },
   "alertRouteModal": {
     "header": "Create Alert",
-    "button": "Create Alert",
+    "createButton": "Create Alert",
+    "editButton": "Edit Alert",
     "toastSuccess": "Success! Alert has been created.",
-    "toastError": "Error creating Alert. Please try again later"
+    "createToastError": "Error creating Alert. Please try again later",
+    "editToastError": "Error editing Alert. Please try again later"
   },
   "alerts": {
     "header": "Alerts",
