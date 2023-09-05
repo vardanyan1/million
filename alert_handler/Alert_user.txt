@@ -1,0 +1,3 @@
+Name,Surname,Email,Departure Air,Destination Air,Start Date,End Date,Cabin,Status
+John,Doe,gasparyan93saqo@gmail.com,SYD,LHR,2023-08-19,2023-09-20,Economy&Business&First,Pending
+Jane,Smith,gasparyan93saqo@gmail.com,SYD,JFK,2023-10-12,2023-12-15,PremiumEconomy&Business,Sent
