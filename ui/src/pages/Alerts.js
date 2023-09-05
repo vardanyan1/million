@@ -21,7 +21,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  useDisclosure,
   Flex,
   Text,
 } from "@chakra-ui/react"
@@ -36,6 +35,7 @@ import { getAlerts, deleteAlert } from "../services/api"
 import AlertRouteContent from "../components/FlightsTable/AlertRouteContent"
 import { trackPage } from "../services/analytics"
 import { programNameToCodeMapping } from "../constants"
+import { useState } from "react"
 
 const DATE_FORMAT = "MMMM dd, yyyy"
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
@@ -58,13 +58,21 @@ const pointsPrograms = {
 }
 
 const Alerts = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [openAlerts, setOpenAlerts] = useState({})
   const queryClient = useQueryClient()
   const { data: alerts } = useQuery({
     queryKey: ["alerts"],
     queryFn: getAlerts,
     initialData: [],
   })
+
+  const onOpen = (alertId) => {
+    setOpenAlerts((prev) => ({ ...prev, [alertId]: true }))
+  }
+
+  const onClose = (alertId) => {
+    setOpenAlerts((prev) => ({ ...prev, [alertId]: false }))
+  }
 
   const { mutateAsync: deleteAlertMutation } = useMutation({
     mutationFn: deleteAlert,
@@ -109,7 +117,10 @@ const Alerts = () => {
               textAlign={"left"}
             >
               <Thead>
-                <Tr boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)">
+                <Tr
+                  boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)"
+                  borderTopRadius="12px"
+                >
                   <Th textTransform="none" p={4} w={"20%"}>
                     {t("alerts.itinerary")}
                   </Th>
@@ -169,9 +180,13 @@ const Alerts = () => {
                           cursor="pointer"
                           boxSize={5}
                           color="#6a6e85"
-                          onClick={onOpen}
+                          onClick={() => onOpen(userAlert.id)}
                         />
-                        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                        <Modal
+                          isOpen={openAlerts[userAlert.id]}
+                          onClose={() => onClose(userAlert.id)}
+                          isCentered
+                        >
                           <ModalOverlay />
                           <ModalContent>
                             <ModalHeader fontSize={"2xl"} fontWeight="bold">
@@ -187,7 +202,9 @@ const Alerts = () => {
                                   textTransform={"uppercase"}
                                   backgroundColor="#F7F7F9"
                                   color="#DD0000"
-                                  onClick={onClose}
+                                  onClick={() => {
+                                    onClose(userAlert.id)
+                                  }}
                                 >
                                   {t("alerts.deleteCancel")}
                                 </Button>

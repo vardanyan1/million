@@ -7,15 +7,12 @@ import { ReactComponent as AlertMenuIcon } from "../img/alert_menu_icon.svg"
 import { ReactComponent as SettingsMenuIcon } from "../img/settings_menu_icon.svg"
 import { ReactComponent as LogoutMenuIcon } from "../img/logout_menu_icon.svg"
 import { ReactComponent as PriceMenuIcon } from "../img/price_menu_icon.svg"
-import { ReactComponent as BusinessClassImage } from "../img/business.svg"
-import { ReactComponent as FirstClassImage } from "../img/first_class.svg"
 import { Link as RouterLink, useLocation } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
 import { logout } from "../services/api"
 import { useAuthContext } from "../services/auth"
 
-
-const MenuItem = ({isActive, ...props}) => {
+const MenuItem = ({ isActive, ...props }) => {
   return (
     <Flex
       as={RouterLink}
@@ -41,10 +38,10 @@ const Menu = () => {
   const location = useLocation()
 
   const { t } = useTranslation()
-  const {user} = useAuthContext()
+  const { user } = useAuthContext()
 
   const isUserPresent = !!user
-  const showShowLoginButton = !isUserPresent && location.pathname !== '/login'
+  const showShowLoginButton = !isUserPresent && location.pathname !== "/login"
 
   return (
     <Stack
@@ -64,82 +61,92 @@ const Menu = () => {
         <Image src={logo} width="177px" mb={[0, 0, 0, 6]} />
       </RouterLink>
 
-
-      <MenuItem 
-        to={'/'} 
+      <MenuItem
+        to={"/"}
         ml={{ base: "auto !important", lg: "0 !important" }}
-        isActive={location.pathname === '/'}
-        >
+        isActive={location.pathname === "/"}
+      >
         <Image
           as={AllRewardsMenuIcon}
           width={{ base: "20px", lg: "24px" }}
           display="inline"
-          fill={location.pathname === '/' ? "#DD0000" : "#6A6E85"}
+          fill={location.pathname === "/" ? "#DD0000" : "#6A6E85"}
         />
         <Show above="lg">
-          <Text ml={2}>{t('allRewardMenuItem')}</Text>
+          <Text ml={2}>{t("allRewardMenuItem")}</Text>
         </Show>
       </MenuItem>
 
-      <MenuItem to={'/pricing'} ml={0} isActive={location.pathname === '/pricing'}>
+      <MenuItem
+        to={"/pricing"}
+        ml={0}
+        isActive={location.pathname === "/pricing"}
+      >
         <Image
           as={PriceMenuIcon}
           width={{ base: "20px", lg: "24px" }}
           display="inline"
-          stroke={location.pathname === '/pricing' ? "#DD0000" : "#6A6E85"}
+          stroke={location.pathname === "/pricing" ? "#DD0000" : "#6A6E85"}
         />
         <Show above="lg">
           <Text ml={2}>Pricing</Text>
         </Show>
       </MenuItem>
 
-      {isUserPresent &&
+      {isUserPresent && (
         <>
-          <MenuItem to={'/settings'} ml={0}
-        isActive={location.pathname === '/settings'}
-        >
-        <Image
-          as={SettingsMenuIcon}
-          width={{ base: "20px", lg: "24px" }}
-          display="inline"
-          stroke={location.pathname === '/settings' ? "#DD0000" : "#6A6E85"}
-        />
-        <Show above="lg">
-          <Text ml={2}>Settings</Text>
-        </Show>
-      </MenuItem>
+          <MenuItem
+            to={"/settings"}
+            ml={0}
+            isActive={location.pathname === "/settings"}
+          >
+            <Image
+              as={SettingsMenuIcon}
+              width={{ base: "20px", lg: "24px" }}
+              display="inline"
+              stroke={location.pathname === "/settings" ? "#DD0000" : "#6A6E85"}
+            />
+            <Show above="lg">
+              <Text ml={2}>Settings</Text>
+            </Show>
+          </MenuItem>
 
-      <MenuItem to={'/alerts'} ml={0}
-        isActive={location.pathname === '/alerts'}
-        >
-        <Image
-          as={AlertMenuIcon}
-          width={{ base: "20px", lg: "24px" }}
-          display="inline"
-          stroke={location.pathname === '/alerts' ? "#DD0000" : "#6A6E85"}
-        />
-        <Show above="lg">
-          <Text ml={2}>Alerts</Text>
-        </Show>
-      </MenuItem>
+          <MenuItem
+            to={"/alerts"}
+            ml={0}
+            isActive={location.pathname === "/alerts"}
+          >
+            <Image
+              as={AlertMenuIcon}
+              width={{ base: "20px", lg: "24px" }}
+              display="inline"
+              stroke={location.pathname === "/alerts" ? "#DD0000" : "#6A6E85"}
+            />
+            <Show above="lg">
+              <Text ml={2}>Alerts</Text>
+            </Show>
+          </MenuItem>
 
-      <MenuItem ml={0} onClick={() => { 
-        logout()
-        queryClient.resetQueries()
-        }}>
-        <Image
-          as={LogoutMenuIcon}
-          width={{ base: "20px", lg: "24px" }}
-          display="inline"
-          stroke={"#6A6E85"}
-        />
-        <Show above="lg">
-          <Text ml={2}>Logout</Text>
-        </Show>
-      </MenuItem>
+          <MenuItem
+            ml={0}
+            onClick={() => {
+              logout()
+              queryClient.resetQueries()
+            }}
+          >
+            <Image
+              as={LogoutMenuIcon}
+              width={{ base: "20px", lg: "24px" }}
+              display="inline"
+              stroke={"#6A6E85"}
+            />
+            <Show above="lg">
+              <Text ml={2}>Logout</Text>
+            </Show>
+          </MenuItem>
         </>
-      }
-      {showShowLoginButton && 
+      )}
+      {showShowLoginButton && (
         <Box pt={{ lg: 8 }} w={{ base: "200px", lg: "100%" }}>
           <RouterLink to="/login">
             <Button
@@ -152,8 +159,7 @@ const Menu = () => {
             </Button>
           </RouterLink>
         </Box>
-      }
-      
+      )}
     </Stack>
   )
 }

@@ -18,14 +18,14 @@ import { useTranslation } from "react-i18next"
 
 import PasswordInput from "../components/PasswordInput"
 
-import { updateUser, me } from "../services/api"
+import { updateUser } from "../services/api"
 import Menu from "../components/Menu"
 import { useAuthContext } from "../services/auth"
 
 export default function Settings() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const { user, error } = useAuthContext()
+  const { user } = useAuthContext()
   const {
     register,
     handleSubmit,
@@ -157,7 +157,9 @@ export default function Settings() {
             </FormControl>
             <Flex alignItems={"center"} justifyContent="center">
               <Text mr={2}>Active Plan:</Text>
-              <Badge fontSize="md" colorScheme="red">{user.subscription}</Badge>
+              <Badge fontSize="md" colorScheme="red">
+                {user.subscription}
+              </Badge>
             </Flex>
             <Button
               type="submit"

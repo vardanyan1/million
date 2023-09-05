@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
 import range from "lodash/range"
 import { useQuery } from "@tanstack/react-query"
-import { format, parseISO, addMinutes, isEqual } from "date-fns"
+import { format } from "date-fns"
 import { Link as RouterLink } from "react-router-dom"
 
 import Menu from "../components/Menu"
@@ -21,14 +21,14 @@ import { useAuthContext } from "../services/auth"
 import { trackPage } from "../services/analytics"
 import { ITEMS_PER_PAGE } from "../constants"
 
-const breakpoints = {
-  base: "0em", //0??
-  sm: "30em", // 480px
-  md: "48em", // 768px
-  lg: "62em", // 992px
-  xl: "80em", // 1280px
-  "2xl": "96em", // 1536px
-}
+// const breakpoints = {
+//   base: "0em", //0??
+//   sm: "30em", // 480px
+//   md: "48em", // 768px
+//   lg: "62em", // 992px
+//   xl: "80em", // 1280px
+//   "2xl": "96em", // 1536px
+// }
 
 const getPagesToRender = (currentPage, pageCount) => {
   if (pageCount <= 6) {

@@ -1,3 +1,6 @@
+import reportWebVitals from "./reportWebVitals"
+
+// Libraries
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ChakraProvider } from "@chakra-ui/react"
@@ -11,17 +14,22 @@ import {
   Outlet,
   Navigate,
 } from "react-router-dom"
+
+// Styles
 import "@fontsource/nunito-sans/400.css"
 import "@fontsource/nunito-sans/600.css"
 import "@fontsource/nunito-sans/700.css"
 import "@fontsource/nunito-sans/800.css"
+import "./index.css"
 
+// Services & Configs
 import enTranslations from "./translations"
 import chakraTheme from "./chakraTheme"
-import reportWebVitals from "./reportWebVitals"
-import "./index.css"
 import "./services/api"
 import { AuthProvider, useAuthContext } from "./services/auth"
+
+// Components & Pages
+import Loading from "./components/Loading"
 import TermsAndConditions from "./pages/TermsAndConditions"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
 import AllAvailability from "./pages/AllAvailability"
@@ -33,8 +41,6 @@ import ResetPassword from "./pages/ResetPassword"
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm"
 import Pricing from "./pages/Pricing"
 import CheckoutResult from "./pages/CheckoutResult"
-
-import Loading from "./components/Loading"
 
 const resources = {
   en: {
