@@ -35,7 +35,6 @@ const Register = () => {
 
   useEffect(() => {
     if (countryCode && countryCode.length === 4) {
-      console.log(phoneNumberRef)
       phoneNumberRef.current?.focus()
     }
   }, [countryCode])

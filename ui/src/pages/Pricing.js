@@ -111,40 +111,43 @@ export const Pricing = () => {
             flexGrow={1}
             backgroundColor="white"
             position="relative"
+            justifyContent="space-between"
           >
-            {(user?.subscription === FREE || user?.subscription === null) && (
-              <Badge
-                colorScheme="red"
-                width="100px"
-                position="absolute"
-                top="8px"
-                left="8px"
+            <div>
+              {(user?.subscription === FREE || user?.subscription === null) && (
+                <Badge
+                  colorScheme="red"
+                  width="100px"
+                  position="absolute"
+                  top="8px"
+                  left="8px"
+                >
+                  {t("pricing.activePlan")}
+                </Badge>
+              )}
+              <Text
+                fontSize="sm"
+                textTransform="uppercase"
+                fontWeight="bold"
+                color="#D00"
               >
-                {t("pricing.activePlan")}
-              </Badge>
-            )}
-            <Text
-              fontSize="sm"
-              textTransform="uppercase"
-              fontWeight="bold"
-              color="#D00"
-            >
-              {t("pricing.free.header")}
-            </Text>
-            <Text fontSize={"3xl"}>$0.00</Text>
+                {t("pricing.free.header")}
+              </Text>
+              <Text fontSize={"3xl"}>$0.00</Text>
 
-            <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
+              <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
 
-            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
-              <ListItem display="flex">
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.free.point1")}
-              </ListItem>
-              <ListItem display="flex">
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.free.point2")}
-              </ListItem>
-            </List>
+              <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
+                <ListItem display="flex">
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.free.point1")}
+                </ListItem>
+                <ListItem display="flex">
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.free.point2")}
+                </ListItem>
+              </List>
+            </div>
             <Button
               as={RouterLink}
               to="/"
@@ -171,44 +174,47 @@ export const Pricing = () => {
             flexGrow={1}
             backgroundColor="white"
             position="relative"
+            justifyContent="space-between"
           >
-            {user?.subscription === MONTHLY && (
-              <Badge
-                colorScheme="red"
-                width="100px"
-                position="absolute"
-                top="8px"
-                left="8px"
+            <div>
+              {user?.subscription === MONTHLY && (
+                <Badge
+                  colorScheme="red"
+                  width="100px"
+                  position="absolute"
+                  top="8px"
+                  left="8px"
+                >
+                  {t("pricing.activePlan")}
+                </Badge>
+              )}
+              <Text
+                fontSize="sm"
+                textTransform="uppercase"
+                fontWeight="bold"
+                color="#D00"
               >
-                {t("pricing.activePlan")}
-              </Badge>
-            )}
-            <Text
-              fontSize="sm"
-              textTransform="uppercase"
-              fontWeight="bold"
-              color="#D00"
-            >
-              {t("pricing.monthly.header")}
-            </Text>
-            <Text fontSize={"3xl"}>${monthPlan?.amount}</Text>
+                {t("pricing.monthly.header")}
+              </Text>
+              <Text fontSize={"3xl"}>${monthPlan?.amount}</Text>
 
-            <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
+              <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
 
-            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
-              <ListItem display={"flex"}>
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.monthly.point1")}
-              </ListItem>
-              <ListItem display="flex">
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.monthly.point2")}
-              </ListItem>
-              <ListItem display="flex">
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.monthly.point3")}
-              </ListItem>
-            </List>
+              <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
+                <ListItem display={"flex"}>
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.monthly.point1")}
+                </ListItem>
+                <ListItem display="flex">
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.monthly.point2")}
+                </ListItem>
+                <ListItem display="flex">
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.monthly.point3")}
+                </ListItem>
+              </List>
+            </div>
             <Flex gap={2}>
               {!user && (
                 <Button
@@ -266,42 +272,45 @@ export const Pricing = () => {
             flexGrow={1}
             backgroundColor="white"
             position="relative"
+            justifyContent="space-between"
           >
-            {user?.subscription === ANNUAL && (
-              <Badge
-                colorScheme="red"
-                width="100px"
-                position="absolute"
-                top="8px"
-                left="8px"
+            <div>
+              {user?.subscription === ANNUAL && (
+                <Badge
+                  colorScheme="red"
+                  width="100px"
+                  position="absolute"
+                  top="8px"
+                  left="8px"
+                >
+                  {t("pricing.activePlan")}
+                </Badge>
+              )}
+              <Text
+                fontSize="sm"
+                textTransform="uppercase"
+                fontWeight="bold"
+                color="#D00"
               >
-                {t("pricing.activePlan")}
-              </Badge>
-            )}
-            <Text
-              fontSize="sm"
-              textTransform="uppercase"
-              fontWeight="bold"
-              color="#D00"
-            >
-              {t("pricing.annual.header")}
-            </Text>
-            <Text fontSize={"3xl"}>${annualPlan?.amount}</Text>
-            <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
-            <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
-              <ListItem display="flex">
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.annual.point1")}
-              </ListItem>
-              <ListItem display={"flex"}>
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.annual.point2")}
-              </ListItem>
-              <ListItem display={"flex"}>
-                <ListIcon as={CheckIcon} color="#D00" mt={1} />
-                {t("pricing.annual.point3")}
-              </ListItem>
-            </List>
+                {t("pricing.annual.header")}
+              </Text>
+              <Text fontSize={"3xl"}>${annualPlan?.amount}</Text>
+              <Divider color="rgba(33, 51, 63, 0.15)" my={5} />
+              <List fontWeight="semibold" fontSize="sm" textAlign="left" mb={8}>
+                <ListItem display="flex">
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.annual.point1")}
+                </ListItem>
+                <ListItem display={"flex"}>
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.annual.point2")}
+                </ListItem>
+                <ListItem display={"flex"}>
+                  <ListIcon as={CheckIcon} color="#D00" mt={1} />
+                  {t("pricing.annual.point3")}
+                </ListItem>
+              </List>
+            </div>
             <Flex gap={2}>
               {!user && (
                 <Button

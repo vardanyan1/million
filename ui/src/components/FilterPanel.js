@@ -189,7 +189,11 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
 
   const isFreePlan = !user || [FREE, null].includes(user?.subscription)
 
-  const originAirportOptions = originAirportsQuery.data.map((airport) => {
+  const sortedOriginAirports = originAirportsQuery.data.sort((a, b) =>
+    a.name.localeCompare(b.name)
+  )
+
+  const originAirportOptions = sortedOriginAirports.map((airport) => {
     return { value: airport.code, label: `${airport.name} (${airport.code})` }
   })
 
@@ -199,11 +203,13 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
     }
   }, [originAirportOptions, from, onChange])
 
-  const destinationAirportOptions = destinationAirportsQuery.data.map(
-    (airport) => {
-      return { value: airport.code, label: `${airport.name} (${airport.code})` }
-    }
+  const sortedAirports = destinationAirportsQuery.data.sort((a, b) =>
+    a.name.localeCompare(b.name)
   )
+
+  const destinationAirportOptions = sortedAirports.map((airport) => {
+    return { value: airport.code, label: `${airport.name} (${airport.code})` }
+  })
 
   const allowedDates = flightDatesQuery.data.map(({ date }) => {
     return new Date(date)
