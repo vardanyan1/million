@@ -110,17 +110,20 @@ const Alerts = () => {
             >
               <Thead>
                 <Tr boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)">
-                  <Th textTransform="none" p={4} w={"22%"}>
+                  <Th textTransform="none" p={4} w={"20%"}>
                     {t("alerts.itinerary")}
                   </Th>
-                  <Th textTransform="none" p={4} w={"22%"}>
+                  <Th textTransform="none" p={4} w={"20%"}>
                     {t("alerts.dateRange")}
                   </Th>
-                  <Th textTransform="none" p={4} w={"22%"}>
+                  <Th textTransform="none" p={4} w={"20%"}>
                     {t("alerts.class")}
                   </Th>
-                  <Th textTransform="none" p={4} w={"22%"}>
+                  <Th textTransform="none" p={4} w={"18%"}>
                     {t("alerts.program")}
+                  </Th>
+                  <Th textTransform="none" p={4} w={"14%"}>
+                    {t("alerts.status")}
                   </Th>
                   <Th textTransform="none" p={2}></Th>
                   <Th textTransform="none" p={2}></Th>
@@ -160,7 +163,8 @@ const Alerts = () => {
                       </Td>
                       <Td p={4}>{flightClasses.join(", ")}</Td>
                       <Td p={4}>{programs.join(", ")}</Td>
-                      <Td p={2}>
+                      <Td p={4}>Pending</Td>
+                      <Td p={2} textAlign="center">
                         <DeleteIcon
                           cursor="pointer"
                           boxSize={5}

@@ -39,14 +39,15 @@ const DatePickerInput = forwardRef((props, ref) => {
         borderRadius={12}
         _focus={{ border: "1px solid black", boxShadow: "none" }}
         border="1px solid black"
-        borderColor={"gray.200"}
+        borderColor="gray.200"
         py={1}
         px={3}
+        fontSize="14px"
       />
       <ChevronDownIcon
-        boxSize={5}
+        boxSize={4}
         position="absolute"
-        right="4"
+        right="3"
         height="100%"
       />
     </Flex>
@@ -162,7 +163,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
           {t("alertRouteModal.header")}
         </Heading>
       </Flex>
-      <Text mb={4} fontSize="md" align="center">
+      <Text mb={4} fontSize="md">
         {route?.origin.name + " (" + route?.origin.code + ")"}{" "}
         <ArrowForwardIcon verticalAlign={-2} />{" "}
         {route?.destination.name + " (" + route?.destination.code + ")"}
@@ -211,7 +212,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
           </Box>
         </Stack>
         <Stack gap={3} direction="row" mb={9}>
-          <Box w={"50%"}>
+          <Box w="50%">
             <FormControl mb={3} isInvalid={!!errors?.economy}>
               <Controller
                 control={control}
@@ -307,7 +308,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
         <Text fontSize={"xs"} mb={3}>
           Preferred Program
         </Text>
-        <FormControl mb={3} isInvalid={!!errors?.qantasFF}>
+        {/* <FormControl mb={3} isInvalid={!!errors?.qantasFF}>
           <Controller
             control={control}
             name="qantasFF"
@@ -328,7 +329,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
             }}
           />
           <FormErrorMessage>{errors?.qantasFF?.message}</FormErrorMessage>
-        </FormControl>
+        </FormControl> */}
         <FormControl mb={7} isInvalid={!!errors?.virginVelocity}>
           <Controller
             control={control}
@@ -338,8 +339,9 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
                 <Checkbox
                   onChange={onChange}
                   ref={ref}
-                  isChecked={value}
-                  colorScheme={"red"}
+                  isChecked={true}
+                  colorScheme="red"
+                  isDisabled={true}
                 >
                   <Text fontSize="sm" fontWeight="semibold">
                     Virgin Velocity
