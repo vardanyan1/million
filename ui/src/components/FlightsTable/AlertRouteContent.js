@@ -42,7 +42,7 @@ const DatePickerInput = forwardRef((props, ref) => {
         borderColor="gray.200"
         py={1}
         px={3}
-        fontSize="14px"
+        fontSize="12px"
       />
       <ChevronDownIcon
         boxSize={4}
@@ -141,7 +141,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
         position: "bottom-right",
         title: t(
           isNew
-            ? "alertRouteModal.newToastError"
+            ? "alertRouteModal.createToastError"
             : "alertRouteModal.editToastError"
         ),
         status: "error",
@@ -179,6 +179,9 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
               selected={new Date(fromDate)}
               onChange={(date) => {
                 setFromDate(format(date, "yyyy-MM-dd"))
+                if (new Date(toDate) < date) {
+                  setToDate(format(date, "yyyy-MM-dd"))
+                }
               }}
               selectsStart
               startDate={new Date(fromDate)}
@@ -186,7 +189,6 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
               customInput={<DatePickerInput />}
               dateFormat="EEE, dd MMMM"
               minDate={new Date()}
-              // renderDayContents={renderDayContents}
               calendarContainer={CustomCalendarContainer}
             />
           </Box>
@@ -205,8 +207,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
               endDate={new Date(toDate)}
               customInput={<DatePickerInput />}
               dateFormat="EEE, dd MMMM"
-              minDate={new Date()}
-              // renderDayContents={renderDayContents}
+              minDate={new Date(fromDate)}
               calendarContainer={CustomCalendarContainer}
             />
           </Box>
