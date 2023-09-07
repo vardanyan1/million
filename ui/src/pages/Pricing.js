@@ -16,7 +16,11 @@ import {
   ListIcon,
   Badge,
 } from "@chakra-ui/react"
-import { getPricingPlans, createCheckoutSession } from "../services/api"
+import {
+  getPricingPlans,
+  createCheckoutSession,
+  cancelSubscription,
+} from "../services/api"
 import Menu from "../components/Menu"
 import Footer from "../components/Footer"
 import SubscriptionPopup from "../components/SubscriptionPopup"
@@ -36,8 +40,13 @@ export const Pricing = () => {
     queryFn: getPricingPlans,
     initialData: [],
   })
+
   const { mutateAsync: checkoutSessionMutation } = useMutation({
     mutationFn: createCheckoutSession,
+  })
+
+  const { mutateAsync: cancelSubscriptionMutation } = useMutation({
+    mutationFn: cancelSubscription,
   })
 
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false)
@@ -54,8 +63,20 @@ export const Pricing = () => {
     setIsCancelPopupOpen(false)
   }
 
-  const handleCancelConfirm = () => {
-    setIsCancelPopupOpen(false)
+  const handleCancelConfirm = async () => {
+    if (user) {
+      try {
+        await cancelSubscriptionMutation({
+          queryKey: ["cancelSubscription", user.id],
+        })
+
+        setIsCancelPopupOpen(false)
+
+        navigate("/")
+      } catch (error) {
+        console.error("Error canceling subscription:", error)
+      }
+    }
   }
 
   const handleSwitchClick = (plan) => {

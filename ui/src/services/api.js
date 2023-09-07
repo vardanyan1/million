@@ -162,6 +162,12 @@ export const getCheckoutResult = async ({ queryKey }) => {
   return response.data
 }
 
+export const cancelSubscription = async ({ queryKey }) => {
+  const [_, userId] = queryKey
+  const response = await API.post(`/users/${userId}/cancel_subscription`)
+  return response.data
+}
+
 export const getPricingPlans = async () => {
   const response = await API.get(`/plans`)
   return response.data
