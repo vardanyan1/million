@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
 from djoser import views
-from djstripe.models import Customer, Plan, Price, Session
+from djstripe.models import Customer, Plan, Price, Session, Subscription
 from djstripe import settings as djstripe_settings
 
 from flight_rewards.flights import NOTIFICATION_STATUS
@@ -212,6 +212,23 @@ class UserViewSet(views.UserViewSet):
             'session_payment_status': session.payment_status
         }
         return Response(data)
+
+    @action(detail=True, methods=['POST'])
+    def cancel_subscription(self, request, id=None):
+        user = self.get_object()  # Get the user instance based on the id passed in the URL
+        customer = Customer.objects.get(subscriber=user)
+
+        subscription = customer.valid_subscriptions.order_by('created').last()
+        if not subscription:
+            return Response({"error": "No active subscription found for this user"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Cancel the subscription using dj-stripe
+        subscription_obj = subscription.api_retrieve()  # Get the stripe object
+        subscription_obj.cancel_at_period_end = True  # Cancel the subscription at the end of the current period
+        subscription_obj.save()
+
+        return Response({"success": "Subscription will be cancelled at the end of the current period"})
 
 
 class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
