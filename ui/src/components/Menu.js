@@ -1,7 +1,7 @@
 import { Text, Stack, Image, Flex, Show, Button, Box } from "@chakra-ui/react"
 import { useTranslation } from "react-i18next"
 
-import logo from "../img/logo.svg"
+import logo from "../img/reward_flights_logo.svg"
 import { ReactComponent as AllRewardsMenuIcon } from "../img/all_rewards_menu_icon.svg"
 import { ReactComponent as AlertMenuIcon } from "../img/alert_menu_icon.svg"
 import { ReactComponent as SettingsMenuIcon } from "../img/settings_menu_icon.svg"

@@ -16,7 +16,12 @@ import {
   ListIcon,
   Badge,
 } from "@chakra-ui/react"
-import { getPricingPlans, createCheckoutSession } from "../services/api"
+import {
+  getPricingPlans,
+  createCheckoutSession,
+  cancelSubscription,
+  me,
+} from "../services/api"
 import Menu from "../components/Menu"
 import Footer from "../components/Footer"
 import SubscriptionPopup from "../components/SubscriptionPopup"
@@ -28,7 +33,8 @@ const { MONTH, YEAR } = PRICE_INTERVAL
 
 export const Pricing = () => {
   const [plan, setPlan] = useState()
-  const { user } = useAuthContext()
+  const { user, setUser } = useAuthContext()
+  const [isProcessing, setIsProcessing] = useState(false)
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: pricingPlans } = useQuery({
@@ -38,6 +44,10 @@ export const Pricing = () => {
   })
   const { mutateAsync: checkoutSessionMutation } = useMutation({
     mutationFn: createCheckoutSession,
+  })
+
+  const { mutateAsync: cancelSubscriptionMutation } = useMutation({
+    mutationFn: cancelSubscription,
   })
 
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false)
@@ -54,11 +64,35 @@ export const Pricing = () => {
     setIsCancelPopupOpen(false)
   }
 
-  const handleCancelConfirm = () => {
-    setIsCancelPopupOpen(false)
+  const handleCancelConfirm = async () => {
+    if (user) {
+      try {
+        setIsProcessing(true)
+
+        await cancelSubscriptionMutation({
+          queryKey: ["cancelSubscription", user.id],
+        })
+
+        setTimeout(async () => {
+          const updatedUser = await me()
+
+          if (updatedUser) {
+            setUser(updatedUser)
+          }
+
+          setIsCancelPopupOpen(false)
+          setIsProcessing(false)
+
+          navigate("/")
+        }, 2000)
+      } catch (error) {
+        console.error("Error canceling subscription:", error)
+        setIsProcessing(false)
+      }
+    }
   }
 
-  const handleSwitchClick = (plan) => {
+  const handleSubscribeClick = (plan) => {
     setPlan(plan)
     setIsSwitchPopupOpen(true)
   }
@@ -67,7 +101,7 @@ export const Pricing = () => {
     setIsSwitchPopupOpen(false)
   }
 
-  const handleSwitchConfirm = async (plan) => {
+  const handleSubscribeConfirm = async (plan) => {
     if (plan) {
       const response = await checkoutSessionMutation({
         interval: plan,
@@ -114,17 +148,20 @@ export const Pricing = () => {
             justifyContent="space-between"
           >
             <div>
-              {(user?.subscription === FREE || user?.subscription === null) && (
-                <Badge
-                  colorScheme="red"
-                  width="100px"
-                  position="absolute"
-                  top="8px"
-                  left="8px"
-                >
-                  {t("pricing.activePlan")}
-                </Badge>
-              )}
+              {user &&
+                (user.cancel_at_period_end ||
+                  user.subscription === FREE ||
+                  user.subscription === null) && (
+                  <Badge
+                    colorScheme="red"
+                    width="100px"
+                    position="absolute"
+                    top="8px"
+                    left="8px"
+                  >
+                    {t("pricing.activePlan")}
+                  </Badge>
+                )}
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
@@ -177,17 +214,19 @@ export const Pricing = () => {
             justifyContent="space-between"
           >
             <div>
-              {user?.subscription === MONTHLY && (
-                <Badge
-                  colorScheme="red"
-                  width="100px"
-                  position="absolute"
-                  top="8px"
-                  left="8px"
-                >
-                  {t("pricing.activePlan")}
-                </Badge>
-              )}
+              {user &&
+                !user.cancel_at_period_end &&
+                user.subscription === MONTHLY && (
+                  <Badge
+                    colorScheme="red"
+                    width="100px"
+                    position="absolute"
+                    top="8px"
+                    left="8px"
+                  >
+                    {t("pricing.activePlan")}
+                  </Badge>
+                )}
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
@@ -231,31 +270,48 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {user && user.subscription !== MONTHLY && (
+              {user && user.cancel_at_period_end && (
                 <Button
                   w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={() => handleSwitchClick(MONTH)}
+                  textTransform={"uppercase"}
+                  onClick={() => handleSubscribeClick(MONTH)}
                   color="white"
                 >
-                  {t("login.switch")}
+                  {t("login.resubscribe")}
                 </Button>
               )}
 
-              {user && user.subscription === MONTHLY && (
-                <Button
-                  w="100%"
-                  mt="auto"
-                  backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={handleCancelClick}
-                  color="white"
-                >
-                  {t("login.cancel")}
-                </Button>
-              )}
+              {user &&
+                user.subscription === MONTHLY &&
+                !user.cancel_at_period_end && (
+                  <Button
+                    w="100%"
+                    mt="auto"
+                    backgroundColor="#D00"
+                    textTransform="uppercase"
+                    onClick={handleCancelClick}
+                    color="white"
+                  >
+                    {t("login.cancel")}
+                  </Button>
+                )}
+
+              {user &&
+                user.subscription !== MONTHLY &&
+                !user.cancel_at_period_end && (
+                  <Button
+                    w="100%"
+                    mt="auto"
+                    backgroundColor="#D00"
+                    textTransform="uppercase"
+                    onClick={() => handleSubscribeClick(MONTH)}
+                    color="white"
+                  >
+                    {t("login.switch")}
+                  </Button>
+                )}
             </Flex>
           </Flex>
 
@@ -275,17 +331,19 @@ export const Pricing = () => {
             justifyContent="space-between"
           >
             <div>
-              {user?.subscription === ANNUAL && (
-                <Badge
-                  colorScheme="red"
-                  width="100px"
-                  position="absolute"
-                  top="8px"
-                  left="8px"
-                >
-                  {t("pricing.activePlan")}
-                </Badge>
-              )}
+              {user &&
+                !user.cancel_at_period_end &&
+                user?.subscription === ANNUAL && (
+                  <Badge
+                    colorScheme="red"
+                    width="100px"
+                    position="absolute"
+                    top="8px"
+                    left="8px"
+                  >
+                    {t("pricing.activePlan")}
+                  </Badge>
+                )}
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
@@ -327,30 +385,48 @@ export const Pricing = () => {
                 </Button>
               )}
 
-              {user && user.subscription !== ANNUAL && (
+              {user && user.cancel_at_period_end && (
                 <Button
                   w="100%"
                   mt="auto"
                   backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={() => handleSwitchClick(YEAR)}
+                  textTransform={"uppercase"}
+                  onClick={() => handleSubscribeClick(YEAR)}
                   color="white"
                 >
-                  {t("login.switch")}
+                  {t("login.resubscribe")}
                 </Button>
               )}
-              {user && user?.subscription === ANNUAL && (
-                <Button
-                  w="100%"
-                  mt="auto"
-                  backgroundColor="#D00"
-                  textTransform="uppercase"
-                  onClick={handleCancelClick}
-                  color="white"
-                >
-                  {t("login.cancel")}
-                </Button>
-              )}
+
+              {user &&
+                user.subscription === ANNUAL &&
+                !user.cancel_at_period_end && (
+                  <Button
+                    w="100%"
+                    mt="auto"
+                    backgroundColor="#D00"
+                    textTransform="uppercase"
+                    onClick={handleCancelClick}
+                    color="white"
+                  >
+                    {t("login.cancel")}
+                  </Button>
+                )}
+
+              {user &&
+                user.subscription !== ANNUAL &&
+                !user.cancel_at_period_end && (
+                  <Button
+                    w="100%"
+                    mt="auto"
+                    backgroundColor="#D00"
+                    textTransform="uppercase"
+                    onClick={() => handleSubscribeClick(YEAR)}
+                    color="white"
+                  >
+                    {t("login.switch")}
+                  </Button>
+                )}
             </Flex>
           </Flex>
         </Stack>
@@ -360,15 +436,16 @@ export const Pricing = () => {
           onClose={handleCancelClose}
           onConfirm={handleCancelConfirm}
           header="Cancel Subscription"
-          body="Are you sure you want to cancel your subscription?"
+          body={t("subscription.cancellation.text")}
           type="cancel"
+          isProcessing={isProcessing}
         />
         <SubscriptionPopup
           isOpen={isSwitchPopupOpen}
           onClose={handleSwitchCancel}
-          onConfirm={handleSwitchConfirm}
+          onConfirm={handleSubscribeConfirm}
           header="Switch Subscription"
-          body="The current plan remains in place until the next billing cycle, at which point the account will be switched over."
+          body={t("subscription.switch.text")}
           type="switch"
           plan={plan}
         />
