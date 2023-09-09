@@ -8,6 +8,7 @@ import {
   AlertDialogOverlay,
   Button,
 } from "@chakra-ui/react"
+import { useTranslation } from "react-i18next"
 
 const SubscriptionPopup = ({
   isOpen,
@@ -17,7 +18,10 @@ const SubscriptionPopup = ({
   body,
   type,
   plan,
+  isProcessing = false,
 }) => {
+  const { t } = useTranslation()
+
   const handleConfirmation = () => {
     if (type === "cancel") {
       onConfirm()
@@ -30,20 +34,24 @@ const SubscriptionPopup = ({
   return (
     <AlertDialog isOpen={isOpen} onClose={onClose} isCentered>
       <AlertDialogOverlay>
-        <AlertDialogContent>
+        <AlertDialogContent maxWidth="lg">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {header}
           </AlertDialogHeader>
           <AlertDialogBody>{body}</AlertDialogBody>
-          <AlertDialogFooter>
-            <Button onClick={onClose}>No</Button>
+          <AlertDialogFooter justifyContent="center">
+            <Button onClick={onClose} textTransform="uppercase">
+              {t("subscription.cancellation.cancel.button")}
+            </Button>
             <Button
               backgroundColor="#D00"
               color="white"
               onClick={handleConfirmation}
               ml={3}
+              textTransform="uppercase"
+              isDisabled={isProcessing}
             >
-              Yes
+              {t("subscription.cancellation.confirm.button")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
