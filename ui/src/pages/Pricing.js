@@ -22,6 +22,7 @@ import {
   cancelSubscription,
   me,
 } from "../services/api"
+import { format, parseISO } from "date-fns"
 import Menu from "../components/Menu"
 import Footer from "../components/Footer"
 import SubscriptionPopup from "../components/SubscriptionPopup"
@@ -147,11 +148,9 @@ export const Pricing = () => {
             position="relative"
             justifyContent="space-between"
           >
-            <div>
+            <Box mt="8px">
               {user &&
-                (user.cancel_at_period_end ||
-                  user.subscription === FREE ||
-                  user.subscription === null) && (
+                (user.subscription === FREE || user.subscription === null) && (
                   <Badge
                     colorScheme="red"
                     width="100px"
@@ -162,11 +161,13 @@ export const Pricing = () => {
                     {t("pricing.activePlan")}
                   </Badge>
                 )}
+
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
                 fontWeight="bold"
                 color="#D00"
+                mt={user && user.subscription !== FREE ? "18px" : 0}
               >
                 {t("pricing.free.header")}
               </Text>
@@ -184,7 +185,7 @@ export const Pricing = () => {
                   {t("pricing.free.point2")}
                 </ListItem>
               </List>
-            </div>
+            </Box>
             <Button
               as={RouterLink}
               to="/"
@@ -213,25 +214,32 @@ export const Pricing = () => {
             position="relative"
             justifyContent="space-between"
           >
-            <div>
-              {user &&
-                !user.cancel_at_period_end &&
-                user.subscription === MONTHLY && (
-                  <Badge
-                    colorScheme="red"
-                    width="100px"
-                    position="absolute"
-                    top="8px"
-                    left="8px"
-                  >
-                    {t("pricing.activePlan")}
-                  </Badge>
-                )}
+            <Box mt="8px">
+              {user && user.subscription === MONTHLY && (
+                <Badge
+                  colorScheme="red"
+                  width="100px"
+                  position="absolute"
+                  top="8px"
+                  left="8px"
+                >
+                  {t("pricing.activePlan")}
+                </Badge>
+              )}
+
+              {user && user?.subscription === MONTHLY && (
+                <Text colorScheme="red" fontSize="12px" fontStyle="italic">
+                  ({t("login.cancels")}{" "}
+                  {format(parseISO(user.current_period_end), "dd MMM yyyy")})
+                </Text>
+              )}
+
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
                 fontWeight="bold"
                 color="#D00"
+                mt={user && user.subscription !== MONTHLY ? "18px" : 0}
               >
                 {t("pricing.monthly.header")}
               </Text>
@@ -253,7 +261,7 @@ export const Pricing = () => {
                   {t("pricing.monthly.point3")}
                 </ListItem>
               </List>
-            </div>
+            </Box>
             <Flex gap={2}>
               {!user && (
                 <Button
@@ -330,25 +338,32 @@ export const Pricing = () => {
             position="relative"
             justifyContent="space-between"
           >
-            <div>
-              {user &&
-                !user.cancel_at_period_end &&
-                user?.subscription === ANNUAL && (
-                  <Badge
-                    colorScheme="red"
-                    width="100px"
-                    position="absolute"
-                    top="8px"
-                    left="8px"
-                  >
-                    {t("pricing.activePlan")}
-                  </Badge>
-                )}
+            <Box mt="8px">
+              {user && user?.subscription === ANNUAL && (
+                <Badge
+                  colorScheme="red"
+                  width="100px"
+                  position="absolute"
+                  top="8px"
+                  left="8px"
+                >
+                  {t("pricing.activePlan")}
+                </Badge>
+              )}
+
+              {user && user.subscription === ANNUAL && (
+                <Text colorScheme="red" fontSize="12px" fontStyle="italic">
+                  ({t("login.cancels")}{" "}
+                  {format(parseISO(user.current_period_end), "dd MMM yyyy")})
+                </Text>
+              )}
+
               <Text
                 fontSize="sm"
                 textTransform="uppercase"
                 fontWeight="bold"
                 color="#D00"
+                mt={user && user.subscription !== ANNUAL ? "18px" : 0}
               >
                 {t("pricing.annual.header")}
               </Text>
@@ -368,7 +383,7 @@ export const Pricing = () => {
                   {t("pricing.annual.point3")}
                 </ListItem>
               </List>
-            </div>
+            </Box>
             <Flex gap={2}>
               {!user && (
                 <Button

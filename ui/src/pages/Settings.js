@@ -15,6 +15,7 @@ import {
 import { useForm } from "react-hook-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
+import { format, parseISO } from "date-fns"
 
 import PasswordInput from "../components/PasswordInput"
 
@@ -158,8 +159,12 @@ export default function Settings() {
             <Flex alignItems={"center"} justifyContent="center">
               <Text mr={2}>Active Plan:</Text>
               <Badge fontSize="md" colorScheme="red">
-                {user.subscription}
+                {user?.subscription}
               </Badge>
+              <Text fontStyle="italic" fontSize="14px" marginLeft="10px">
+                ({t("login.cancels")}{" "}
+                {format(parseISO(user?.current_period_end), "dd MMM yyyy")})
+              </Text>
             </Flex>
             <Button
               type="submit"

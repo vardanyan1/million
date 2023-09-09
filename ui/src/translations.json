@@ -162,6 +162,7 @@
     "noAccountYet": "Don't have an account yet?",
     "signUp": "Create account",
     "cancel": "Cancel",
+    "cancels": "Cancels:",
     "resubscribe": "Resubscribe",
     "generalError": "Invalid username or password. Please try again.",
     "switch": "Switch"
