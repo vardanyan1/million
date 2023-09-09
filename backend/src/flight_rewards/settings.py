@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -50,16 +51,9 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'djoser',
-    # 'rest_framework.authtoken',
     'django_filters',
     'corsheaders',
     'djstripe',
-
-    # 'allauth',
-    # 'allauth.account',
-    # 'dj_rest_auth',
-    # 'dj_rest_auth.registration',
-
     'flight_rewards.flights'
 ]
 
@@ -188,6 +182,7 @@ AUTH_USER_MODEL = 'flights.User'
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
 }
 
 REST_FRAMEWORK = {
