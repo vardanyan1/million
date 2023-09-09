@@ -1,6 +1,7 @@
 """
 Flights app viewsets
 """
+import logging
 import stripe
 
 from django.db.models import Min
@@ -14,17 +15,33 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
+
 from djoser import views
-from djstripe.models import Customer, Plan, Price, Session, Subscription
+from djstripe.models import (
+    Customer,
+    Plan,
+    Price,
+    Session
+)
 from djstripe import settings as djstripe_settings
 
 from flight_rewards.flights import NOTIFICATION_STATUS
-from flight_rewards.flights.models import Airport, Contact, AvailabilityNotification, User, Flight
-from flight_rewards.flights.serializers import (
-    AirportSerializer, ContactSerializer,
-    AvailabilityNotificationSerializer, SubscriptionPlanSerializer, FlightDepartureDateSerializer, FlightSerializer
+from flight_rewards.flights.models import (
+    Airport,
+    Contact,
+    AvailabilityNotification,
+    User,
+    Flight
 )
-import logging
+from flight_rewards.flights.serializers import (
+    AirportSerializer,
+    ContactSerializer,
+    AvailabilityNotificationSerializer,
+    SubscriptionPlanSerializer,
+    FlightDepartureDateSerializer,
+    FlightSerializer,
+    CurrentUserSerializer
+)
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -160,6 +177,12 @@ class UserFilterBackend(rest_filters.BaseFilterBackend):
 
 
 class UserViewSet(views.UserViewSet):
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = CurrentUserSerializer(instance)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['POST'])
     def checkout_session(self, request):
         user = request.user
@@ -225,10 +248,15 @@ class UserViewSet(views.UserViewSet):
 
         # Cancel the subscription using dj-stripe
         subscription_obj = subscription.api_retrieve()  # Get the stripe object
-        subscription_obj.cancel_at_period_end = True  # Cancel the subscription at the end of the current period
-        subscription_obj.save()
+        subscription_obj.cancel_at_period_end = True  # Set the flag
+        updated_subscription = subscription_obj.save()  # Save the update
 
-        return Response({"success": "Subscription will be cancelled at the end of the current period"})
+        # Check the response
+        if updated_subscription.cancel_at_period_end:
+            return Response({"success": "Subscription will be cancelled at the end of the current period"})
+        else:
+            return Response({"error": "Failed to schedule subscription cancellation"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
@@ -238,18 +266,20 @@ class SubscriptionPlanViewSet(viewsets.ReadOnlyModelViewSet):
 
 class AvailabilityNotificationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    queryset = AvailabilityNotification.objects.all()
     serializer_class = AvailabilityNotificationSerializer
     filter_backends = [UserFilterBackend]
 
+    def get_queryset(self):
+        return AvailabilityNotification.objects.filter(status=NOTIFICATION_STATUS.PENDING.value)
+
     def create(self, request, *args, **kwargs):
         user: User = request.user
-        if user.notifications.count() >= user.alerts_limit:  # Changed == to >= for safety
+        # Count only "pending" notifications
+        if user.notifications.filter(status=NOTIFICATION_STATUS.PENDING.value).count() >= user.alerts_limit:
             raise APIException({"reason": "MAX amount of alerts reached"})
 
         mutable_data = request.data.copy()  # Create a mutable copy
         mutable_data['user'] = user.id  # Set the user id
-        # No need to rename 'destination' and 'origin' if they are already correct
 
         serializer = self.get_serializer(data=mutable_data)
         serializer.is_valid(raise_exception=True)
@@ -273,7 +303,7 @@ class NotificationJobViewSet(viewsets.ViewSet):
                 'Destination Air': notification.destination.code,
                 'Start Date': notification.start_date,
                 'End Date': notification.end_date,
-                'Cabin': ','.join(notification.flight_classes), # This will work correctly now
+                'Cabin': ','.join(notification.flight_classes),
                 'Status': notification.status
             })
 
@@ -289,4 +319,3 @@ class NotificationJobViewSet(viewsets.ViewSet):
         AvailabilityNotification.objects.filter(id__in=ids).update(status=NOTIFICATION_STATUS.SENT)
 
         return Response({'message': 'Status updated successfully'}, status=status.HTTP_200_OK)
-
