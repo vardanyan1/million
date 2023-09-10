@@ -227,12 +227,14 @@ export const Pricing = () => {
                 </Badge>
               )}
 
-              {user && user?.subscription === MONTHLY && (
-                <Text colorScheme="red" fontSize="12px" fontStyle="italic">
-                  ({t("login.cancels")}{" "}
-                  {format(parseISO(user.current_period_end), "dd MMM yyyy")})
-                </Text>
-              )}
+              {user &&
+                user?.subscription === MONTHLY &&
+                user.cancel_at_period_end && (
+                  <Text colorScheme="red" fontSize="12px" fontStyle="italic">
+                    ({t("login.cancels")}{" "}
+                    {format(parseISO(user.current_period_end), "dd MMM yyyy")})
+                  </Text>
+                )}
 
               <Text
                 fontSize="sm"
@@ -351,12 +353,14 @@ export const Pricing = () => {
                 </Badge>
               )}
 
-              {user && user.subscription === ANNUAL && (
-                <Text colorScheme="red" fontSize="12px" fontStyle="italic">
-                  ({t("login.cancels")}{" "}
-                  {format(parseISO(user.current_period_end), "dd MMM yyyy")})
-                </Text>
-              )}
+              {user &&
+                user.subscription === ANNUAL &&
+                user.cancel_at_period_end && (
+                  <Text colorScheme="red" fontSize="12px" fontStyle="italic">
+                    ({t("login.cancels")}{" "}
+                    {format(parseISO(user.current_period_end), "dd MMM yyyy")})
+                  </Text>
+                )}
 
               <Text
                 fontSize="sm"

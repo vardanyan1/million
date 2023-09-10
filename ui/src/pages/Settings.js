@@ -161,10 +161,12 @@ export default function Settings() {
               <Badge fontSize="md" colorScheme="red">
                 {user?.subscription}
               </Badge>
-              <Text fontStyle="italic" fontSize="14px" marginLeft="10px">
-                ({t("login.cancels")}{" "}
-                {format(parseISO(user?.current_period_end), "dd MMM yyyy")})
-              </Text>
+              {user.cancel_at_period_end && (
+                <Text fontStyle="italic" fontSize="14px" marginLeft="10px">
+                  ({t("login.cancels")}{" "}
+                  {format(parseISO(user?.current_period_end), "dd MMM yyyy")})
+                </Text>
+              )}
             </Flex>
             <Button
               type="submit"
