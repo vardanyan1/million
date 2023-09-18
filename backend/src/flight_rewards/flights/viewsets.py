@@ -3,10 +3,12 @@ Flights app viewsets
 """
 import logging
 import stripe
+from django.core.mail import EmailMultiAlternatives
 
 from django.db.models import Min
 from django.conf import settings
 from django.db.models.functions import TruncDate
+from django.template.loader import render_to_string
 
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, filters as rest_filters, status
@@ -182,6 +184,25 @@ class UserViewSet(views.UserViewSet):
         instance = self.get_object()
         serializer = CurrentUserSerializer(instance)
         return Response(serializer.data)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        user = serializer.save()
+
+        # Render the HTML content
+        html_content = render_to_string("registration_thank_you_email.html", {'user': user})
+        text_content = "Thank you for registering with us."
+
+        # Create email
+        email = EmailMultiAlternatives(
+            "Welcome to Reward Flights!",
+            text_content,
+            "noreply@rewardflights.io",
+            [user.email]
+        )
+        email.attach_alternative(html_content, "text/html")
+
+        # Send email
+        email.send()
 
     @action(detail=False, methods=['POST'])
     def checkout_session(self, request):

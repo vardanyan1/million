@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Flight Rewards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .content {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">Hey {{ user.first_name }}, thanks for signing up to Reward Flights!</h1>
+        <div class="content">
+            <p>If you’ve successfully registered a card via Stripe, you should be able to search flights up to a year in advance and create alert notifications based on availability.</p>
+
+            <p>- Monthly subscribers get x5 active alerts</p>
+            <p>- Annual subscribers get x25 active alerts</p>
+
+            <p>For help, support, or questions including route requests, please contact <a href="mailto:support@rewardflights.io">support@rewardflights.io</a></p>
+        </div>
+    </div>
+</body>
+</html>
