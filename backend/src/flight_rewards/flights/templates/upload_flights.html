@@ -1,6 +1,23 @@
-<h1>Upload Flights Data</h1>
-<form action="/flights/upload" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Flights Data</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Upload Flights Data</h1>
+    <form action="/flights/upload" method="post" enctype="multipart/form-data" class="bg-light p-4 rounded">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.label_tag }} {{ form }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+</body>
+</html>
