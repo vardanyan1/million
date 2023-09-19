@@ -197,7 +197,7 @@ REST_FRAMEWORK = {
 }
 
 DOMAIN = os.environ.get('DOMAIN')
-SITE_NAME = "Rewards Flights"
+SITE_NAME = "Reward Flights"
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password-confirm/{uid}/{token}',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
