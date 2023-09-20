@@ -120,8 +120,8 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
-        # 'level': 'DEBUG',  # Set the logging level to DEBUG
+        # 'level': 'INFO',
+        'level': 'DEBUG',  # Set the logging level to DEBUG
 
     },
 }
