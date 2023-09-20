@@ -178,6 +178,9 @@ CORS_ORIGIN_WHITELIST = [
     'https://rewardflights.io',
     'https://170.64.192.200',
     'http://127.0.0.1:3000',
+    'http://rewardflights.io:8000',
+    'http://170.64.192.200:8000',
+
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
