@@ -34,7 +34,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '170.64.192.200',
-    'rewardflights.io'
+    'rewardflights.io',
+    'www.rewardflights.io'
 ]
 
 
