@@ -176,8 +176,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://rewardflights.io',
-    'https://170.64.192.200'
-    'http://127.0.0.1:3000'
+    'https://170.64.192.200',
+    'http://127.0.0.1:3000',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
