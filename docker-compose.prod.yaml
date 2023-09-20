@@ -20,7 +20,7 @@ services:
       context: ./ui
       dockerfile: Dockerfile.prod
       args:
-        REACT_APP_BACKEND_URL: 'http://170.64.192.200:8000/api'
+        REACT_APP_BACKEND_URL: 'http://rewardflights.io:8000/api'
     ports:
       - "80:80"
       - "443:443"
