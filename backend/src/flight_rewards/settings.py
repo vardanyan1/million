@@ -33,7 +33,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    '170.64.192.200'
+    '170.64.192.200',
+    'rewardflights.io',
+    'www.rewardflights.io'
 ]
 
 
@@ -70,6 +72,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'flight_rewards.urls'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 TEMPLATES = [
     {
@@ -116,8 +120,8 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'INFO',
-        # 'level': 'DEBUG',  # Set the logging level to DEBUG
+        # 'level': 'INFO',
+        'level': 'DEBUG',  # Set the logging level to DEBUG
 
     },
 }
@@ -169,7 +173,17 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'https://rewardflights.io',
+    'https://170.64.192.200',
+    'http://127.0.0.1:3000',
+    'http://rewardflights.io:8000',
+    'http://170.64.192.200:8000',
+
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
@@ -183,19 +197,19 @@ AUTH_USER_MODEL = 'flights.User'
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30)
 }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     )
 }
 
 DOMAIN = os.environ.get('DOMAIN')
-SITE_NAME = "Classic Flight Rewards"
+SITE_NAME = "Reward Flights"
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password-confirm/{uid}/{token}',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,

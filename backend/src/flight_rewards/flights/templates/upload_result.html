@@ -1,5 +1,23 @@
-{% if success %}
-Successfully Uploaded new Flights Data.
-{% else %}
-Error Uploading Data, keeping old one. Details: {{ error_message }}
-{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Result</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <a href="/flights/upload" class="btn btn-secondary mt-3">Back to Upload</a>
+</div>
+
+</body>
+</html>
