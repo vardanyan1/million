@@ -59,7 +59,10 @@ const Register = () => {
   const interval = searchParams.get("interval") || MONTH
 
   const onSubmit = async (values) => {
-    const fullPhoneNumber = `${countryCode}${values.phoneNumber || ""}`
+    const fullPhoneNumber = values.phoneNumber
+      ? `${countryCode}${values.phoneNumber}`
+      : ""
+
     try {
       const credentials = {
         email: values.email,
@@ -103,6 +106,15 @@ const Register = () => {
     value = "+" + value.substring(1).replace(/[+]/g, "")
 
     setCountryCode(value)
+  }
+
+  const handlePhoneNumber = (valueString, field) => {
+    const onlyNumbers = valueString.replace(/[^0-9]/g, "")
+
+    if (onlyNumbers.length > 15) {
+      return
+    }
+    field.onChange(onlyNumbers)
   }
 
   return (
@@ -197,10 +209,9 @@ const Register = () => {
                       {...field}
                       bg={"white"}
                       allowMouseWheel
-                      onChange={(valueString) => {
-                        const onlyNumbers = valueString.replace(/[^0-9]/g, "")
-                        field.onChange(onlyNumbers)
-                      }}
+                      onChange={(valueString) =>
+                        handlePhoneNumber(valueString, field)
+                      }
                     >
                       <NumberInputField ref={phoneNumberRef} />
                     </NumberInput>
