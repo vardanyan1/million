@@ -49,7 +49,7 @@ from flight_rewards.flights.serializers import (
 logger = logging.getLogger(__name__)
 
 
-stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class DestinationAirportFilterSet(filters.FilterSet):
