@@ -27,6 +27,10 @@ else
   echo "Creating superuser..."
   admin_status=$(python manage.py create_admin)
   echo "Superuser status: $admin_status"
+
+  echo "Collecting Static files..."
+  python manage.py collectstatic --no-input
+
   echo "Importing airports from 'flight_rewards/flights/fixtures/airport_codes.csv'..."
   python manage.py import_airports "flight_rewards/flights/fixtures/airport_codes.csv"
   echo "Airports imported successfully."
