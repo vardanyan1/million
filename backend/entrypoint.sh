@@ -19,14 +19,13 @@ echo "Add Stripe keys..."
 stripe_keys_status=$(python manage.py add_stripes_keys)
 echo "$stripe_keys_status"
 
-echo "Synchronizing Stripe models..."
-python manage.py djstripe_sync_models
-echo "Stripe models synchronized successfully."
-
 if echo "$stripe_keys_status" | grep -q "already exists"; then
   echo "Stripe keys already exist, skipping further operations."
 else
   echo "Stripe keys added successfully."
+  echo "Synchronizing Stripe models..."
+  python manage.py djstripe_sync_models
+  echo "Stripe models synchronized successfully."
 
   echo "Creating superuser..."
   admin_status=$(python manage.py create_admin)
