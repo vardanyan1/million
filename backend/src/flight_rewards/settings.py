@@ -216,15 +216,10 @@ DJOSER = {
     }
 }
 
-# Get environment variables
-STRIPE_LIVE_MODE = os.environ.get("STRIPE_LIVE_MODE", "True") == "True"  # This will return a boolean
-LIVE_API_KEY = os.environ.get("STRIPE_LIVE_SECRET_KEY", "<your default live key>")
-TEST_API_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your default test key>")
 
-# Set STRIPE_SECRET_KEY based on STRIPE_LIVE_MODE
-STRIPE_SECRET_KEY = LIVE_API_KEY if STRIPE_LIVE_MODE else TEST_API_KEY
-
-# Other settings
+STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_LIVE_SECRET_KEY", None)
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", None)
+STRIPE_LIVE_MODE = True
 DJSTRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
