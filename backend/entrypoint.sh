@@ -12,6 +12,9 @@ echo "Running migrate..."
 python manage.py migrate
 echo "Migration completed successfully."
 
+echo "Collecting Static files..."
+python manage.py collectstatic --no-input
+
 echo "Add Stripe keys..."
 stripe_keys_status=$(python manage.py add_stripes_keys)
 echo "$stripe_keys_status"
@@ -27,9 +30,6 @@ else
   echo "Creating superuser..."
   admin_status=$(python manage.py create_admin)
   echo "Superuser status: $admin_status"
-
-  echo "Collecting Static files..."
-  python manage.py collectstatic --no-input
 
   echo "Importing airports from 'flight_rewards/flights/fixtures/airport_codes.csv'..."
   python manage.py import_airports "flight_rewards/flights/fixtures/airport_codes.csv"
