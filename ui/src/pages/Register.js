@@ -32,6 +32,7 @@ const Register = () => {
   const location = useLocation()
   const [countryCode, setCountryCode] = useState("+61")
   const phoneNumberRef = useRef(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (countryCode && countryCode.length === 4) {
@@ -59,6 +60,8 @@ const Register = () => {
   const interval = searchParams.get("interval") || MONTH
 
   const onSubmit = async (values) => {
+    setLoading(true)
+
     const fullPhoneNumber = values.phoneNumber
       ? `${countryCode}${values.phoneNumber}`
       : ""
@@ -78,6 +81,8 @@ const Register = () => {
       await performLogin(credentials)
       const response = await checkoutSessionMutation({ interval })
       window.location.href = response.session_url
+
+      setLoading(false)
     } catch (error) {
       let message = t("register.generalError")
       const firstKey = Object.keys(error.response?.data)[0]
@@ -88,6 +93,8 @@ const Register = () => {
         type: "signupError",
         message,
       })
+
+      setLoading(false)
     }
   }
 
@@ -122,6 +129,8 @@ const Register = () => {
       direction={{ base: "column", lg: "row" }}
       minHeight="100vh"
       spacing={0}
+      className={loading ? "loading-cursor" : ""}
+      style={{ cursor: loading ? "progress" : "default" }}
     >
       <Menu />
       <Flex
