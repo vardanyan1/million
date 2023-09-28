@@ -24,6 +24,7 @@ import { signup, login, createCheckoutSession } from "../services/api"
 import { EMAIL_REGEX, PRICE_INTERVAL } from "../constants"
 import Menu from "../components/Menu"
 import PasswordInput from "../components/PasswordInput"
+import Loading from "../components/Loading"
 
 const { MONTH } = PRICE_INTERVAL
 
@@ -129,9 +130,12 @@ const Register = () => {
       direction={{ base: "column", lg: "row" }}
       minHeight="100vh"
       spacing={0}
-      className={loading ? "loading-cursor" : ""}
+      filter={loading ? "blur(10%)" : "none"}
+      pointerEvents={loading ? "none" : "auto"}
       style={{ cursor: loading ? "progress" : "default" }}
     >
+      {loading && <Loading />}
+
       <Menu />
       <Flex
         bg="#F7F7F9"

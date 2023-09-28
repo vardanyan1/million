@@ -125,7 +125,7 @@ export default function Login() {
             <Text fontSize={"sm"}>
               {t("login.noAccountYet")} {` `}
               <Text as="span" color="#D00" textDecoration={"underline"}>
-                <RouterLink to="/register">{t("login.signUp")}</RouterLink>
+                <RouterLink to="/pricing">{t("login.signUp")}</RouterLink>
               </Text>
             </Text>
           </form>
