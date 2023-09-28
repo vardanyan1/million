@@ -3,7 +3,11 @@ import loadingAnimation from "../img/loading_animation.svg"
 
 const Loading = () => {
   return (
-    <AbsoluteCenter justifyContent="center">
+    <AbsoluteCenter
+      backgroundColor="transparent"
+      justifyContent="center"
+      zIndex="999"
+    >
       <Image src={loadingAnimation} />
     </AbsoluteCenter>
   )
