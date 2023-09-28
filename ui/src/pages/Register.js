@@ -130,8 +130,8 @@ const Register = () => {
       direction={{ base: "column", lg: "row" }}
       minHeight="100vh"
       spacing={0}
-      filter={loading ? "blur(1px)" : ""}
-      pointerEvents={loading ? "none" : ""}
+      filter={loading ? "blur(10%)" : "none"}
+      pointerEvents={loading ? "none" : "auto"}
       style={{ cursor: loading ? "progress" : "default" }}
     >
       {loading && <Loading />}
