@@ -41,7 +41,7 @@
     "velocityBookTaxes": "+ taxes",
     "velocityBookButton": "BOOK",
     "avios": "avios",
-    "empty": "No reward flights found. Use the date picker to find the next available flights for this route. Dates with reward availability are in bold.",
+    "empty": "No reward flights found. Use the date picker to find the next available flights for this route. Coloured segments around the date represent reward availability.",
     "pointsLabel": "Min points required to travel this route in the lowest fare class found.",
     "maxAlertReached": "Max. alerts reached. Upgrade plan for more."
   },
@@ -143,8 +143,8 @@
     "addressSubheader": "IP Address Information and Other Information Collected Automatically",
     "addressParagraph1": "We may automatically receive and record information from your web browser when you interact with the Services, including your IP address and cookie information. This information is used for fighting spam/malware and also to facilitate collection of data concerning your interaction with the Services (e.g., what links you have clicked on).",
     "addressParagraph2": "Generally, the Services may automatically collect usage information, such as the number and frequency of visitors to the Site. We may use this data in aggregate form, that is, as a statistical measure, but not in a manner that would identify you personally. This type of aggregate data enables us and third parties authorized by us to figure out how often individuals use parts of the Services so that we can analyze and improve them.",
-    "emailSubheader": "Email Communications",
-    "emailParagraph1": "RewardFlights may send occasional promotional materials through email if you have signed up to our newsletter or explicitly provided your email address to us. You will have the option to opt-out of these emails by responding directly inside of the email itself.",
+    "emailSubheader": "Email and SMS Communications",
+    "emailParagraph1": "RewardFlights may send occasional promotional materials through email if you have signed up to our newsletter or explicitly provided your email address and mobile number to us. You will have the option to opt-out of these emails by responding directly inside of the email or SMS itself.",
     "advertSubheader": "Information Related to Advertising",
     "advertParagraph1": "To support and enhance the Services, we may serve affiliate links to various credit card organizations.",
     "choicesSubheader": "What Choices Do I Have Regarding My Information?",
@@ -184,7 +184,7 @@
   },
   "subscription": {
     "switch.text": "The current plan remains in place until the next billing cycle, at which point the account will be switched over.",
-    "cancellation.text": "You’re about to cancel your subscription. You’ll still have full access to search & alerts up until the end of the current billing cycle. Following that you’ll still be able to search up to 60 days but for alerts and searches up to a year advance, you’ll need to re-subscribe. Thank you!",
+    "cancellation.text": "You’re about to cancel your subscription. You’ll still have full access to search & alerts up until the end of the current billing cycle. Following that you’ll be able to search up to 60 days but for alerts and searches up to a year advance, you’ll need to re-subscribe. Thank you!",
     "cancellation.cancel.button": "Cancel",
     "cancellation.confirm.button": "Confirm"
   },
@@ -192,7 +192,7 @@
     "loading": "Loading"
   },
   "settings": {
-    "header": "Settings",
+    "header": "Account",
     "save": "Save Changes"
   },
   "resetPassword": {
