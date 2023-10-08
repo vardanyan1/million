@@ -41,6 +41,7 @@ import ResetPassword from "./pages/ResetPassword"
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm"
 import Pricing from "./pages/Pricing"
 import CheckoutResult from "./pages/CheckoutResult"
+import FlightDetail from "./components/FlightDetail"
 
 const resources = {
   en: {
@@ -108,7 +109,7 @@ const Layout = () => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout></Layout>,
+    element: <Layout />,
     children: [
       { index: true, element: <AllAvailability /> },
       {
@@ -174,6 +175,11 @@ const router = createBrowserRouter([
       {
         path: "/checkout_result",
         element: <CheckoutResult />,
+      },
+      {
+        path: "/flights",
+        element: <AllAvailability />,
+        children: [{ path: ":route", element: <FlightDetail /> }],
       },
       {
         path: "*",
