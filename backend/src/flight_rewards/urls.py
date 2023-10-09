@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
 from rest_framework import routers
 
 from flight_rewards.flights.viewsets import (
@@ -59,3 +62,6 @@ urlpatterns = [
     path('flights/upload_result', upload_result, name='upload_result'),
     path('stripe/', include('djstripe.urls', namespace='djstripe'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
