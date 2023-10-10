@@ -22,7 +22,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import { useQuery } from "@tanstack/react-query"
 import pickBy from "lodash/pickBy"
 import { isSameDay, isFuture, format, addMonths, isToday } from "date-fns"
-import { Link as RouterLink } from "react-router-dom"
+import { Link as RouterLink, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import { Select } from "./Select"
@@ -154,9 +154,11 @@ const buildGradientString = (availabilities) => {
 const FilterPanel = ({ from, to, date, onChange, user }) => {
   const { t } = useTranslation()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const params = useParams()
+  const route = params?.route?.split("-")[1]
 
   const originAirportsQuery = useQuery({
-    queryKey: ["originAirports"],
+    queryKey: ["originAirports", to?.value],
     queryFn: getOriginAirports,
     initialData: [],
   })
@@ -210,6 +212,16 @@ const FilterPanel = ({ from, to, date, onChange, user }) => {
   const destinationAirportOptions = sortedAirports.map((airport) => {
     return { value: airport.code, label: `${airport.name} (${airport.code})` }
   })
+
+  useEffect(() => {
+    if (destinationAirportOptions.length > 0 && !to && route) {
+      const existingDestinationValue = destinationAirportOptions.find(
+        (el) => el.value === route
+      )
+
+      existingDestinationValue && onChange({ to: existingDestinationValue })
+    }
+  }, [destinationAirportOptions, to, onChange, route])
 
   const allowedDates = flightDatesQuery.data.map(({ date }) => {
     return new Date(date)
