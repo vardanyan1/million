@@ -181,6 +181,10 @@ CORS_ORIGIN_WHITELIST = [
 
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'rewardflights.io',
+]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
