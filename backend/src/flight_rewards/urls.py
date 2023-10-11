@@ -58,8 +58,8 @@ urlpatterns = [
     path('api/', include('djoser.urls')),
     path('api/', include('djoser.urls.jwt')),
     path('api-auth/', include('rest_framework.urls')),
-    path('flights/upload', upload_flights, name='upload_flights'),
-    path('flights/upload_result', upload_result, name='upload_result'),
+    path('flights/upload/', upload_flights, name='upload_flights'),
+    path('flights/upload_result/', upload_result, name='upload_result'),
     path('stripe/', include('djstripe.urls', namespace='djstripe'))
 ]
 
