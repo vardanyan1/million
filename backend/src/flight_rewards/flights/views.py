@@ -3,6 +3,7 @@ from io import TextIOWrapper
 
 from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_protect
 
 from flight_rewards.flights.forms import UploadFileForm
 from flight_rewards.flights.services import import_flights_from_csv
@@ -11,6 +12,7 @@ from flight_rewards.flights.services import import_flights_from_csv
 logger = logging.getLogger(__name__)
 
 
+@csrf_protect
 def upload_flights(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -28,5 +30,6 @@ def upload_flights(request):
     return render(request, 'upload_flights.html', {'form': form})
 
 
+@csrf_protect
 def upload_result(request):
     return render(request, 'upload_result.html')
