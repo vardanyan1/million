@@ -7,8 +7,8 @@ import { ReactComponent as AlertMenuIcon } from "../img/alert_menu_icon.svg"
 import { ReactComponent as SettingsMenuIcon } from "../img/settings_menu_icon.svg"
 import { ReactComponent as LogoutMenuIcon } from "../img/logout_menu_icon.svg"
 import { ReactComponent as PriceMenuIcon } from "../img/price_menu_icon.svg"
-import reward_icon from "../img/reward_icon.png"
-import { Link, Link as RouterLink, useLocation } from "react-router-dom"
+import { ReactComponent as RewardIcon } from "../img/reward_icon.svg"
+import { Link as RouterLink, useLocation } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
 import { logout } from "../services/api"
 import { useAuthContext } from "../services/auth"
@@ -43,7 +43,7 @@ const Menu = () => {
 
   const isUserPresent = !!user
   const showShowLoginButton = !isUserPresent && location.pathname !== "/login"
-console.log(reward_icon);
+  
   return (
     <Stack
       direction={{ base: "row", lg: "column" }}
@@ -134,12 +134,9 @@ console.log(reward_icon);
             target='_blank'
           >
             <Image
-              src={reward_icon}
-              width="17px"
-              height="21px"
-              ml='4px'
+              as={RewardIcon}
+              width={{ base: "20px", lg: "24px" }}
               display="inline"
-              stroke="#6A6E85"
             />
             <Show above="lg">
               <Text ml={2}>Reward Concierge</Text>
