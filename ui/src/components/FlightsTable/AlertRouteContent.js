@@ -95,8 +95,6 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
         (flightClass) => flightClass === "Business"
       ),
       first: route.flightClasses.some((flightClass) => flightClass === "First"),
-      // qantasFF: route.source.some((program) => program === "QF"),
-      // virginVelocity: route.source.some((program) => program === "VA"),
     },
   })
   const queryClient = useQueryClient()
@@ -306,53 +304,6 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
             </FormControl>
           </Box>
         </Stack>
-        {/* <Text fontSize={"xs"} mb={3}>
-          Preferred Program
-        </Text> */}
-        {/* <FormControl mb={3} isInvalid={!!errors?.qantasFF}>
-          <Controller
-            control={control}
-            name="qantasFF"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Checkbox
-                  onChange={onChange}
-                  ref={ref}
-                  isChecked={value}
-                  colorScheme="red"
-                  isDisabled={true}
-                >
-                  <Text fontSize="sm" fontWeight="semibold">
-                    Qantas FF
-                  </Text>
-                </Checkbox>
-              )
-            }}
-          />
-          <FormErrorMessage>{errors?.qantasFF?.message}</FormErrorMessage>
-        </FormControl> */}
-        {/* <FormControl mb={7} isInvalid={!!errors?.virginVelocity}>
-          <Controller
-            control={control}
-            name="virginVelocity"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Checkbox
-                  onChange={onChange}
-                  ref={ref}
-                  isChecked={true}
-                  colorScheme="red"
-                  isDisabled={true}
-                >
-                  <Text fontSize="sm" fontWeight="semibold">
-                    Virgin Velocity
-                  </Text>
-                </Checkbox>
-              )
-            }}
-          />
-          <FormErrorMessage>{errors?.virginVelocity?.message}</FormErrorMessage>
-        </FormControl> */}
         <Text fontSize={"xs"} mb={5}>
           Availability for the selected rote is checked at least once a day.
           Alerts will be sent to the account email.
