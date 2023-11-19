@@ -95,8 +95,8 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
         (flightClass) => flightClass === "Business"
       ),
       first: route.flightClasses.some((flightClass) => flightClass === "First"),
-      qantasFF: route.source.some((program) => program === "QF"),
-      virginVelocity: route.source.some((program) => program === "VA"),
+      // qantasFF: route.source.some((program) => program === "QF"),
+      // virginVelocity: route.source.some((program) => program === "VA"),
     },
   })
   const queryClient = useQueryClient()
@@ -306,9 +306,9 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
             </FormControl>
           </Box>
         </Stack>
-        <Text fontSize={"xs"} mb={3}>
+        {/* <Text fontSize={"xs"} mb={3}>
           Preferred Program
-        </Text>
+        </Text> */}
         {/* <FormControl mb={3} isInvalid={!!errors?.qantasFF}>
           <Controller
             control={control}
@@ -331,7 +331,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
           />
           <FormErrorMessage>{errors?.qantasFF?.message}</FormErrorMessage>
         </FormControl> */}
-        <FormControl mb={7} isInvalid={!!errors?.virginVelocity}>
+        {/* <FormControl mb={7} isInvalid={!!errors?.virginVelocity}>
           <Controller
             control={control}
             name="virginVelocity"
@@ -352,7 +352,7 @@ const AlertRouteContent = ({ route, onClose, isNew }) => {
             }}
           />
           <FormErrorMessage>{errors?.virginVelocity?.message}</FormErrorMessage>
-        </FormControl>
+        </FormControl> */}
         <Text fontSize={"xs"} mb={5}>
           Availability for the selected rote is checked at least once a day.
           Alerts will be sent to the account email.

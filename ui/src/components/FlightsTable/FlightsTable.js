@@ -49,6 +49,7 @@ import {
   flightClassesMapping,
   maxAlertsPerSubscription,
 } from "../../constants"
+import QantasBookContent from "./QantasBookContent"
 
 const numberFormat = new Intl.NumberFormat()
 
@@ -569,7 +570,11 @@ const FlightsTable = ({ flights, user }) => {
                         borderRadius={8}
                       >
                         <PopoverBody p={0}>
-                          <VelocityBookContent points={highestPoint.points} />
+                          {flight.source === "QF" ? (
+                            <VelocityBookContent points={highestPoint.points} />
+                          ) : (
+                            <QantasBookContent points={highestPoint.points} />
+                          )}
                         </PopoverBody>
                       </PopoverContent>
                     </Popover>
