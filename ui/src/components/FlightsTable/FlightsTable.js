@@ -341,9 +341,7 @@ const FlightsTable = ({ flights, user }) => {
                 "yyyy-MM-dd"
               ),
               flightClasses: Object.keys(summaryPoints),
-              preferredPrograms: [
-                flight.source === "Virgin Velocity" ? "VA" : "Qantas FF",
-              ],
+              preferredPrograms: [flight.source === "VA" ? "VA" : "Qantas FF"],
               source: [flight.source],
             }
 
@@ -570,7 +568,7 @@ const FlightsTable = ({ flights, user }) => {
                         borderRadius={8}
                       >
                         <PopoverBody p={0}>
-                          {flight.source === "QF" ? (
+                          {flight.source === "VA" ? (
                             <VelocityBookContent points={highestPoint.points} />
                           ) : (
                             <QantasBookContent points={highestPoint.points} />
