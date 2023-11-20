@@ -55,8 +55,6 @@ volumes:
   postgres_data:
   shared-statics:
 
-
-
 networks:
   default:
     name: million_net

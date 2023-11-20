@@ -118,13 +118,6 @@ class AvailabilityNotificationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Invalid flight class")
         return value
 
-    def validate_preferred_programs(self, value):
-        # Custom logic to validate that value is one of the allowed choices
-        for v in value:
-            if v not in [prog.value for prog in PREFERRED_PROGRAMS]:
-                raise serializers.ValidationError("Invalid preferred program")
-        return value
-
     class Meta:
         model = AvailabilityNotification
         fields = '__all__'
