@@ -177,8 +177,8 @@ class AvailabilityNotification(models.Model):
             max_length=20,
             choices=[(prog.value, prog.name) for prog in PREFERRED_PROGRAMS]
         ),
-        null=False,
-        blank=False
+        null=True,
+        blank=True
     )
     status = models.CharField(
         max_length=20,
