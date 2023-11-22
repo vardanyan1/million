@@ -127,7 +127,7 @@ class FlightDetail(models.Model):
     flight_duration = models.CharField(max_length=255)
     transition_time = models.CharField(max_length=255, null=True, blank=True)
     aircraft_details = models.CharField(max_length=255)
-    equipment = models.CharField(max_length=255)
+    equipment = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.from_airport} to {self.to_airport} - Departure:" \
@@ -140,7 +140,7 @@ class FlightClassDetail(models.Model):
     rbd = models.CharField(max_length=255)
     points_per_adult = models.PositiveIntegerField()
     tax_per_adult = models.DecimalField(max_digits=8, decimal_places=2)
-    remaining_seats = models.PositiveIntegerField()
+    remaining_seats = models.PositiveIntegerField(null=True, blank=True)
     designated_class = models.CharField(max_length=255)
 
     def __str__(self):

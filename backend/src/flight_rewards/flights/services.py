@@ -81,6 +81,9 @@ def process_row(row):
                 if created_to:
                     logger.info(f"Airport with code {to_airport_code} added to the database with placeholder name.")
 
+            # Handle '-' for equipment
+            equipment_value = None if equipment_list[0] == '-' else equipment_list[idx]
+
             # Create FlightDetail for each connection
             FlightDetail.objects.create(
                 flight=flight,
@@ -91,7 +94,7 @@ def process_row(row):
                 flight_duration=durations[idx],
                 transition_time=transition_times[idx] if idx < len(transition_times) else None,
                 aircraft_details=aircraft_details[idx],
-                equipment=equipment_list[idx]
+                equipment=equipment_value
             )
 
     # Create FlightClassDetail for each flight class
@@ -107,6 +110,6 @@ def process_row(row):
             rbd=row['RBD'],
             points_per_adult=int(row['Points Per Adult']),
             tax_per_adult=float(row['Tax Per Adult'].replace('$', '')),
-            remaining_seats=int(row['Remaining Seats']),
+            remaining_seats=None if row['Remaining Seats'] == '-' else int(row['Remaining Seats']),
             designated_class=row['Designated Class']
         )
