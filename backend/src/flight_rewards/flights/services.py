@@ -21,7 +21,8 @@ def import_flights_from_csv(file_obj):
     # Delete all existing flights with the same origin and destination
     main_origin = Airport.objects.get(code=first_row['Origin Code'])
     main_destination = Airport.objects.get(code=first_row['Destination Code'])
-    Flight.objects.filter(origin=main_origin, destination=main_destination).delete()
+    source = first_row['Source']
+    Flight.objects.filter(origin=main_origin, destination=main_destination, source=source).delete()
 
     # Now process the first row, since we've already read it
     process_row(first_row)
