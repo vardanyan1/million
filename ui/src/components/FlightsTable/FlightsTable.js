@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 
 import { trackPage } from "../../services/analytics"
-import EarnPointsContent from "./EarnPointsContent"
+// import EarnPointsContent from "./EarnPointsContent"
 import VelocityBookContent from "./VelocityBookContent"
 import AlertRouteContent from "./AlertRouteContent"
 import { getAlerts } from "../../services/api"
@@ -21,6 +21,7 @@ import bellImage from "../../img/bell.svg"
 
 import QFAwards from "../../img/QF.svg"
 import VAAwards from "../../img/VA.png"
+import airplane from "../../img/airplane.svg"
 
 import flightImages from "../../flightImages"
 
@@ -115,7 +116,7 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
         return (
           <Fragment key={index}>
             <Flex my={6} fontSize="sm" fontWeight="semibold">
-              <Flex alignItems="center" gap="10px" w="36px" mr="26px">
+              <Flex alignItems="center" gap="10px" w="36px">
                 <Image
                   width="100%"
                   src={planeImage}
@@ -124,7 +125,7 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                   zIndex={1}
                   top={secondPlaneImage ? "5px" : "0px"}
                 />
-                <Box
+                {/* <Box
                   height={84}
                   position="relative"
                   borderLeft={"1px solid #B6BAD1"}
@@ -149,8 +150,18 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                     bottom: "-13px",
                     left: "-7px",
                   }}
-                />
+                /> */}
               </Flex>
+
+              <Image
+                src={airplane}
+                width="24px"
+                height="108px"
+                alt="airplane"
+                alignSelf="center"
+                mr="2px"
+              />
+
               <Box w={"45%"} fontSize="12px">
                 <Text color={COLORS.secondary}>
                   {format(
@@ -178,9 +189,11 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                 <Text color={COLORS.secondary}>
                   Availability: {showFlightClasses(flight.class_details, index)}
                 </Text>
-                <Text color={COLORS.secondary}>
-                  Aircraft: {detail.equipment}
-                </Text>
+                {detail?.equipment && (
+                  <Text color={COLORS.secondary}>
+                    Aircraft: {detail.equipment}
+                  </Text>
+                )}
                 <Text color={COLORS.secondary}>
                   Last seen: {shouldIncludeAbout ? "about " : ""}
                   {lastSeenText}
@@ -190,13 +203,15 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
             {index < details.length - 1 && (
               <Box
                 ml="60px"
-                py={4}
+                py={2}
                 borderTop="1px solid #D4D4D9;"
                 borderBottom="1px solid #D4D4D9;"
                 fontWeight="semibold"
-                fontSize="sm"
+                fontSize={"12px"}
               >
-                Layover: {detail.to_airport} {detail.transition_time}
+                <Text>
+                  Layover: {detail.to_airport} {detail.transition_time}
+                </Text>
               </Box>
             )}
           </Fragment>
@@ -579,7 +594,8 @@ const FlightsTable = ({ flights, user }) => {
                   </Td>
                   <Show above="lg">
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      {flight.source === "QF" ? (
+                      {/* We will open this logic, when activate Earn Points */}
+                      {/* {flight.source === "QF" ? (
                         <Popover
                           placement="left"
                           onOpen={() => {
@@ -608,9 +624,9 @@ const FlightsTable = ({ flights, user }) => {
                             </PopoverBody>
                           </PopoverContent>
                         </Popover>
-                      ) : (
-                        <Image src={cardImage} margin="0 auto" opacity={0.3} />
-                      )}
+                      ) : ( */}
+                      <Image src={cardImage} margin="0 auto" opacity={0.3} />
+                      {/* )} */}
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
                       <Popover
