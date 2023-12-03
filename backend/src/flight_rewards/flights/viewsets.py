@@ -3,14 +3,14 @@ Flights app viewsets
 """
 import logging
 import stripe
-from django.core.mail import EmailMultiAlternatives
 
-from django.db.models import Min
 from django.conf import settings
+from django.db.models import Min
 from django.db.models.functions import TruncDate
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-
 from django_filters import rest_framework as filters
+
 from rest_framework import viewsets, mixins, filters as rest_filters, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -53,6 +53,9 @@ if settings.STRIPE_LIVE_MODE:
     stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
 else:
     stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+
+
+AUSTRALIAN_AIRPORT_CODES = ['SYD', 'MEL', 'BNE', 'PER', 'ADL']
 
 
 class DestinationAirportFilterSet(filters.FilterSet):
@@ -125,6 +128,15 @@ class FlightViewSet(viewsets.ModelViewSet):
 
         if destination:
             queryset = queryset.filter(destination__code=destination)
+
+        # Handling 'Leaving Australia' and 'Back to Australia' filters
+        leaving_australia = self.request.query_params.get('leaving_australia', None)
+        back_to_australia = self.request.query_params.get('back_to_australia', None)
+
+        if leaving_australia:
+            queryset = queryset.filter(origin__code__in=AUSTRALIAN_AIRPORT_CODES)
+        elif back_to_australia:
+            queryset = queryset.filter(destination__code__in=AUSTRALIAN_AIRPORT_CODES)
 
         return queryset
 
