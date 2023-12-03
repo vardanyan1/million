@@ -33,6 +33,7 @@ export default function ResetPassword() {
   } = useForm()
 
   const onSubmit = async (values) => {
+    values.email = values.email.toLowerCase()
     try {
       await resetPasswordMutation(values.email)
       toast({

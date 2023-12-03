@@ -36,6 +36,8 @@ export default function Login() {
   } = useForm()
 
   const onSubmit = async (values) => {
+    values.email = values.email.toLowerCase()
+
     try {
       await performLogin(values)
       navigate("/")

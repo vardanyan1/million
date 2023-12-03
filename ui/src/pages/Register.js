@@ -62,6 +62,7 @@ const Register = () => {
 
   const onSubmit = async (values) => {
     setLoading(true)
+    values.email = values.email.toLowerCase()
 
     const fullPhoneNumber = values.phoneNumber
       ? `${countryCode}${values.phoneNumber}`
