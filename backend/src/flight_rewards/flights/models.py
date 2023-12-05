@@ -139,7 +139,7 @@ class FlightClassDetail(models.Model):
     cabin_type = models.CharField(max_length=255)
     rbd = models.CharField(max_length=255)
     points_per_adult = models.PositiveIntegerField()
-    tax_per_adult = models.DecimalField(max_digits=8, decimal_places=2)
+    tax_per_adult = models.DecimalField(max_digits=12, decimal_places=2)
     remaining_seats = models.PositiveIntegerField(null=True, blank=True)
     designated_class = models.CharField(max_length=255)
 
