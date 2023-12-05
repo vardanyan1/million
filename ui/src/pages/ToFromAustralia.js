@@ -1,63 +1,57 @@
 import { useState, useEffect } from "react"
-
+import { useTranslation } from "react-i18next"
+import { useQuery } from "@tanstack/react-query"
+import { Outlet, Link as RouterLink, useNavigate } from "react-router-dom"
+import { Helmet } from "react-helmet"
+import { Box, Heading, Text, Stack, Image, Flex, Link } from "@chakra-ui/react"
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
+import Menu from "../components/Menu"
+import Loading from "../components/Loading"
+import { Select } from "../components/Select"
+import FlightDataContext from "../components/Flights/FlightDataContext"
+import { trackPage } from "../services/analytics"
+import { getAustralianFlights } from "../services/api"
+import facebookImage from "../img/facebook.svg"
+import { getPagesToRender } from "../helpers/functions"
+import instagramImage from "../img/instagram.svg"
+import { ITEMS_PER_PAGE_AUSTRALIA } from "../constants"
 import "../App.css"
 
-import { Box, Heading, Text, Stack, Image, Flex, Link } from "@chakra-ui/react"
-import { useTranslation } from "react-i18next"
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
-import { useQuery } from "@tanstack/react-query"
-import { format } from "date-fns"
-import { Outlet, Link as RouterLink, useNavigate } from "react-router-dom"
+let selectOptions = [
+  {
+    label: "Leaving Australia",
+    value: 1,
+  },
+  {
+    label: "Back to Australia",
+    value: 2,
+  },
+]
 
-import Menu from "../components/Menu"
-import FilterPanel from "../components/Flights/FilterPanel"
-import Loading from "../components/Loading"
-import instagramImage from "../img/instagram.svg"
-import facebookImage from "../img/facebook.svg"
-import { getFlights } from "../services/api"
-import { useAuthContext } from "../services/auth"
-import { trackPage } from "../services/analytics"
-import { ITEMS_PER_PAGE } from "../constants"
-import FlightDataContext from "../components/Flights/FlightDataContext"
-import { Helmet } from "react-helmet"
-import { getPagesToRender } from "../helpers/functions"
-
-const AllAvailability = () => {
+const ToFromAustralia = () => {
   const navigate = useNavigate()
-  const { user } = useAuthContext()
   const { t } = useTranslation()
   const [currentPage, setCurrentPage] = useState(1)
-  const [filters, setFilters] = useState({
-    from: "",
-    to: "",
-    date: new Date(),
-  })
-
-  const params = {
-    page: currentPage,
-    date: format(filters.date, "yyyy-MM-dd"),
-    origin: filters.from?.value,
-    destination: filters.to?.value,
-  }
+  const [isFromAustralia, setIsFromAustralia] = useState(null)
 
   const query = useQuery({
-    queryKey: ["flights", params],
-    queryFn: getFlights,
+    queryKey: ["australianFlights", isFromAustralia],
+    queryFn: getAustralianFlights,
     keepPreviousData: true,
     initialData: { count: 0, results: [] },
-    enabled: !!(params.origin && params.destination),
+    enabled: isFromAustralia !== null,
   })
 
   useEffect(() => {
-    trackPage({ title: "All Rewards Availability" })
+    trackPage({ title: "To From Australian Flights" })
   }, [])
 
   if (query.isLoading && query.isInitialLoading) {
     return <Loading />
   }
 
-  const pageCount = Math.ceil(query.data.count / ITEMS_PER_PAGE)
-  const flights = query.data.results
+  const pageCount = Math.ceil(query.data.count / ITEMS_PER_PAGE_AUSTRALIA)
+  const flights = query.data.results || []
 
   const goToPrevPage = () => {
     if (currentPage > 1 && pageCount !== 1) {
@@ -77,25 +71,16 @@ const AllAvailability = () => {
     }
   }
 
-  const handleFlightSelection = ({ from, to }) => {
-    if (from && to) {
-      navigate(`/flights/${from.value}-${to.value}`)
-    }
-  }
+  const handleSelectChange = ({ value }) => {
+    setCurrentPage(1)
 
-  const applyFilters = (newFilters) => {
-    let updateFrom = newFilters.from || filters.from
-    let updateTo = newFilters.to || filters.to
+    const toFrom = value === 1 ? "from" : "to"
 
-    if (
-      newFilters.from !== filters.from ||
-      newFilters.to !== filters.to ||
-      newFilters.date !== filters.date
-    ) {
-      setCurrentPage(1)
-      handleFlightSelection({ from: updateFrom, to: updateTo })
+    setIsFromAustralia(value === 1 ? true : false)
+
+    if (value) {
+      navigate(`/australian-flights/${toFrom}-australia`)
     }
-    setFilters((existingFilters) => ({ ...existingFilters, ...newFilters }))
   }
 
   const paginationButtons = getPagesToRender(currentPage, pageCount)
@@ -103,17 +88,18 @@ const AllAvailability = () => {
   return (
     <>
       <Helmet>
-        <title>Reward Flight Search</title>
+        <title>Business & First Class reward flights to/from Australia</title>
         <meta
           name="description"
-          content="Easy reward flight discovery using Qantas and Velocity points"
+          content="Business & First Class reward flights to/from Australia"
         />
         <meta
           name="keywords"
           content="reward travel, award travel, classic flight rewards, qantas reward flights, velocity frequent flier, flight redemption"
         />
       </Helmet>
-      <FlightDataContext.Provider value={{ flights, user }}>
+
+      <FlightDataContext.Provider value={{ flights }}>
         <Stack
           direction={{ base: "column", lg: "row" }}
           minHeight="100vh"
@@ -135,7 +121,7 @@ const AllAvailability = () => {
                 color="#141725"
                 fontSize={{ base: "xl", lg: "2xl" }}
               >
-                {t("allRewardMenuItem")}
+                {t("allAustralianFLightsMenuItem")}
               </Heading>
               <Text
                 align="left"
@@ -143,17 +129,29 @@ const AllAvailability = () => {
                 pb="6"
                 fontSize={{ base: "small", lg: "sm" }}
               >
-                {t("allRewardDescription")}
+                {t("allAustralianFlightsDescription")}
               </Text>
             </Box>
 
             <Box bg="white" borderRadius={[0, 12]} mb={7}>
-              <Box px={4} pt={4} pb={4}>
-                <FilterPanel onChange={applyFilters} {...filters} user={user} />
+              <Box px={4} pt={4} pb={4} w={{ lg: 250 }}>
+                <Select
+                  placeholder="Leaving Australia"
+                  onChange={handleSelectChange}
+                  value={
+                    isFromAustralia === null
+                      ? ""
+                      : isFromAustralia
+                      ? selectOptions[0]
+                      : selectOptions[1]
+                  }
+                  options={selectOptions}
+                />
               </Box>
 
               <Outlet />
 
+              {/* Pagination */}
               <Flex py={5} justify={"center"} gap={2} userSelect={"none"}>
                 <Text
                   onClick={goToPrevPage}
@@ -161,6 +159,7 @@ const AllAvailability = () => {
                 >
                   <ChevronLeftIcon color="#70767D" boxSize={6} />
                 </Text>
+
                 {paginationButtons.map((label, index) => {
                   return (
                     <Text
@@ -192,7 +191,7 @@ const AllAvailability = () => {
               </Flex>
             </Box>
 
-            {/* Footer */}
+            {/* footer */}
             <Box px={[4, 0]}>
               <Text
                 fontSize={{ base: "10px", lg: "small" }}
@@ -242,4 +241,4 @@ const AllAvailability = () => {
   )
 }
 
-export default AllAvailability
+export default ToFromAustralia

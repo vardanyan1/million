@@ -10,20 +10,20 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 
-import { trackPage } from "../../services/analytics"
+import { trackPage } from "../../../services/analytics"
 // import EarnPointsContent from "./EarnPointsContent"
 import VelocityBookContent from "./VelocityBookContent"
 import AlertRouteContent from "./AlertRouteContent"
-import { getAlerts } from "../../services/api"
+import { getAlerts } from "../../../services/api"
 
-import cardImage from "../../img/card.svg"
-import bellImage from "../../img/bell.svg"
+import cardImage from "../../../img/card.svg"
+import bellImage from "../../../img/bell.svg"
 
-import QFAwards from "../../img/QF.svg"
-import VAAwards from "../../img/VA.png"
-import airplane from "../../img/airplane.svg"
+import QFAwards from "../../../img/QF.svg"
+import VAAwards from "../../../img/VA.png"
+import airplane from "../../../img/airplane.svg"
 
-import flightImages from "../../flightImages"
+import flightImages from "../../../flightImages"
 
 import {
   Text,
@@ -49,7 +49,7 @@ import {
   DATE_FORMAT_EXPANDABLE_ROW,
   flightClassesMapping,
   maxAlertsPerSubscription,
-} from "../../constants"
+} from "../../../constants"
 import QantasBookContent from "./QantasBookContent"
 
 const numberFormat = new Intl.NumberFormat()
@@ -63,7 +63,7 @@ const parseDate = (dateStr) => {
   return parseISO(dateStr)
 }
 
-const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
+const ExpandableRow = ({ flight }) => {
   const showFlightClasses = (flightClass, index) => {
     const uniqueFlightClasses = flightClass.map(({ cabin_type }) => {
       const classArr = cabin_type.split(", ")
@@ -113,6 +113,11 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
 
         const shouldIncludeAbout = !lastSeenText.includes("about")
 
+        const planeImage =
+          details.length >= 3
+            ? flightImages.group_3_plus
+            : flightImages[details[index].aircraft_details.slice(0, 2)]
+
         return (
           <Fragment key={index}>
             <Flex my={6} fontSize="sm" fontWeight="semibold">
@@ -123,7 +128,6 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                   margin="0 auto"
                   position="relative"
                   zIndex={1}
-                  top={secondPlaneImage ? "5px" : "0px"}
                 />
                 {/* <Box
                   height={84}
@@ -362,6 +366,20 @@ const FlightsTable = ({ flights, user }) => {
 
             const isFlightExpanded = expandedFlight === flight
 
+            const checkIfSameAirline = (details) => {
+              const regex = /\((.*?)\)/
+
+              // Extract the company names from each string in the array
+              const companyNames = details.map((detail) => {
+                const match = detail.aircraft_details.match(regex)
+
+                return match ? match[1] : null
+              })
+
+              // Check if all extracted company names are the same
+              return companyNames.every((name, _, arr) => name === arr[0])
+            }
+
             return (
               <Fragment key={flight.id}>
                 <Tr
@@ -397,7 +415,7 @@ const FlightsTable = ({ flights, user }) => {
                         zIndex={1}
                         top={secondPlaneImage ? "5px" : "0px"}
                       />
-                      {secondPlaneImage && (
+                      {secondPlaneImage && !checkIfSameAirline(details) && (
                         <Image
                           width="100%"
                           src={secondPlaneImage}
@@ -440,7 +458,9 @@ const FlightsTable = ({ flights, user }) => {
                           </Text>
                           <Text color="#141725">{lowestPoint.name}</Text>
                           <Text color="#141725">
-                            {lowestPoint.remaining_seats} seats left
+                            {lowestPoint.remaining_seats
+                              ? lowestPoint.remaining_seats + " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -482,8 +502,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["Economy"].remaining_seats} seats
-                            left
+                            {summaryPoints["Economy"].remaining_seats
+                              ? summaryPoints["Economy"].remaining_seats +
+                                " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -506,8 +528,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["PremiumEconomy"].remaining_seats}{" "}
-                            seats left
+                            {summaryPoints["PremiumEconomy"].remaining_seats
+                              ? summaryPoints["PremiumEconomy"]
+                                  .remaining_seats + " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -530,8 +554,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["Business"].remaining_seats} seats
-                            left
+                            {summaryPoints["Business"].remaining_seats
+                              ? summaryPoints["Business"].remaining_seats +
+                                " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -550,7 +576,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["First"].remaining_seats} seats left
+                            {summaryPoints["First"].remaining_seats
+                              ? summaryPoints["First"].remaining_seats +
+                                " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -693,11 +722,7 @@ const FlightsTable = ({ flights, user }) => {
                     zIndex="1"
                   >
                     <Td colSpan={11} p={2} border={0}>
-                      <ExpandableRow
-                        flight={flight}
-                        planeImage={planeImage}
-                        secondPlaneImage={secondPlaneImage}
-                      />
+                      <ExpandableRow flight={flight} />
                     </Td>
                   </Tr>
                 )}

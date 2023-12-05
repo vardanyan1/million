@@ -35,6 +35,7 @@ export const maxAlertsPerSubscription = {
 }
 
 export const ITEMS_PER_PAGE = 10
+export const ITEMS_PER_PAGE_AUSTRALIA = 15
 
 export const flightClassesColors = {
   Economy: "#DD0000",

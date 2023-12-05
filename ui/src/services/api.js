@@ -93,6 +93,20 @@ export const updateUser = async (values) => {
 export const getFlights = async ({ queryKey }) => {
   const [_, params] = queryKey
   const urlParams = new URLSearchParams(params)
+
+  const response = await API.get(`/flights?${urlParams}`)
+  return response.data
+}
+
+export const getAustralianFlights = async ({ queryKey }) => {
+  const [_, isFromAustralia] = queryKey
+  const urlParams = new URLSearchParams({
+    page: 1,
+    date: "2023-11-29",
+    origin: "MEL",
+    destination: "SIN",
+  })
+
   const response = await API.get(`/flights?${urlParams}`)
   return response.data
 }
