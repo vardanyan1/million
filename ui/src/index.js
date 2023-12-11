@@ -41,7 +41,9 @@ import ResetPassword from "./pages/ResetPassword"
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm"
 import Pricing from "./pages/Pricing"
 import CheckoutResult from "./pages/CheckoutResult"
-import FlightDetail from "./components/FlightDetail"
+import ToFromAustralia from "./pages/ToFromAustralia"
+import FlightDetail from "./components/Flights/FlightDetail"
+import AustralianFlightDetail from "./components/AustralianFlights/FlightDetail"
 
 const resources = {
   en: {
@@ -180,6 +182,11 @@ const router = createBrowserRouter([
         path: "/flights",
         element: <AllAvailability />,
         children: [{ path: ":route", element: <FlightDetail /> }],
+      },
+      {
+        path: "/australian-flights",
+        element: <ToFromAustralia />,
+        children: [{ path: ":route", element: <AustralianFlightDetail /> }],
       },
       {
         path: "*",

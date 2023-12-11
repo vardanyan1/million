@@ -25,16 +25,20 @@ import { isSameDay, isFuture, format, addMonths, isToday } from "date-fns"
 import { Link as RouterLink, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
-import { Select } from "./Select"
+import { Select } from "../Select"
 import {
   getFlightDates,
   getOriginAirports,
   getDestinationAirports,
   getPricingPlans,
-} from "../services/api"
-import circleImage from "../img/circle.svg"
-import locationPinImage from "../img/location_pin.svg"
-import { PRICE_INTERVAL, SUBSCRIPTION, flightClassesColors } from "../constants"
+} from "../../services/api"
+import circleImage from "../../img/circle.svg"
+import locationPinImage from "../../img/location_pin.svg"
+import {
+  PRICE_INTERVAL,
+  SUBSCRIPTION,
+  flightClassesColors,
+} from "../../constants"
 
 const { MONTH } = PRICE_INTERVAL
 const { FREE } = SUBSCRIPTION

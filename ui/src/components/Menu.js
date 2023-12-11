@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import logo from "../img/reward_flights_logo.svg"
 import { ReactComponent as AllRewardsMenuIcon } from "../img/all_rewards_menu_icon.svg"
+import { ReactComponent as AustralianFlightsMenuIcon } from "../img/australian_flights_menu_icon.svg"
 import { ReactComponent as AlertMenuIcon } from "../img/alert_menu_icon.svg"
 import { ReactComponent as SettingsMenuIcon } from "../img/settings_menu_icon.svg"
 import { ReactComponent as LogoutMenuIcon } from "../img/logout_menu_icon.svg"
@@ -43,7 +44,7 @@ const Menu = () => {
 
   const isUserPresent = !!user
   const showShowLoginButton = !isUserPresent && location.pathname !== "/login"
-  
+
   return (
     <Stack
       direction={{ base: "row", lg: "column" }}
@@ -75,6 +76,24 @@ const Menu = () => {
         />
         <Show above="lg">
           <Text ml={2}>{t("allRewardMenuItem")}</Text>
+        </Show>
+      </MenuItem>
+
+      <MenuItem
+        to={"/australian-flights"}
+        ml={0}
+        isActive={location.pathname === "/australian-flights"}
+      >
+        <Image
+          as={AustralianFlightsMenuIcon}
+          width={{ base: "20px", lg: "24px" }}
+          display="inline"
+          stroke={
+            location.pathname === "/australian-flights" ? "#DD0000" : "#6A6E85"
+          }
+        />
+        <Show above="lg">
+          <Text ml={2}>All Business & First Class</Text>
         </Show>
       </MenuItem>
 
@@ -129,9 +148,11 @@ const Menu = () => {
           </MenuItem>
 
           <MenuItem
-            to={"https://docs.google.com/forms/d/e/1FAIpQLSeJnfVte3CL4d-7jCUdHnW_eLaTaRea2pYcO8Kc4HRTv-hmAA/viewform?usp=sf_link"}
+            to={
+              "https://docs.google.com/forms/d/e/1FAIpQLSeJnfVte3CL4d-7jCUdHnW_eLaTaRea2pYcO8Kc4HRTv-hmAA/viewform?usp=sf_link"
+            }
             ml={0}
-            target='_blank'
+            target="_blank"
           >
             <Image
               as={RewardIcon}

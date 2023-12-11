@@ -1,4 +1,4 @@
-import { Fragment, useState, useRef } from "react"
+import { Fragment, useState, useRef, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import {
   format,
@@ -10,20 +10,19 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 
-import { trackPage } from "../../services/analytics"
-// import EarnPointsContent from "./EarnPointsContent"
+import { trackPage } from "../../../services/analytics"
 import VelocityBookContent from "./VelocityBookContent"
 import AlertRouteContent from "./AlertRouteContent"
-import { getAlerts } from "../../services/api"
+import { getAlerts } from "../../../services/api"
 
-import cardImage from "../../img/card.svg"
-import bellImage from "../../img/bell.svg"
+import cardImage from "../../../img/card.svg"
+import bellImage from "../../../img/bell.svg"
 
-import QFAwards from "../../img/QF.svg"
-import VAAwards from "../../img/VA.png"
-import airplane from "../../img/airplane.svg"
+import QFAwards from "../../../img/QF.svg"
+import VAAwards from "../../../img/VA.png"
+import airplane from "../../../img/airplane.svg"
 
-import flightImages from "../../flightImages"
+import flightImages from "../../../flightImages"
 
 import {
   Text,
@@ -46,10 +45,11 @@ import {
 } from "@chakra-ui/react"
 import {
   COLORS,
+  DATE_FORMAT_AUSTRALIA_DEPART,
   DATE_FORMAT_EXPANDABLE_ROW,
   flightClassesMapping,
   maxAlertsPerSubscription,
-} from "../../constants"
+} from "../../../constants"
 import QantasBookContent from "./QantasBookContent"
 
 const numberFormat = new Intl.NumberFormat()
@@ -63,7 +63,7 @@ const parseDate = (dateStr) => {
   return parseISO(dateStr)
 }
 
-const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
+const ExpandableRow = ({ flight }) => {
   const showFlightClasses = (flightClass, index) => {
     const uniqueFlightClasses = flightClass.map(({ cabin_type }) => {
       const classArr = cabin_type.split(", ")
@@ -83,35 +83,13 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
     return uniqueFlightClasses.join(", ")
   }
 
-  const adjustTimezone = (dateStr, timezoneOffsetInHoursFromUTC) => {
-    const [datePart, timePart] = dateStr.split("T")
-    const [year, month, day] = datePart.split("-").map(Number)
-    const [hour, minute, second] = timePart.split(":").map(Number)
-
-    const utcDate = new Date(
-      Date.UTC(
-        year,
-        month - 1,
-        day,
-        hour - timezoneOffsetInHoursFromUTC,
-        minute,
-        second
-      )
-    )
-
-    return utcDate.toISOString()
-  }
-
   return (
     <Box>
       {flight.details.map((detail, index, details) => {
-        const flightTimeInUTC = adjustTimezone(flight.timestamp, 10)
-
-        const lastSeenText = formatDistanceToNow(parseDate(flightTimeInUTC), {
-          addSuffix: true,
-        })
-
-        const shouldIncludeAbout = !lastSeenText.includes("about")
+        const planeImage =
+          details.length >= 3
+            ? flightImages.group_3_plus
+            : flightImages[details[index].aircraft_details.slice(0, 2)]
 
         return (
           <Fragment key={index}>
@@ -123,7 +101,6 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                   margin="0 auto"
                   position="relative"
                   zIndex={1}
-                  top={secondPlaneImage ? "5px" : "0px"}
                 />
                 {/* <Box
                   height={84}
@@ -194,10 +171,6 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
                     Aircraft: {detail.equipment}
                   </Text>
                 )}
-                <Text color={COLORS.secondary}>
-                  Last seen: {shouldIncludeAbout ? "about " : ""}
-                  {lastSeenText}
-                </Text>
               </Box>
             </Flex>
             {index < details.length - 1 && (
@@ -222,9 +195,30 @@ const ExpandableRow = ({ flight, planeImage, secondPlaneImage }) => {
 }
 
 const FlightsTable = ({ flights, user }) => {
-  const [expandedFlight, setExpandedFlight] = useState(null)
   const ref = useRef()
   const { t } = useTranslation()
+
+  const [expandedFlight, setExpandedFlight] = useState(null)
+  const [sortConfig, setSortConfig] = useState({
+    key: "depart",
+    direction: "ascending",
+  })
+
+  const sortedFlights = useMemo(() => {
+    let sortableFlights = [...flights]
+    if (sortConfig.key !== null) {
+      sortableFlights.sort((a, b) => {
+        if (a.flight_start_date < b.flight_start_date) {
+          return sortConfig.direction === "ascending" ? -1 : 1
+        }
+        if (a.flight_start_date > b.flight_start_date) {
+          return sortConfig.direction === "ascending" ? 1 : -1
+        }
+        return 0
+      })
+    }
+    return sortableFlights
+  }, [flights, sortConfig])
 
   const { data: alerts } = useQuery({
     queryKey: ["alerts"],
@@ -246,6 +240,14 @@ const FlightsTable = ({ flights, user }) => {
     return <Text p={2}>{t("table.empty")}</Text>
   }
 
+  const sortFlights = (key) => {
+    let direction = "ascending"
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending"
+    }
+    setSortConfig({ key, direction })
+  }
+  console.log(sortConfig.key)
   return (
     <>
       <Table width="100%" ref={ref}>
@@ -254,6 +256,54 @@ const FlightsTable = ({ flights, user }) => {
             boxShadow="0px 2px 8px rgba(20, 23, 37, 0.08)"
             fontSize={[10, 12]}
           >
+            <Th
+              textTransform="none"
+              p={2}
+              w={{ lg: "10%" }}
+              cursor={"pointer"}
+              onClick={() => sortFlights("depart")}
+            >
+              {t("table.depart")}
+              {sortConfig.key === "depart" ? (
+                sortConfig.direction === "descending" ? (
+                  <ChevronUpIcon boxSize="4" />
+                ) : (
+                  <ChevronDownIcon boxSize="4" />
+                )
+              ) : null}
+            </Th>
+            <Th
+              textTransform="none"
+              p={2}
+              w={{ lg: "10%" }}
+              cursor={"pointer"}
+              onClick={() => sortFlights("from")}
+            >
+              {t("table.from")}
+              {sortConfig.key === "from" ? (
+                sortConfig.direction === "descending" ? (
+                  <ChevronUpIcon boxSize="4" />
+                ) : (
+                  <ChevronDownIcon boxSize="4" />
+                )
+              ) : null}
+            </Th>
+            <Th
+              textTransform="none"
+              p={2}
+              w={{ lg: "10%" }}
+              cursor={"pointer"}
+              onClick={() => sortFlights("to")}
+            >
+              {t("table.to")}
+              {sortConfig.key === "to" ? (
+                sortConfig.direction === "descending" ? (
+                  <ChevronUpIcon boxSize="4" />
+                ) : (
+                  <ChevronDownIcon boxSize="4" />
+                )
+              ) : null}
+            </Th>
             <Show above="lg">
               <Th textTransform="none" p={2}></Th>
             </Show>
@@ -266,20 +316,43 @@ const FlightsTable = ({ flights, user }) => {
               </Th>
             </Show>
             <Show above="lg">
-              <Th textTransform="none" p={2}>
+              <Th textTransform="none" p={2} w={{ lg: "8%" }}>
                 {t("table.stops")}
               </Th>
-              <Th textTransform="none" p={2} w={{ lg: "10%" }}>
-                {t("table.economy")}
-              </Th>
-              <Th textTransform="none" p={2} w={{ lg: "10%" }}>
-                {t("table.premiumEconomy")}
-              </Th>
-              <Th textTransform="none" p={2} w={{ lg: "10%" }}>
+              <Th
+                textTransform="none"
+                p={2}
+                w={{ lg: "10%" }}
+                cursor={"pointer"}
+                onClick={() => sortFlights("business")}
+              >
                 {t("table.business")}
+                {sortConfig.key === "business" ? (
+                  sortConfig.direction === "descending" ? (
+                    <ChevronUpIcon boxSize="4" />
+                  ) : (
+                    <ChevronDownIcon boxSize="4" />
+                  )
+                ) : null}
+              </Th>
+              <Th
+                textTransform="none"
+                p={2}
+                w={{ lg: "10%" }}
+                cursor={"pointer"}
+                onClick={() => sortFlights("first")}
+              >
+                {t("table.first")}
+                {sortConfig.key === "first" ? (
+                  sortConfig.direction === "descending" ? (
+                    <ChevronUpIcon boxSize="4" />
+                  ) : (
+                    <ChevronDownIcon boxSize="4" />
+                  )
+                ) : null}
               </Th>
               <Th textTransform="none" p={2} w={{ lg: "10%" }}>
-                {t("table.first")}
+                {t("table.lastSeen")}
               </Th>
             </Show>
             <Th textTransform="none" textAlign="center" p={2}>
@@ -296,7 +369,7 @@ const FlightsTable = ({ flights, user }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {flights.map((flight) => {
+          {sortedFlights.map((flight) => {
             const { details } = flight
 
             const summaryPoints = flight.class_details.reduce(
@@ -362,6 +435,47 @@ const FlightsTable = ({ flights, user }) => {
 
             const isFlightExpanded = expandedFlight === flight
 
+            const checkIfSameAirline = (details) => {
+              const regex = /\((.*?)\)/
+
+              // Extract the company names from each string in the array
+              const companyNames = details.map((detail) => {
+                const match = detail.aircraft_details.match(regex)
+
+                return match ? match[1] : null
+              })
+
+              // Check if all extracted company names are the same
+              return companyNames.every((name, _, arr) => name === arr[0])
+            }
+
+            const adjustTimezone = (dateStr, timezoneOffsetInHoursFromUTC) => {
+              const [datePart, timePart] = dateStr.split("T")
+              const [year, month, day] = datePart.split("-").map(Number)
+              const [hour, minute, second] = timePart.split(":").map(Number)
+
+              const utcDate = new Date(
+                Date.UTC(
+                  year,
+                  month - 1,
+                  day,
+                  hour - timezoneOffsetInHoursFromUTC,
+                  minute,
+                  second
+                )
+              )
+
+              return utcDate.toISOString()
+            }
+            const flightTimeInUTC = adjustTimezone(flight.timestamp, 10)
+            const lastSeenText = formatDistanceToNow(
+              parseDate(flightTimeInUTC),
+              {
+                addSuffix: true,
+              }
+            )
+            const shouldIncludeAbout = !lastSeenText.includes("about")
+
             return (
               <Fragment key={flight.id}>
                 <Tr
@@ -381,6 +495,24 @@ const FlightsTable = ({ flights, user }) => {
                   }}
                   cursor="pointer"
                 >
+                  <Td
+                    p="8px"
+                    width="50px"
+                    whiteSpace="noWrap"
+                    fontWeight={600}
+                    fontSize={12}
+                  >
+                    {format(
+                      parseDate(flight.details[0].departure_date),
+                      DATE_FORMAT_AUSTRALIA_DEPART
+                    )}
+                  </Td>
+                  <Td p="8px" width="50px" fontSize={12}>
+                    {flight.origin.name}
+                  </Td>
+                  <Td p="8px" width="50px" fontSize={12}>
+                    {flight.destination.name}
+                  </Td>
                   <Show above="lg">
                     <Td
                       p="8px"
@@ -397,7 +529,7 @@ const FlightsTable = ({ flights, user }) => {
                         zIndex={1}
                         top={secondPlaneImage ? "5px" : "0px"}
                       />
-                      {secondPlaneImage && (
+                      {secondPlaneImage && !checkIfSameAirline(details) && (
                         <Image
                           width="100%"
                           src={secondPlaneImage}
@@ -440,7 +572,9 @@ const FlightsTable = ({ flights, user }) => {
                           </Text>
                           <Text color="#141725">{lowestPoint.name}</Text>
                           <Text color="#141725">
-                            {lowestPoint.remaining_seats} seats left
+                            {lowestPoint.remaining_seats
+                              ? lowestPoint.remaining_seats + " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -467,54 +601,6 @@ const FlightsTable = ({ flights, user }) => {
                       </Text>
                     </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      {summaryPoints["Economy"] ? (
-                        <>
-                          <Text color="#DD0000">
-                            {numberFormat.format(
-                              summaryPoints["Economy"].points
-                            )}
-                            <Text as="span" fontSize={10}>
-                              {" "}
-                              +$
-                              {Math.round(
-                                summaryPoints["Economy"].tax_per_adult
-                              )}
-                            </Text>
-                          </Text>
-                          <Text color="#141725" fontSize="xs">
-                            {summaryPoints["Economy"].remaining_seats} seats
-                            left
-                          </Text>
-                        </>
-                      ) : (
-                        "-"
-                      )}
-                    </Td>
-                    <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      {summaryPoints["PremiumEconomy"] ? (
-                        <>
-                          <Text color="#DD0000">
-                            {numberFormat.format(
-                              summaryPoints["PremiumEconomy"].points
-                            )}
-                            <Text as="span" fontSize={10} color="#DD0000">
-                              {" "}
-                              +$
-                              {Math.round(
-                                summaryPoints["PremiumEconomy"].tax_per_adult
-                              )}
-                            </Text>
-                          </Text>
-                          <Text color="#141725" fontSize="xs">
-                            {summaryPoints["PremiumEconomy"].remaining_seats}{" "}
-                            seats left
-                          </Text>
-                        </>
-                      ) : (
-                        "-"
-                      )}
-                    </Td>
-                    <Td p={2} border={isFlightExpanded ? "none" : ""}>
                       {summaryPoints["Business"] ? (
                         <>
                           <Text color="#DD0000">
@@ -530,8 +616,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["Business"].remaining_seats} seats
-                            left
+                            {summaryPoints["Business"].remaining_seats
+                              ? summaryPoints["Business"].remaining_seats +
+                                " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -550,7 +638,10 @@ const FlightsTable = ({ flights, user }) => {
                             </Text>
                           </Text>
                           <Text color="#141725" fontSize="xs">
-                            {summaryPoints["First"].remaining_seats} seats left
+                            {summaryPoints["First"].remaining_seats
+                              ? summaryPoints["First"].remaining_seats +
+                                " seats left"
+                              : "Min. 2 seats left"}
                           </Text>
                         </>
                       ) : (
@@ -558,6 +649,16 @@ const FlightsTable = ({ flights, user }) => {
                       )}
                     </Td>
                   </Show>
+                  <Td
+                    p={2}
+                    border={isFlightExpanded ? "none" : ""}
+                    fontSize={"12px"}
+                  >
+                    <Text color={COLORS.secondary}>
+                      {shouldIncludeAbout ? "about " : ""}
+                      {lastSeenText}
+                    </Text>
+                  </Td>
                   <Td p={2} border={isFlightExpanded ? "none" : ""}>
                     <Popover
                       placement="left"
@@ -693,11 +794,7 @@ const FlightsTable = ({ flights, user }) => {
                     zIndex="1"
                   >
                     <Td colSpan={11} p={2} border={0}>
-                      <ExpandableRow
-                        flight={flight}
-                        planeImage={planeImage}
-                        secondPlaneImage={secondPlaneImage}
-                      />
+                      <ExpandableRow flight={flight} />
                     </Td>
                   </Tr>
                 )}
