@@ -40,7 +40,7 @@ services:
     volumes:
       - /root/rewardflights.io.crt:/etc/nginx/certs/rewardflights.io.crt:ro
       - /root/rewardflights.io.key:/etc/nginx/certs/rewardflights.io.key:ro
-      - ./sitemap.xml:/usr/share/nginx/html/sitemap.xml
+      - ./ui/sitemap.xml:/usr/share/nginx/html/sitemap.xml
       - shared-statics:/backend/static
     restart: unless-stopped
 
