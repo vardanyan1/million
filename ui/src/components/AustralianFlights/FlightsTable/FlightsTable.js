@@ -247,7 +247,7 @@ const FlightsTable = ({ flights, user }) => {
     }
     setSortConfig({ key, direction })
   }
-  console.log(sortConfig.key)
+
   return (
     <>
       <Table width="100%" ref={ref}>
