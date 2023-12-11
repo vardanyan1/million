@@ -16,6 +16,7 @@ import { getPagesToRender } from "../helpers/functions"
 import instagramImage from "../img/instagram.svg"
 import { ITEMS_PER_PAGE_AUSTRALIA } from "../constants"
 import "../App.css"
+import AustralianFlightDetail from "../components/AustralianFlights/FlightDetail"
 
 let selectOptions = [
   {
@@ -188,7 +189,7 @@ const ToFromAustralia = () => {
                 </Flex>
               </Flex>
 
-              <Outlet />
+              <AustralianFlightDetail />
 
               {/* Pagination */}
               <Flex py={5} justify={"center"} gap={2} userSelect={"none"}>
