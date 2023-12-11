@@ -8,7 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
 import Menu from "../components/Menu"
 import Loading from "../components/Loading"
 import { Select } from "../components/Select"
-import FlightDataContext from "../components/Flights/FlightDataContext"
+import AustralianFlightDataContext from "../components/AustralianFlights/FlightDataContext"
 import { trackPage } from "../services/analytics"
 import { getAustralianFlights } from "../services/api"
 import facebookImage from "../img/facebook.svg"
@@ -32,14 +32,19 @@ const ToFromAustralia = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [currentPage, setCurrentPage] = useState(1)
-  const [isFromAustralia, setIsFromAustralia] = useState(null)
+  const [isFromAustralia, setIsFromAustralia] = useState("leaving_australia")
+
+  const params = {
+    page: currentPage,
+    [isFromAustralia]: true,
+  }
 
   const query = useQuery({
-    queryKey: ["australianFlights", isFromAustralia],
+    queryKey: ["australianFlights", params],
     queryFn: getAustralianFlights,
     keepPreviousData: true,
     initialData: { count: 0, results: [] },
-    enabled: isFromAustralia !== null,
+    enabled: true,
   })
 
   useEffect(() => {
@@ -76,7 +81,7 @@ const ToFromAustralia = () => {
 
     const toFrom = value === 1 ? "from" : "to"
 
-    setIsFromAustralia(value === 1 ? true : false)
+    setIsFromAustralia(value === 1 ? "leaving_australia" : "back_to_australia")
 
     if (value) {
       navigate(`/australian-flights/${toFrom}-australia`)
@@ -99,7 +104,7 @@ const ToFromAustralia = () => {
         />
       </Helmet>
 
-      <FlightDataContext.Provider value={{ flights }}>
+      <AustralianFlightDataContext.Provider value={{ flights }}>
         <Stack
           direction={{ base: "column", lg: "row" }}
           minHeight="100vh"
@@ -128,26 +133,60 @@ const ToFromAustralia = () => {
                 color="#141725"
                 pb="6"
                 fontSize={{ base: "small", lg: "sm" }}
+                sx={{ maxWidth: "590px" }}
               >
                 {t("allAustralianFlightsDescription")}
               </Text>
             </Box>
 
             <Box bg="white" borderRadius={[0, 12]} mb={7}>
-              <Box px={4} pt={4} pb={4} w={{ lg: 250 }}>
-                <Select
-                  placeholder="Leaving Australia"
-                  onChange={handleSelectChange}
-                  value={
-                    isFromAustralia === null
-                      ? ""
-                      : isFromAustralia
-                      ? selectOptions[0]
-                      : selectOptions[1]
-                  }
-                  options={selectOptions}
-                />
-              </Box>
+              <Flex gap={5}>
+                <Box px={4} pt={4} pb={4} w={{ lg: 250 }}>
+                  <Select
+                    placeholder="Leaving Australia"
+                    onChange={handleSelectChange}
+                    value={
+                      isFromAustralia === null
+                        ? ""
+                        : isFromAustralia
+                        ? selectOptions[0]
+                        : selectOptions[1]
+                    }
+                    options={selectOptions}
+                  />
+                </Box>
+
+                <Flex
+                  direction={"column"}
+                  alignItems={"flex-start"}
+                  justifyContent={"center"}
+                  fontWeight={600}
+                  lineHeight={1.2}
+                  textAlign={"left"}
+                >
+                  <Text
+                    fontSize={{ base: "small", lg: "xs" }}
+                    fontStyle={"italic"}
+                    color={"grey"}
+                  >
+                    {t("australianFlightsInfo")}
+                  </Text>
+                  <Text
+                    fontSize={{ base: "small", lg: "xs" }}
+                    fontStyle={"italic"}
+                    color={"grey"}
+                  >
+                    {t("leavingAustralia")}
+                  </Text>
+                  <Text
+                    fontSize={{ base: "small", lg: "xs" }}
+                    fontStyle={"italic"}
+                    color={"grey"}
+                  >
+                    {t("backToAustralia")}
+                  </Text>
+                </Flex>
+              </Flex>
 
               <Outlet />
 
@@ -236,7 +275,7 @@ const ToFromAustralia = () => {
             </Box>
           </Box>
         </Stack>
-      </FlightDataContext.Provider>
+      </AustralianFlightDataContext.Provider>
     </>
   )
 }

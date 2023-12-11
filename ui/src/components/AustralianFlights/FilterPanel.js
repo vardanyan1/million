@@ -57,16 +57,14 @@ const AustralianFlightsFilterPanel = ({ from, to, onChange }) => {
 
   return (
     <Stack>
-      <Stack>
-        <Box w={{ lg: 250 }}>
-          <Select
-            placeholder="Leaving Australia"
-            onChange={(value) => onChange({ from: value })}
-            value={from}
-            options={originAirportOptions}
-          />
-        </Box>
-      </Stack>
+      <Box w={{ lg: 250 }}>
+        <Select
+          placeholder="Leaving Australia"
+          onChange={(value) => onChange({ from: value })}
+          value={from}
+          options={originAirportOptions}
+        />
+      </Box>
     </Stack>
   )
 }

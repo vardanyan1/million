@@ -6,8 +6,8 @@ import FlightsTable from "./FlightsTable/FlightsTable"
 // import { australianFlightsSEOInfo } from "../../constants/constants"
 
 const AustralianFlightDetail = () => {
-  const context = useContext(AustralianFlightDataContext)
-  console.log(context)
+  const { flights } = useContext(AustralianFlightDataContext)
+
   // const { route } = useParams()
   // const to = route?.split("-")[1]
 
@@ -28,7 +28,7 @@ const AustralianFlightDetail = () => {
         />
       </Helmet> */}
 
-      {/* <FlightsTable flights={flights} /> */}
+      <FlightsTable flights={flights} />
     </>
   )
 }
