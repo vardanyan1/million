@@ -9,10 +9,10 @@ import {
   Divider,
 } from "@chakra-ui/react"
 
-import amexImage from "../../img/logo_amex.svg"
-import qantasLogoImage from "../../img/qantas_logo.svg"
-import amexQantas from "../../img/amex_qantas.png"
-import amexQantasBusiness from "../../img/amex_qantas_business.png"
+import amexImage from "../../../img/logo_amex.svg"
+import qantasLogoImage from "../../../img/qantas_logo.svg"
+import amexQantas from "../../../img/amex_qantas.png"
+import amexQantasBusiness from "../../../img/amex_qantas_business.png"
 
 const numberFormat = new Intl.NumberFormat()
 

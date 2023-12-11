@@ -11,8 +11,7 @@ import {
   Box,
   Text,
 } from "@chakra-ui/react"
-
-import velocity from "../../img/velocity.png"
+import velocity from "../../../img/velocity.png"
 
 const numberFormat = new Intl.NumberFormat()
 

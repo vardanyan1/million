@@ -28,6 +28,8 @@ export const DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 export const DATE_FORMAT_EXPANDABLE_ROW = "EEEE, MMMM dd, HH:mm aa"
 // 'yyyy-MM-dd HH:mm:ss'
 
+export const DATE_FORMAT_AUSTRALIA_DEPART = "dd MMM yyyy"
+
 export const maxAlertsPerSubscription = {
   FREE: 0,
   MONTHLY: 5,
@@ -35,6 +37,7 @@ export const maxAlertsPerSubscription = {
 }
 
 export const ITEMS_PER_PAGE = 10
+export const ITEMS_PER_PAGE_AUSTRALIA = 15
 
 export const flightClassesColors = {
   Economy: "#DD0000",

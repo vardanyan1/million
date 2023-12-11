@@ -21,10 +21,10 @@ import DatePicker, { CalendarContainer } from "react-datepicker"
 import format from "date-fns/format"
 import invert from "lodash/invert"
 
-import bellImage from "../../img/bell.svg"
-import { createAlert, updateAlert } from "../../services/api"
+import bellImage from "../../../img/bell.svg"
+import { createAlert, updateAlert } from "../../../services/api"
 import { addDays, parseISO } from "date-fns"
-import { pointsPrograms } from "../../constants"
+import { pointsPrograms } from "../../../constants"
 
 const DatePickerInput = forwardRef((props, ref) => {
   const { value, onClick } = props
