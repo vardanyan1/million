@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
-import { Outlet, Link as RouterLink, useNavigate } from "react-router-dom"
+import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import { Box, Heading, Text, Stack, Image, Flex, Link } from "@chakra-ui/react"
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons"
@@ -38,6 +38,7 @@ const ToFromAustralia = () => {
   const params = {
     page: currentPage,
     [isFromAustralia]: true,
+    page_size: 15,
   }
 
   const query = useQuery({
