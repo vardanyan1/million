@@ -104,6 +104,9 @@ class DestinationAirportViewSet(viewsets.ViewSet):
 class CustomFlightPagination(PageNumberPagination):
     page_size = 10
 
+    def get_page_size(self, request):
+        return request.query_params.get('page_size', self.page_size)
+
 
 class FlightViewSet(viewsets.ModelViewSet):
     serializer_class = FlightSerializer
@@ -129,14 +132,21 @@ class FlightViewSet(viewsets.ModelViewSet):
         if destination:
             queryset = queryset.filter(destination__code=destination)
 
-        # Handling 'Leaving Australia' and 'Back to Australia' filters
+        # Handling 'Leaving Australia' and 'Back to Australia' filters with cabin type
         leaving_australia = self.request.query_params.get('leaving_australia', None)
         back_to_australia = self.request.query_params.get('back_to_australia', None)
+        cabin_types = ['First', 'Business']  # Define the cabin types to filter
 
         if leaving_australia:
-            queryset = queryset.filter(origin__code__in=AUSTRALIAN_AIRPORT_CODES)
+            queryset = queryset.filter(
+                origin__code__in=AUSTRALIAN_AIRPORT_CODES,
+                class_details__cabin_type__in=cabin_types
+            )
         elif back_to_australia:
-            queryset = queryset.filter(destination__code__in=AUSTRALIAN_AIRPORT_CODES)
+            queryset = queryset.filter(
+                destination__code__in=AUSTRALIAN_AIRPORT_CODES,
+                class_details__cabin_type__in=cabin_types
+            )
 
         return queryset
 
