@@ -104,6 +104,9 @@ class DestinationAirportViewSet(viewsets.ViewSet):
 class CustomFlightPagination(PageNumberPagination):
     page_size = 10
 
+    def get_page_size(self, request):
+        return request.query_params.get('page_size', self.page_size)
+
 
 class FlightViewSet(viewsets.ModelViewSet):
     serializer_class = FlightSerializer
