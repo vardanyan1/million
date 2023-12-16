@@ -38,6 +38,7 @@ const ToFromAustralia = () => {
   const params = {
     page: currentPage,
     [isFromAustralia]: true,
+    page_size: 15,
   }
 
   const query = useQuery({
@@ -85,7 +86,7 @@ const ToFromAustralia = () => {
     setIsFromAustralia(value === 1 ? "leaving_australia" : "back_to_australia")
 
     if (value) {
-      navigate(`/australian-flights/${toFrom}-australia`)
+      navigate(`/australian-flights-for-testing/${toFrom}-australia`)
     }
   }
 
@@ -140,22 +141,20 @@ const ToFromAustralia = () => {
             </Box>
 
             <Box bg="white" borderRadius={[0, 12]} mb={7}>
-              <Flex gap={5}>
-                <Box px={4} pt={4} pb={4} w={{ lg: 250 }}>
-                  <Select
-                    placeholder="Leaving Australia"
-                    onChange={handleSelectChange}
-                    value={
-                      isFromAustralia === null
-                        ? ""
-                        : isFromAustralia
-                        ? selectOptions[0]
-                        : selectOptions[1]
-                    }
-                    options={selectOptions}
-                  />
-                </Box>
-              </Flex>
+              <Box px={4} pt={4} pb={4} w={{ lg: 250 }}>
+                <Select
+                  placeholder="Leaving Australia"
+                  onChange={handleSelectChange}
+                  value={
+                    isFromAustralia === null
+                      ? ""
+                      : isFromAustralia
+                      ? selectOptions[0]
+                      : selectOptions[1]
+                  }
+                  options={selectOptions}
+                />
+              </Box>
 
               <AustralianFlightDetail />
 
