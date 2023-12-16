@@ -136,21 +136,28 @@ class FlightViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(destination__code=destination)
 
         # Handling 'Leaving Australia' and 'Back to Australia' filters with cabin type
-        leaving_australia = self.request.query_params.get('leaving_australia', None)
-        back_to_australia = self.request.query_params.get('back_to_australia', None)
         cabin_types = ['First', 'Business']  # Define the cabin types to filter
 
+        leaving_australia = self.request.query_params.get('leaving_australia', None)
         if leaving_australia:
             queryset = queryset.filter(
                 origin__code__in=AUSTRALIAN_AIRPORT_CODES,
                 class_details__cabin_type__in=cabin_types
             )
-        elif back_to_australia:
+            queryset = self.apply_time_filters(queryset)
+
+        # Back to Australia filter with cabin type and time filters
+        back_to_australia = self.request.query_params.get('back_to_australia', None)
+        if back_to_australia:
             queryset = queryset.filter(
                 destination__code__in=AUSTRALIAN_AIRPORT_CODES,
                 class_details__cabin_type__in=cabin_types
             )
+            queryset = self.apply_time_filters(queryset)
 
+        return queryset
+
+    def apply_time_filters(self, queryset):
         # Filter for Flights Starting from Now + 24 Hours
         show_future_flights = self.request.query_params.get('show_future_flights', 1)
         time_plus_24_hours = timezone.now() + timedelta(days=int(show_future_flights))
