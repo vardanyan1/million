@@ -185,6 +185,7 @@ const router = createBrowserRouter([
       {
         path: "/australian-flights-for-testing",
         element: <ToFromAustralia />,
+        children: [{ path: "*", element: <ToFromAustralia /> }],
       },
       {
         path: "*",
