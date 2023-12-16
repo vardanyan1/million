@@ -135,7 +135,6 @@ const ToFromAustralia = () => {
                 color="#141725"
                 pb="6"
                 fontSize={{ base: "small", lg: "sm" }}
-                sx={{ maxWidth: "590px" }}
               >
                 {t("allAustralianFlightsDescription")}
               </Text>
@@ -157,37 +156,6 @@ const ToFromAustralia = () => {
                     options={selectOptions}
                   />
                 </Box>
-
-                <Flex
-                  direction={"column"}
-                  alignItems={"flex-start"}
-                  justifyContent={"center"}
-                  fontWeight={600}
-                  lineHeight={1.2}
-                  textAlign={"left"}
-                >
-                  <Text
-                    fontSize={{ base: "small", lg: "xs" }}
-                    fontStyle={"italic"}
-                    color={"grey"}
-                  >
-                    {t("australianFlightsInfo")}
-                  </Text>
-                  <Text
-                    fontSize={{ base: "small", lg: "xs" }}
-                    fontStyle={"italic"}
-                    color={"grey"}
-                  >
-                    {t("leavingAustralia")}
-                  </Text>
-                  <Text
-                    fontSize={{ base: "small", lg: "xs" }}
-                    fontStyle={"italic"}
-                    color={"grey"}
-                  >
-                    {t("backToAustralia")}
-                  </Text>
-                </Flex>
               </Flex>
 
               <AustralianFlightDetail />
