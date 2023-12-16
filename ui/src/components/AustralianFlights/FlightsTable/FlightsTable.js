@@ -15,7 +15,6 @@ import VelocityBookContent from "./VelocityBookContent"
 import AlertRouteContent from "./AlertRouteContent"
 import { getAlerts } from "../../../services/api"
 
-import cardImage from "../../../img/card.svg"
 import bellImage from "../../../img/bell.svg"
 
 import QFAwards from "../../../img/QF.svg"
@@ -360,9 +359,6 @@ const FlightsTable = ({ flights, user }) => {
             </Th>
             <Show above="lg">
               <Th textTransform="none" textAlign="center" p={2}>
-                {t("table.earnPoints")}
-              </Th>
-              <Th textTransform="none" textAlign="center" p={2}>
                 {t("table.alert")}
               </Th>
             </Show>
@@ -618,7 +614,7 @@ const FlightsTable = ({ flights, user }) => {
                           <Text color="#141725" fontSize="xs">
                             {summaryPoints["Business"].remaining_seats
                               ? summaryPoints["Business"].remaining_seats +
-                                " seats left"
+                              " seats left"
                               : "Min. 2 seats left"}
                           </Text>
                         </>
@@ -640,7 +636,7 @@ const FlightsTable = ({ flights, user }) => {
                           <Text color="#141725" fontSize="xs">
                             {summaryPoints["First"].remaining_seats
                               ? summaryPoints["First"].remaining_seats +
-                                " seats left"
+                              " seats left"
                               : "Min. 2 seats left"}
                           </Text>
                         </>
@@ -694,41 +690,6 @@ const FlightsTable = ({ flights, user }) => {
                     </Popover>
                   </Td>
                   <Show above="lg">
-                    <Td p={2} border={isFlightExpanded ? "none" : ""}>
-                      {/* We will open this logic, when activate Earn Points */}
-                      {/* {flight.source === "QF" ? (
-                        <Popover
-                          placement="left"
-                          onOpen={() => {
-                            trackPage({
-                              title: "Earn Points",
-                              destination: flight.destination,
-                            })
-                          }}
-                          isOpen={false}
-                        >
-                          <PopoverTrigger>
-                            <Image src={cardImage} margin="0 auto" />
-                          </PopoverTrigger>
-                          <PopoverContent
-                            p={5}
-                            pb={0}
-                            _focus={{ boxShadow: "none" }}
-                            boxShadow="0px 10px 22px rgba(0, 0, 0, 0.14);"
-                            borderRadius={8}
-                          >
-                            <PopoverBody p={0}>
-                              <EarnPointsContent
-                                points={highestPoint.points}
-                                destinationAirport={flight.destination}
-                              />
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      ) : ( */}
-                      <Image src={cardImage} margin="0 auto" opacity={0.3} />
-                      {/* )} */}
-                    </Td>
                     <Td p={2} border={isFlightExpanded ? "none" : ""}>
                       <Popover
                         placement="left"

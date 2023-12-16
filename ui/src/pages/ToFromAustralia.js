@@ -135,7 +135,6 @@ const ToFromAustralia = () => {
                 color="#141725"
                 pb="6"
                 fontSize={{ base: "small", lg: "sm" }}
-                sx={{ maxWidth: "590px" }}
               >
                 {t("allAustralianFlightsDescription")}
               </Text>
