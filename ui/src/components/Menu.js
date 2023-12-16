@@ -80,16 +80,18 @@ const Menu = () => {
       </MenuItem>
 
       <MenuItem
-        to={"/australian-flights"}
+        to={"/australian-flights-for-testing"}
         ml={0}
-        isActive={location.pathname === "/australian-flights"}
+        isActive={location.pathname === "/australian-flights-for-testing"}
       >
         <Image
           as={AustralianFlightsMenuIcon}
           width={{ base: "20px", lg: "24px" }}
           display="inline"
           stroke={
-            location.pathname === "/australian-flights" ? "#DD0000" : "#6A6E85"
+            location.pathname === "/australian-flights-for-testing"
+              ? "#DD0000"
+              : "#6A6E85"
           }
         />
         <Show above="lg">
