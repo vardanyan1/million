@@ -2,6 +2,8 @@
 Flights app viewsets
 """
 import logging
+from datetime import timedelta
+
 import stripe
 
 from django.conf import settings
@@ -9,6 +11,7 @@ from django.db.models import Min
 from django.db.models.functions import TruncDate
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django_filters import rest_framework as filters
 
 from rest_framework import viewsets, mixins, filters as rest_filters, status
@@ -147,6 +150,16 @@ class FlightViewSet(viewsets.ModelViewSet):
                 destination__code__in=AUSTRALIAN_AIRPORT_CODES,
                 class_details__cabin_type__in=cabin_types
             )
+
+        # Filter for Flights Starting from Now + 24 Hours
+        show_future_flights = self.request.query_params.get('show_future_flights', 1)
+        time_plus_24_hours = timezone.now() + timedelta(days=int(show_future_flights))
+        queryset = queryset.filter(flight_start_date__gte=time_plus_24_hours)
+
+        # Filter for Flights with Timestamp Within the Last 24 Hours
+        show_recent_flights = self.request.query_params.get('show_recent_flights', 1)
+        last_24_hours_time = timezone.now() - timedelta(days=int(show_recent_flights))
+        queryset = queryset.filter(timestamp__gte=last_24_hours_time)
 
         return queryset
 
