@@ -142,7 +142,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         if leaving_australia:
             queryset = queryset.filter(
                 origin__code__in=AUSTRALIAN_AIRPORT_CODES,
-                class_details__cabin_type__in=cabin_types
+                class_details__designated_class__in=cabin_types
             )
             queryset = self.apply_time_filters(queryset)
 
@@ -151,7 +151,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         if back_to_australia:
             queryset = queryset.filter(
                 destination__code__in=AUSTRALIAN_AIRPORT_CODES,
-                class_details__cabin_type__in=cabin_types
+                class_details__designated_class__in=cabin_types
             )
             queryset = self.apply_time_filters(queryset)
 
