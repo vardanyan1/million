@@ -30,7 +30,9 @@ from flight_rewards.flights.viewsets import (
     SubscriptionPlanViewSet,
     FlightDepartureDatesViewSet,
     FlightViewSet,
-    NotificationJobViewSet)
+    NotificationJobViewSet,
+    AustralianFlightsViewSet
+)
 from flight_rewards.flights.views import upload_flights, upload_result
 
 
@@ -46,6 +48,7 @@ router.register(r'users', UserViewSet, basename='users')
 router.register(r'origins', OriginAirportViewSet, basename='origins')
 router.register(r'destinations', DestinationAirportViewSet, basename='destinations')
 router.register(r'flights', FlightViewSet, basename='flights')
+router.register(r'australia_flights', AustralianFlightsViewSet, basename='australia_flights')
 router.register(r'flight-dates', FlightDepartureDatesViewSet, basename='flight-departure-dates')
 router.register(r'contacts', ContactViewSet)
 router.register(r'alerts', AvailabilityNotificationViewSet, basename='alerts')
