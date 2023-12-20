@@ -1,4 +1,4 @@
-import { Fragment, useState, useRef, useMemo } from "react"
+import { Fragment, useState, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import {
   format,
@@ -101,32 +101,6 @@ const ExpandableRow = ({ flight }) => {
                   position="relative"
                   zIndex={1}
                 />
-                {/* <Box
-                  height={84}
-                  position="relative"
-                  borderLeft={"1px solid #B6BAD1"}
-                  mr={6}
-                  _before={{
-                    content: '""',
-                    width: "12px",
-                    height: "12px",
-                    borderRadius: "50%",
-                    border: "1px solid #B6BAD1",
-                    position: "absolute",
-                    top: "-13px",
-                    left: "-7px",
-                  }}
-                  _after={{
-                    content: '""',
-                    width: "12px",
-                    height: "12px",
-                    borderRadius: "50%",
-                    border: "1px solid #B6BAD1",
-                    position: "absolute",
-                    bottom: "-13px",
-                    left: "-7px",
-                  }}
-                /> */}
               </Flex>
 
               <Image
@@ -193,37 +167,24 @@ const ExpandableRow = ({ flight }) => {
   )
 }
 
-const FlightsTable = ({ flights, user }) => {
+const FlightsTable = ({
+  flights,
+  user,
+  orderBy,
+  descending,
+  setOrderBy,
+  setDescending,
+}) => {
   const ref = useRef()
   const { t } = useTranslation()
 
   const [expandedFlight, setExpandedFlight] = useState(null)
-  const [sortConfig, setSortConfig] = useState({
-    key: "depart",
-    direction: "ascending",
-  })
-
-  const sortedFlights = useMemo(() => {
-    let sortableFlights = [...flights]
-    if (sortConfig.key !== null) {
-      sortableFlights.sort((a, b) => {
-        if (a.flight_start_date < b.flight_start_date) {
-          return sortConfig.direction === "ascending" ? -1 : 1
-        }
-        if (a.flight_start_date > b.flight_start_date) {
-          return sortConfig.direction === "ascending" ? 1 : -1
-        }
-        return 0
-      })
-    }
-    return sortableFlights
-  }, [flights, sortConfig])
 
   const { data: alerts } = useQuery({
     queryKey: ["alerts"],
     queryFn: getAlerts,
     initialData: [],
-    enabled: !!user,
+    enabled: true,
   })
 
   useOutsideClick({
@@ -240,11 +201,12 @@ const FlightsTable = ({ flights, user }) => {
   }
 
   const sortFlights = (key) => {
-    let direction = "ascending"
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending"
+    let isDescending = "False"
+    if (key === orderBy && descending === "False") {
+      isDescending = "True"
     }
-    setSortConfig({ key, direction })
+    setOrderBy(key)
+    setDescending(isDescending)
   }
 
   return (
@@ -260,11 +222,11 @@ const FlightsTable = ({ flights, user }) => {
               p={2}
               w={{ lg: "10%" }}
               cursor={"pointer"}
-              onClick={() => sortFlights("depart")}
+              onClick={() => sortFlights("departure_date")}
             >
               {t("table.depart")}
-              {sortConfig.key === "depart" ? (
-                sortConfig.direction === "descending" ? (
+              {orderBy === "departure_date" ? (
+                descending === "True" ? (
                   <ChevronUpIcon boxSize="4" />
                 ) : (
                   <ChevronDownIcon boxSize="4" />
@@ -276,11 +238,11 @@ const FlightsTable = ({ flights, user }) => {
               p={2}
               w={{ lg: "10%" }}
               cursor={"pointer"}
-              onClick={() => sortFlights("from")}
+              onClick={() => sortFlights("from_airport")}
             >
               {t("table.from")}
-              {sortConfig.key === "from" ? (
-                sortConfig.direction === "descending" ? (
+              {orderBy === "from_airport" ? (
+                descending === "True" ? (
                   <ChevronUpIcon boxSize="4" />
                 ) : (
                   <ChevronDownIcon boxSize="4" />
@@ -292,20 +254,17 @@ const FlightsTable = ({ flights, user }) => {
               p={2}
               w={{ lg: "10%" }}
               cursor={"pointer"}
-              onClick={() => sortFlights("to")}
+              onClick={() => sortFlights("to_airport")}
             >
               {t("table.to")}
-              {sortConfig.key === "to" ? (
-                sortConfig.direction === "descending" ? (
+              {orderBy === "to_airport" ? (
+                descending === "True" ? (
                   <ChevronUpIcon boxSize="4" />
                 ) : (
                   <ChevronDownIcon boxSize="4" />
                 )
               ) : null}
             </Th>
-            <Show above="lg">
-              <Th textTransform="none" p={2}></Th>
-            </Show>
             <Th textTransform="none" p={2} w={{ base: "35%", lg: "15%" }}>
               {t("table.itinerary")}
             </Th>
@@ -323,11 +282,11 @@ const FlightsTable = ({ flights, user }) => {
                 p={2}
                 w={{ lg: "10%" }}
                 cursor={"pointer"}
-                onClick={() => sortFlights("business")}
+                onClick={() => sortFlights("designated_class")}
               >
                 {t("table.business")}
-                {sortConfig.key === "business" ? (
-                  sortConfig.direction === "descending" ? (
+                {orderBy === "designated_class" ? (
+                  descending === "True" ? (
                     <ChevronUpIcon boxSize="4" />
                   ) : (
                     <ChevronDownIcon boxSize="4" />
@@ -339,11 +298,11 @@ const FlightsTable = ({ flights, user }) => {
                 p={2}
                 w={{ lg: "10%" }}
                 cursor={"pointer"}
-                onClick={() => sortFlights("first")}
+                onClick={() => sortFlights("designated_class")}
               >
                 {t("table.first")}
-                {sortConfig.key === "first" ? (
-                  sortConfig.direction === "descending" ? (
+                {orderBy === "designated_class" ? (
+                  descending === "True" ? (
                     <ChevronUpIcon boxSize="4" />
                   ) : (
                     <ChevronDownIcon boxSize="4" />
@@ -365,7 +324,7 @@ const FlightsTable = ({ flights, user }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {sortedFlights.map((flight) => {
+          {flights.map((flight) => {
             const { details } = flight
 
             const summaryPoints = flight.class_details.reduce(
@@ -395,15 +354,6 @@ const FlightsTable = ({ flights, user }) => {
               summaryPoints["PremiumEconomy"] ||
               summaryPoints["Economy"]
 
-            const planeImage =
-              details.length >= 3
-                ? flightImages.group_3_plus
-                : flightImages[details[0].aircraft_details.slice(0, 2)]
-
-            const secondPlaneImage =
-              details.length === 2 &&
-              flightImages[details[1].aircraft_details.slice(0, 2)]
-
             const departureDate = new Date(details[0].departure_date)
             const arrivalDate = new Date(
               details[details.length - 1].arrival_date
@@ -430,20 +380,6 @@ const FlightsTable = ({ flights, user }) => {
             }
 
             const isFlightExpanded = expandedFlight === flight
-
-            const checkIfSameAirline = (details) => {
-              const regex = /\((.*?)\)/
-
-              // Extract the company names from each string in the array
-              const companyNames = details.map((detail) => {
-                const match = detail.aircraft_details.match(regex)
-
-                return match ? match[1] : null
-              })
-
-              // Check if all extracted company names are the same
-              return companyNames.every((name, _, arr) => name === arr[0])
-            }
 
             const adjustTimezone = (dateStr, timezoneOffsetInHoursFromUTC) => {
               const [datePart, timePart] = dateStr.split("T")
@@ -509,35 +445,6 @@ const FlightsTable = ({ flights, user }) => {
                   <Td p="8px" width="50px" fontSize={12}>
                     {flight.destination.name}
                   </Td>
-                  <Show above="lg">
-                    <Td
-                      p="8px"
-                      width="50px"
-                      position="relative"
-                      border={isFlightExpanded ? "none" : ""}
-                    >
-                      <Image
-                        width="100%"
-                        src={planeImage}
-                        margin="0 auto"
-                        position="relative"
-                        right="-4px"
-                        zIndex={1}
-                        top={secondPlaneImage ? "5px" : "0px"}
-                      />
-                      {secondPlaneImage && !checkIfSameAirline(details) && (
-                        <Image
-                          width="100%"
-                          src={secondPlaneImage}
-                          margin="0 auto"
-                          position="relative"
-                          right="4px"
-                          bottom="18px"
-                          zIndex={0}
-                        />
-                      )}
-                    </Td>
-                  </Show>
                   <Td p={2} border={isFlightExpanded ? "none" : ""}>
                     <Text>
                       {formatTime(flight.flight_start_date)} -{" "}
@@ -614,7 +521,7 @@ const FlightsTable = ({ flights, user }) => {
                           <Text color="#141725" fontSize="xs">
                             {summaryPoints["Business"].remaining_seats
                               ? summaryPoints["Business"].remaining_seats +
-                              " seats left"
+                                " seats left"
                               : "Min. 2 seats left"}
                           </Text>
                         </>
@@ -636,7 +543,7 @@ const FlightsTable = ({ flights, user }) => {
                           <Text color="#141725" fontSize="xs">
                             {summaryPoints["First"].remaining_seats
                               ? summaryPoints["First"].remaining_seats +
-                              " seats left"
+                                " seats left"
                               : "Min. 2 seats left"}
                           </Text>
                         </>

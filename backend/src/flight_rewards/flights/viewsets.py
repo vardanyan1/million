@@ -135,6 +135,18 @@ class FlightViewSet(viewsets.ModelViewSet):
         if destination:
             queryset = queryset.filter(destination__code=destination)
 
+        return queryset
+
+
+class AustralianFlightsViewSet(viewsets.ModelViewSet):
+    serializer_class = FlightSerializer
+    pagination_class = CustomFlightPagination
+
+    def get_queryset(self):
+        queryset = Flight.objects.annotate(
+            flight_start_date_trunc=TruncDate('flight_start_date')
+        ).order_by('flight_start_date_trunc')
+
         # Handling 'Leaving Australia' and 'Back to Australia' filters with cabin type
         cabin_types = ['First', 'Business']  # Define the cabin types to filter
 
@@ -142,7 +154,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         if leaving_australia:
             queryset = queryset.filter(
                 origin__code__in=AUSTRALIAN_AIRPORT_CODES,
-                class_details__cabin_type__in=cabin_types
+                class_details__designated_class__in=cabin_types
             )
             queryset = self.apply_time_filters(queryset)
 
@@ -151,9 +163,27 @@ class FlightViewSet(viewsets.ModelViewSet):
         if back_to_australia:
             queryset = queryset.filter(
                 destination__code__in=AUSTRALIAN_AIRPORT_CODES,
-                class_details__cabin_type__in=cabin_types
+                class_details__designated_class__in=cabin_types
             )
             queryset = self.apply_time_filters(queryset)
+
+        # Retrieve and apply order parameters
+        order_by = self.request.query_params.get('order_by', 'departure_date')
+        desc = self.request.query_params.get('desc', 'False') == 'True'
+
+        # Map parameters to model fields if necessary
+        order_fields = {
+            'departure_date': 'flight_start_date',
+            'from_airport': 'origin__name',
+            'to_airport': 'destination__name',
+            'designated_class': 'class_details__designated_class'
+        }
+        order_field = order_fields.get(order_by, 'flight_start_date')
+
+        # Apply ordering
+        if desc:
+            order_field = f'-{order_field}'
+        queryset = queryset.order_by(order_field)
 
         return queryset
 

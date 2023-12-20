@@ -3,10 +3,15 @@ import AustralianFlightDataContext from "./FlightDataContext"
 import FlightsTable from "./FlightsTable/FlightsTable"
 // import { Helmet } from "react-helmet"
 // import { useParams } from "react-router-dom"
-// import { australianFlightsSEOInfo } from "../../constants/constants"
+// import { australianFlightsSEOInfo } from "../../constants/seoInfoAustralia"
 
-const AustralianFlightDetail = () => {
-  const { flights } = useContext(AustralianFlightDataContext)
+const AustralianFlightDetail = ({
+  orderBy,
+  descending,
+  setOrderBy,
+  setDescending,
+}) => {
+  const { flights, user } = useContext(AustralianFlightDataContext)
 
   // const { route } = useParams()
   // const to = route?.split("-")[1]
@@ -28,7 +33,14 @@ const AustralianFlightDetail = () => {
         />
       </Helmet> */}
 
-      <FlightsTable flights={flights} />
+      <FlightsTable
+        flights={flights}
+        user={user}
+        orderBy={orderBy}
+        descending={descending}
+        setOrderBy={setOrderBy}
+        setDescending={setDescending}
+      />
     </>
   )
 }

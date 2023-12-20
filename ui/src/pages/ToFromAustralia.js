@@ -17,6 +17,7 @@ import instagramImage from "../img/instagram.svg"
 import { ITEMS_PER_PAGE_AUSTRALIA } from "../constants"
 import "../App.css"
 import AustralianFlightDetail from "../components/AustralianFlights/FlightDetail"
+import { useAuthContext } from "../services/auth"
 
 let selectOptions = [
   {
@@ -32,13 +33,18 @@ let selectOptions = [
 const ToFromAustralia = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { user } = useAuthContext()
   const [currentPage, setCurrentPage] = useState(1)
+  const [orderBy, setOrderBy] = useState("departure_date")
+  const [descending, setDescending] = useState("False")
   const [isFromAustralia, setIsFromAustralia] = useState("leaving_australia")
 
   const params = {
     page: currentPage,
     [isFromAustralia]: true,
     page_size: 15,
+    order_by: orderBy,
+    desc: descending,
   }
 
   const query = useQuery({
@@ -106,7 +112,7 @@ const ToFromAustralia = () => {
         />
       </Helmet>
 
-      <AustralianFlightDataContext.Provider value={{ flights }}>
+      <AustralianFlightDataContext.Provider value={{ flights, user }}>
         <Stack
           direction={{ base: "column", lg: "row" }}
           minHeight="100vh"
@@ -146,9 +152,7 @@ const ToFromAustralia = () => {
                   placeholder="Leaving Australia"
                   onChange={handleSelectChange}
                   value={
-                    isFromAustralia === null
-                      ? ""
-                      : isFromAustralia
+                    isFromAustralia === "leaving_australia"
                       ? selectOptions[0]
                       : selectOptions[1]
                   }
@@ -156,7 +160,12 @@ const ToFromAustralia = () => {
                 />
               </Box>
 
-              <AustralianFlightDetail />
+              <AustralianFlightDetail
+                orderBy={orderBy}
+                descending={descending}
+                setOrderBy={setOrderBy}
+                setDescending={setDescending}
+              />
 
               {/* Pagination */}
               <Flex py={5} justify={"center"} gap={2} userSelect={"none"}>

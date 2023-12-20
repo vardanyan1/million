@@ -104,7 +104,7 @@ export const getAustralianFlights = async ({ queryKey }) => {
 
   const urlParams = new URLSearchParams(params)
 
-  const response = await API.get(`/flights/?${urlParams}`)
+  const response = await API.get(`/australia_flights/?${urlParams}`)
   return response.data
 }
 
