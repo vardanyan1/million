@@ -143,10 +143,9 @@ class AustralianFlightsViewSet(viewsets.ModelViewSet):
     pagination_class = CustomFlightPagination
 
     def get_queryset(self):
-        queryset = Flight.objects.all()
-        # queryset = Flight.objects.annotate(
-        #     flight_start_date_trunc=TruncDate('flight_start_date')
-        # ).order_by('flight_start_date_trunc')
+        queryset = Flight.objects.annotate(
+            flight_start_date_trunc=TruncDate('flight_start_date')
+        ).order_by('flight_start_date_trunc')
 
         # Handling 'Leaving Australia' and 'Back to Australia' filters with cabin type
         cabin_types = ['First', 'Business']  # Define the cabin types to filter
@@ -185,6 +184,8 @@ class AustralianFlightsViewSet(viewsets.ModelViewSet):
         if desc:
             order_field = f'-{order_field}'
         queryset = queryset.order_by(order_field)
+
+        queryset = queryset.distinct()
 
         return queryset
 
