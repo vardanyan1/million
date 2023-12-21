@@ -92,7 +92,7 @@ const ToFromAustralia = () => {
     setIsFromAustralia(value === 1 ? "leaving_australia" : "back_to_australia")
 
     if (value) {
-      navigate(`/australian-flights-for-testing/${toFrom}-australia`)
+      navigate(`/australian-flights/${toFrom}-australia`)
     }
   }
 
