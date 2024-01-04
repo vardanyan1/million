@@ -48,7 +48,7 @@ import {
   DATE_FORMAT_EXPANDABLE_ROW,
   flightClassesMapping,
   maxAlertsPerSubscription,
-} from "../../../constants"
+} from "../../../constants/constants"
 import QantasBookContent from "./QantasBookContent"
 
 const numberFormat = new Intl.NumberFormat()

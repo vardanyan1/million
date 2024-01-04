@@ -21,7 +21,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
 import { signup, login, createCheckoutSession } from "../services/api"
-import { EMAIL_REGEX, PRICE_INTERVAL } from "../constants"
+import { EMAIL_REGEX, PRICE_INTERVAL } from "../constants/constants"
 import Menu from "../components/Menu"
 import PasswordInput from "../components/PasswordInput"
 import Loading from "../components/Loading"

@@ -43,6 +43,7 @@ import Pricing from "./pages/Pricing"
 import CheckoutResult from "./pages/CheckoutResult"
 import ToFromAustralia from "./pages/ToFromAustralia"
 import FlightDetail from "./components/Flights/FlightDetail"
+import NotFound from "./pages/NotFound"
 
 const resources = {
   en: {
@@ -189,7 +190,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <Navigate to="/" replace />,
+        element: <NotFound />,
       },
     ],
   },

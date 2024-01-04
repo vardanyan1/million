@@ -27,7 +27,7 @@ import Menu from "../components/Menu"
 import Footer from "../components/Footer"
 import SubscriptionPopup from "../components/SubscriptionPopup"
 import { useAuthContext } from "../services/auth"
-import { PRICE_INTERVAL, SUBSCRIPTION } from "../constants"
+import { PRICE_INTERVAL, SUBSCRIPTION } from "../constants/constants"
 
 const { FREE, MONTHLY, ANNUAL } = SUBSCRIPTION
 const { MONTH, YEAR } = PRICE_INTERVAL

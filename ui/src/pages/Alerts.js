@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Stack,
   Box,
@@ -34,8 +35,7 @@ import Menu from "../components/Menu"
 import { getAlerts, deleteAlert } from "../services/api"
 import AlertRouteContent from "../components/Flights/FlightsTable/AlertRouteContent"
 import { trackPage } from "../services/analytics"
-import { programNameToCodeMapping } from "../constants"
-import { useState } from "react"
+import { programNameToCodeMapping } from "../constants/constants"
 
 const DATE_FORMAT = "MMMM dd, yyyy"
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
