@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import FlightDataContext from "./FlightDataContext"
 import FlightsTable from "./FlightsTable/FlightsTable"
-import { flightsSEOInfo } from "../../constants/constants"
+import { flightsSEOInfo } from "../../constants/seoInfo"
 
 const FlightDetail = () => {
   const { flights, user } = useContext(FlightDataContext)

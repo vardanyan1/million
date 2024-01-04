@@ -24,7 +24,7 @@ import invert from "lodash/invert"
 import bellImage from "../../../img/bell.svg"
 import { createAlert, updateAlert } from "../../../services/api"
 import { addDays, parseISO } from "date-fns"
-import { pointsPrograms } from "../../../constants"
+import { pointsPrograms } from "../../../constants/constants"
 
 const DatePickerInput = forwardRef((props, ref) => {
   const { value, onClick } = props

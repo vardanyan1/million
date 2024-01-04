@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next"
 
 import PasswordInput from "../components/PasswordInput"
 import { login } from "../services/api"
-import { EMAIL_REGEX } from "../constants"
+import { EMAIL_REGEX } from "../constants/constants"
 import Menu from "../components/Menu"
 
 export default function Login() {

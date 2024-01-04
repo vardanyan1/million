@@ -38,7 +38,7 @@ import {
   PRICE_INTERVAL,
   SUBSCRIPTION,
   flightClassesColors,
-} from "../../constants"
+} from "../../constants/constants"
 
 const { MONTH } = PRICE_INTERVAL
 const { FREE } = SUBSCRIPTION
